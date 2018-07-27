@@ -1,0 +1,14 @@
+{
+    "extends": "./tsconfig.json",
+    "compileOnSave": false,
+    "include": [
+        "server",
+        "typings",
+    ],
+    "compilerOptions": {
+        "module": "commonjs",
+        "outDir": "dist-server",
+        "noUnusedLocals": false,
+        "noUnusedParameters": false
+    }
+}
