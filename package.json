@@ -46,6 +46,7 @@
   },
   "devDependencies": {
     "@types/koa": "^2.0.46",
+    "@types/koa-bodyparser": "^5.0.1",
     "@types/koa-router": "^7.0.30",
     "@types/koa-session": "^5.7.4",
     "@types/koa-static": "^4.0.0",

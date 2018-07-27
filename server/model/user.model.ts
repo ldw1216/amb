@@ -4,7 +4,7 @@ const collectionName = "User";
 const roles = ["admin", "general"];
 
 const schema = new Schema({
-    name: { type: String, required: true, unique: true, cn: "名称" },
+    name: { type: String, required: true, cn: "名称" },
     phone: { type: String, required: true, unique: true, cn: "备注" },
     role: { type: SchemaTypes.ObjectId, ref: "Role", cn: "角色" },
     department: { type: SchemaTypes.ObjectId, ref: "Department", cn: "部门" },

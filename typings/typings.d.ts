@@ -21,3 +21,4 @@ declare namespace amb {
         remark: string;
     }
 }
+
