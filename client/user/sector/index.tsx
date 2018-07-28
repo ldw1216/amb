@@ -9,7 +9,7 @@ export default class extends PureComponent {
     public render() {
         return (
             <div>
-                <Tabs defaultActiveKey="sector" onChange={console.log}>
+                <Tabs defaultActiveKey="group">
                     <TabPane tab="阿米巴组设置" key="group">
                         <Group />
                     </TabPane>

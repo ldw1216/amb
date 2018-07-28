@@ -10,6 +10,8 @@
 /build
 /build_server
 /dist
+/dist-ts
+/dist-server
 /.vscode
 /.cache
 # misc

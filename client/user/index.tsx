@@ -4,14 +4,6 @@ import { Link, Route, Switch } from "react-router-dom";
 import Sector from "./sector";
 import User from "./user";
 
-class Test extends Component {
-    public render() {
-        return (
-            <div>config</div>
-        );
-    }
-}
-
 class Index extends Component {
     public render() {
         return (

@@ -5,6 +5,7 @@ import path from "path";
 
 import sourceMapSupport from "source-map-support";
 import router from "./api";
+import tracer from './model/log.model'
 
 const app = new Koa();
 const json = require("koa-json");
@@ -66,16 +67,15 @@ app.use(router.routes());
 
 // error-handling
 app.on("error", (err: Error, ctx: any) => {
-    console.error("server error", err, ctx);
+    console.error("server error url: " + ctx.url, '\n',  err.message, '\n', err.stack);
 });
 
 module.exports = app;
 
 process.on("uncaughtException", (err) => {
-    console.error("有未捕获的错误：", err);
+    tracer.error('有未捕获的错误 uncaughtException：', err)
     process.exit(1);
 });
 process.on("unhandledRejection", (reason) => {
-    console.error("reason:", reason);
-    console.error(reason.stack);
+    tracer.error('有未捕获的错误 unhandledRejection', reason)
 });

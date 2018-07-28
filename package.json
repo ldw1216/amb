@@ -7,8 +7,8 @@
     "dev1": "nodemon server/index.ts & cd client && roadhog dev",
     "dev": "nodemon server/index.ts & node client/dev.js",
     "server": "nodemon server/index.ts",
-    "tsc": "tsc -p tsconfig.server.json --pretty",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "build-server": "tsc -p tsconfig.server.json --pretty",
+    "build": "del dist && tsc -p tsconfig.server.json --pretty && parcel build client/index.html",
     "debug": "nodemon --inspect-brk server/index.ts"
   },
   "keywords": [],
@@ -21,6 +21,7 @@
     "axios": "^0.18.0",
     "babel-core": "^6.26.3",
     "babel-plugin-import": "^1.8.0",
+    "del": "^3.0.0",
     "express": "^4.16.3",
     "http-proxy-middleware": "^0.18.0",
     "koa": "^2.5.2",
