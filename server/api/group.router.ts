@@ -3,7 +3,7 @@ import { GroupModel } from "../model/group.model";
 const router = new Router({ prefix: "/group" });
 
 router.get("/", async (ctx) => {
-    ctx.body = await GroupModel.find();
+    ctx.body = await GroupModel.find().populate("sector", ["name", "_id"]);
 });
 
 router.post("/", async (ctx) => {

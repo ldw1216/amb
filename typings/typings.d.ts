@@ -1,13 +1,4 @@
 
-declare module '*.less' {
-    interface style {
-        searchBox: string
-        [className: string]: string
-    }
-    const s : style
-    export default s
-}
-
 declare namespace amb {
     interface IUser {
         _id: string;

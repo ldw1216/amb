@@ -43,6 +43,7 @@
     "react-router-dom": "^4.3.1",
     "readdir-recursively-sync": "^0.2.0",
     "source-map-support": "^0.5.6",
+    "styled-components": "^3.3.3",
     "tracer": "^0.9.1"
   },
   "devDependencies": {

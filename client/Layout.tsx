@@ -3,12 +3,15 @@ import axios from "axios";
 import { observer } from "mobx-react";
 import React, { Component } from "react";
 import { Link, Route, RouteComponentProps, withRouter } from "react-router-dom";
-import Password from "./components/UpdatePassword";
+import styled from "styled-components";
+import Password from "./UpdatePassword";
 import User, { UserMenu } from "./user";
 
 const { Header, Content, Sider } = Layout;
 const user = { userName: "test", _id: "testId" };
 
+const Root = styled.div`
+`;
 @observer
 class MyLayout extends Component<RouteComponentProps<{}>, {}> {
     public state = {
@@ -30,45 +33,47 @@ class MyLayout extends Component<RouteComponentProps<{}>, {}> {
             </Menu >
         );
         return (
-            <Layout style={{ minHeight: "100vh" }}>
-                <Header className="header">
-                    <div style={{ float: "left", paddingRight: 100, fontSize: 20, color: "#ffffff" }} className="logo">
-                        好看阿米巴管理平台
+            <Root>
+                <Layout style={{ minHeight: "100vh" }}>
+                    <Header className="header">
+                        <div style={{ float: "left", paddingRight: 100, fontSize: 20, color: "#ffffff" }} className="logo">
+                            好看阿米巴管理平台
                     </div>
-                    <div style={{ float: "left" }}>
-                        <Menu
-                            theme="dark"
-                            mode="horizontal"
-                            defaultSelectedKeys={[curMainMenu]}
-                            style={{ lineHeight: "64px" }}
-                        >
-                            <Menu.Item key="/production1"><Link to="/production/production/list">预算</Link></Menu.Item>
-                            <Menu.Item key="/user"><Link to="/user">系统配置</Link></Menu.Item>
-                        </Menu>
-                    </div>
+                        <div style={{ float: "left" }}>
+                            <Menu
+                                theme="dark"
+                                mode="horizontal"
+                                defaultSelectedKeys={[curMainMenu]}
+                                style={{ lineHeight: "64px" }}
+                            >
+                                <Menu.Item key="/production1"><Link to="/production/production/list">预算</Link></Menu.Item>
+                                <Menu.Item key="/user"><Link to="/user">系统配置</Link></Menu.Item>
+                            </Menu>
+                        </div>
 
-                    <div style={{ float: "right", color: "white" }}>
-                        <Dropdown overlay={menu}>
-                            <span style={{ cursor: "pointer" }} className="ant-dropdown-link">
-                                欢迎您: {user.userName}<Icon type="down" />
-                            </span>
-                        </Dropdown>
-                    </div>
-                </Header>
-                <Layout>
-                    <Sider collapsible={true} collapsed={this.state.collapsed} onCollapse={this.onCollapse} width={200}>
-                        <Route path="/user" component={UserMenu} />
-                    </Sider>
-                    <Layout style={{ padding: "3px 3px 10px" }}>
-                        <Content style={{ background: "#fff", padding: 24, margin: 0, minHeight: 280 }}>
-                            <div>
-                                <Route exact={true} path="/" component={Home} />
-                                <Route path="/User" component={User} />
-                            </div>
-                        </Content>
+                        <div style={{ float: "right", color: "white" }}>
+                            <Dropdown overlay={menu}>
+                                <span style={{ cursor: "pointer" }} className="ant-dropdown-link">
+                                    欢迎您: {user.userName}<Icon type="down" />
+                                </span>
+                            </Dropdown>
+                        </div>
+                    </Header>
+                    <Layout>
+                        <Sider collapsible={true} collapsed={this.state.collapsed} onCollapse={this.onCollapse} width={200}>
+                            <Route path="/user" component={UserMenu} />
+                        </Sider>
+                        <Layout style={{ padding: "3px 3px 10px" }}>
+                            <Content style={{ background: "#fff", padding: 24, margin: 0, minHeight: 280 }}>
+                                <div>
+                                    <Route exact={true} path="/" component={Home} />
+                                    <Route path="/User" component={User} />
+                                </div>
+                            </Content>
+                        </Layout>
                     </Layout>
                 </Layout>
-            </Layout>
+            </Root>
         );
     }
 
