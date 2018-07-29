@@ -1,10 +1,10 @@
 import { Button, Form, Input, InputNumber, Modal, Select, Switch, Table, Tag } from "antd";
 import { WrappedFormUtils } from "antd/lib/form/Form";
 import axios from "axios";
+import SearchBox from "components/SearchBox";
 import { action, observable, reaction } from "mobx";
 import { observer } from "mobx-react";
 import { Component } from "react";
-import SearchBox from "../../components/SearchBox";
 
 const { Column } = Table;
 const FormItem = Form.Item;
@@ -82,7 +82,7 @@ const Edit = Form.create()(
                 const data = store.data[store.selectedIndex] || {};
                 this.props.form.setFieldsValue({
                     name: data.name,
-                    sector: (data.sector as any)._id,
+                    sector: data.sector && (data.sector as any)._id,
                     rewardRate: data.rewardRate,
                     admin: data.admin,
                     available: data.available === undefined ? true : data.available,

@@ -1,6 +1,7 @@
 import { Button, Form, Input, Modal, Switch, Table, Tag } from "antd";
 import { WrappedFormUtils } from "antd/lib/form/Form";
 import axios from "axios";
+import SearchBox from "components/SearchBox";
 import { action, observable, reaction } from "mobx";
 import { observer } from "mobx-react";
 import { Component } from "react";
@@ -51,10 +52,10 @@ export default class extends Component {
     public render() {
         return (
             <div>
-                <div className="searchBox">
+                <SearchBox>
                     <Button onClick={() => store.showEditModel(-1)} type="primary">添加大部门</Button>
-                    <Edit />
-                </div>
+                </SearchBox>
+                <Edit />
                 <Table pagination={false} rowKey="_id" dataSource={store.data}>
                     <Column title="ID" dataIndex="key" render={(_, __, index) => index + 1} />
                     <Column title="大部门" dataIndex="name" />

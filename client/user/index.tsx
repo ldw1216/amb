@@ -3,7 +3,6 @@ import { Component } from "react";
 import { Link, Route, Switch } from "react-router-dom";
 import Sector from "./sector";
 import User from "./user";
-
 class Index extends Component {
     public render() {
         return (

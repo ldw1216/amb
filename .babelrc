@@ -11,6 +11,17 @@
                 "libraryDirectory": "es",
                 "style": "css"
             }
+        ],
+        [
+            "module-resolver",
+            {
+                "root": [
+                    "./client"
+                ],
+                "alias": {
+                    "components": "./client/components"
+                }
+            }
         ]
     ]
 }
