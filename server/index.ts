@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import { createServer } from "http";
-
+require("app-module-path").addPath(__dirname);
 const app = require("./app");
 const debug = require("debug")("shop-api:server");
 const port = normalizePort(process.env.PORT || "3000");
@@ -62,5 +62,5 @@ function onListening() {
     ? "pipe " + addr
     : "port " + addr.port;
   debug("Listening on " + bind);
-  console.log('Server created: / -> http://localhost:' + port)
+  console.log("Server created: / -> http://localhost:" + port);
 }

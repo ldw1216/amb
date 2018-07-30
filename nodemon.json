@@ -5,9 +5,5 @@
         "ts": "TS_NODE_PROJECT=${PWD}/tsconfig.server.json node -r ts-node/register"
     },
     "env": {
-        "REST_URL": "https://eco.taobao.com/router/rest",
-        "SMS_FREE_SIGN_NAME": "好看",
-        "APPKEY": "24722469",
-        "APPSECRET": "a2a72075217ab60e57817d4d6129c95b"
     }
 }

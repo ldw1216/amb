@@ -16,7 +16,6 @@ router.post("/:id", async (ctx) => {
     ctx.body = { msg: "保存成功" };
 });
 
-
 router.delete("/:id", async (ctx) => {
     await SectorModel.findByIdAndRemove(ctx.query.id);
     ctx.body = { msg: "删除成功" };

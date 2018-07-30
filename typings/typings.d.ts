@@ -1,15 +1,17 @@
 
 declare namespace amb {
     interface IUser {
-        _id: string;
-        createdAt: string;
-        name: string;
-        phone: string;
-        role: string;
-        department: string;
-        extranet: boolean;
-        password: string;
-        remark: string;
+        _id: string
+        createdAt: string
+        name: string
+        account: string
+        role: "admin" | "general"
+        group: string | {_id: string, name: string}
+        available: boolean
+        extranet: boolean
+        removed: boolean
+        password: string
+        remark: string
     }
     interface IGroup {
         _id: string

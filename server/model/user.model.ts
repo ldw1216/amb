@@ -5,12 +5,12 @@ const roles = ["admin", "general"];
 
 const schema = new Schema({
     name: { type: String, required: true, cn: "名称" },
-    phone: { type: String, required: true, unique: true, cn: "备注" },
-    role: { type: SchemaTypes.ObjectId, ref: "Role", cn: "角色" },
-    department: { type: SchemaTypes.ObjectId, ref: "Department", cn: "部门" },
-    extranet: { type: Boolean, default: false, cn: "外网权限" },
+    account: { type: String, required: true, unique: true, cn: "账号" },
+    role: { type: String, enum: roles, cn: "角色" },
+    group: { type: SchemaTypes.ObjectId, ref: "Group", cn: "阿米巴组" },
+    available: { type: Boolean, default: true, cn: "状态" },
+    extranet: { type: Boolean, default: true, cn: "外网权限" },
     removed: { type: Boolean, default: false },
-    merchant: { type: SchemaTypes.ObjectId, ref: "Merchant", cn: "商户" },
     password: { type: String, default: "111111" },
     remark: String,
 }, { timestamps: true, toJSON: { virtuals: true } });

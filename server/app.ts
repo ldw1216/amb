@@ -5,7 +5,7 @@ import path from "path";
 
 import sourceMapSupport from "source-map-support";
 import router from "./api";
-import tracer from './model/log.model'
+import tracer from "./model/log.model";
 
 const app = new Koa();
 const json = require("koa-json");
@@ -17,7 +17,7 @@ if (process.env.NODE_ENV === "development") { sourceMapSupport.install(); }
 import "./model";
 
 onError(app);
-app.use(koaStatic(path.resolve("build")));
+app.use(koaStatic(path.resolve("dist")));
 // 前端项目路由
 if (process.env.NODE_ENV === "production") {
     const template = require("fs").readFileSync(path.resolve("dist-client/index.html"), "utf-8");
@@ -67,15 +67,17 @@ app.use(router.routes());
 
 // error-handling
 app.on("error", (err: Error, ctx: any) => {
-    console.error("server error url: " + ctx.url, '\n',  err.message, '\n', err.stack);
+    console.error("server error url: " + ctx.url, "\n", err.message, "\n", err.stack);
 });
 
 module.exports = app;
 
 process.on("uncaughtException", (err) => {
-    tracer.error('有未捕获的错误 uncaughtException：', err)
+    tracer.error("有未捕获的错误 uncaughtException：", err);
+    console.log(err);
     process.exit(1);
 });
 process.on("unhandledRejection", (reason) => {
-    tracer.error('有未捕获的错误 unhandledRejection', reason)
+    console.log("reason:", reason);
+    tracer.error("有未捕获的错误 unhandledRejection", reason);
 });

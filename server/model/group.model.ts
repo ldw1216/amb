@@ -2,7 +2,7 @@ import { Document, model, Schema, SchemaTypes } from "mongoose";
 const collectionName = "Group";
 
 const schema = new Schema({
-    sector: { type: SchemaTypes.ObjectId, ref: 'Sector', required: true, cn: '大部门' },
+    sector: { type: SchemaTypes.ObjectId, ref: "Sector", required: true, cn: "大部门" },
     name: { type: String, required: true, cn: "名称" },
     rewardRate: { type: Number, required: true, cn: "奖金比例" },
     admin: { type: String, required: true, cn: "负责人" },
