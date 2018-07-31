@@ -21,5 +21,15 @@ declare namespace amb {
         admin: string // 负责人
         available: boolean // 状态
     }
+    interface IPeriod {
+        _id: string
+        durationFormat?: string // 时间 格式化后的 duration get
+        duration: [Date, Date] // 状态 提报中、结束、未开始 
+        state?: string // 状态 提报中、结束、未开始 get
+        year: number // 年度
+        quarters: Array<"一季度" | "二季度" | "三季度" | "四季度"> // 季度
+        groups: Array<string> // 阿米巴组
+        allGroup: boolean // 全部阿米巴组
+    }
 }
 

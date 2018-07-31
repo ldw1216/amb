@@ -1,7 +1,9 @@
 # 好看阿米巴管理系统
 
-## 项目需求
-1.参考原型 ：http://www.pmdaniu.com/cloud/23651/34ea771de53143df5a5a1f14f6556dc2-10237/start.html
+## start
+1. 参考原型 ：http://www.pmdaniu.com/cloud/23651/34ea771de53143df5a5a1f14f6556dc2-10237/start.html
+2. 本项目依赖nodejs + mongodb 
+3. 数据库连接配置 可在/server/model/index.ts中配置数据库连接，也可使环境变量 MONGOOSE_URI 配置数据库连接
 
 ## 项目目录结构
 
@@ -33,12 +35,12 @@
 │   ├── lib
 │   └── model                数据库定义文件  .model. 会自动加载
 │       ├── group.model.ts
-│       ├── index.ts
+│       ├── index.ts         数据库配置
 │       └── user.model.ts
 ├── tsconfig.json
-├── tsconfig.server.json    服务端ts配置
+├── tsconfig.server.json     服务端ts配置
 ├── tslint.json
-└── typings                 接口定义
+└── typings                  接口定义
     └── typings.d.ts
 ```
 

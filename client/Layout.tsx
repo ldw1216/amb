@@ -4,6 +4,7 @@ import { observer } from "mobx-react";
 import React, { Component } from "react";
 import { Link, Route, RouteComponentProps, withRouter } from "react-router-dom";
 import styled from "styled-components";
+import Budget, { BudgetMenu } from "./budget";
 import Password from "./UpdatePassword";
 import User, { UserMenu } from "./user";
 
@@ -46,7 +47,7 @@ class MyLayout extends Component<RouteComponentProps<{}>, {}> {
                                 defaultSelectedKeys={[curMainMenu]}
                                 style={{ lineHeight: "64px" }}
                             >
-                                <Menu.Item key="/production1"><Link to="/production/production/list">预算</Link></Menu.Item>
+                                <Menu.Item key="/budget"><Link to="/budget">预算</Link></Menu.Item>
                                 <Menu.Item key="/user"><Link to="/user">系统配置</Link></Menu.Item>
                             </Menu>
                         </div>
@@ -62,12 +63,14 @@ class MyLayout extends Component<RouteComponentProps<{}>, {}> {
                     <Layout>
                         <Sider collapsible={true} collapsed={this.state.collapsed} onCollapse={this.onCollapse} width={200}>
                             <Route path="/user" component={UserMenu} />
+                            <Route path="/budget" component={BudgetMenu} />
                         </Sider>
                         <Layout style={{ padding: "3px 3px 10px" }}>
                             <Content style={{ background: "#fff", padding: 24, margin: 0, minHeight: 280 }}>
                                 <div>
                                     <Route exact={true} path="/" component={Home} />
-                                    <Route path="/User" component={User} />
+                                    <Route path="/user" component={User} />
+                                    <Route path="/budget" component={Budget} />
                                 </div>
                             </Content>
                         </Layout>
