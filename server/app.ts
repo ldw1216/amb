@@ -3,9 +3,9 @@ import session from "koa-session";
 import koaStatic from "koa-static";
 import path from "path";
 
+import tracer from "model/log.model";
 import sourceMapSupport from "source-map-support";
 import router from "./api";
-import tracer from "./model/log.model";
 
 const app = new Koa();
 const json = require("koa-json");
@@ -20,7 +20,7 @@ onError(app);
 app.use(koaStatic(path.resolve("dist")));
 // 前端项目路由
 if (process.env.NODE_ENV === "production") {
-    const template = require("fs").readFileSync(path.resolve("dist-client/index.html"), "utf-8");
+    const template = require("fs").readFileSync(path.resolve("dist/client/index.html"), "utf-8");
     app.use(async (ctx, next) => {
         if (
             ctx.accepts("html", "json") === "json" ||

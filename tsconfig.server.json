@@ -4,10 +4,11 @@
     "include": [
         "server",
         "typings",
+        "config"
     ],
     "compilerOptions": {
         "module": "commonjs",
-        "outDir": "dist-server",
+        "outDir": "dist",
         "noUnusedLocals": false,
         "noUnusedParameters": false
     }

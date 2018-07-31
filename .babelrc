@@ -16,10 +16,11 @@
             "module-resolver",
             {
                 "root": [
-                    "./client"
+                    "."
                 ],
                 "alias": {
-                    "components": "./client/components"
+                    "components": "./client/components",
+                    "config": "./config"
                 }
             }
         ]

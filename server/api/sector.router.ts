@@ -1,5 +1,5 @@
 import Router from "koa-router";
-import { SectorModel } from "../model/sector.model";
+import { SectorModel } from "model/sector.model";
 const router = new Router({ prefix: "/sector" });
 
 router.get("/", async (ctx) => {

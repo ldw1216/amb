@@ -8,7 +8,7 @@
     "server": "nodemon server/index.ts",
     "client": " node client/dev.js",
     "build-server": "tsc -p tsconfig.server.json --pretty",
-    "build": "del dist && tsc -p tsconfig.server.json --pretty && parcel build client/index.html",
+    "build": "del dist && tsc -p tsconfig.server.json --pretty && parcel build client/index.html -d dist/client",
     "debug": "nodemon --inspect-brk server/index.ts"
   },
   "keywords": [],
@@ -23,6 +23,7 @@
     "babel-core": "^6.26.3",
     "babel-plugin-import": "^1.8.0",
     "babel-plugin-module-resolver": "^3.1.1",
+    "config": "^2.0.0",
     "del": "^3.0.0",
     "express": "^4.16.3",
     "http-proxy-middleware": "^0.18.0",

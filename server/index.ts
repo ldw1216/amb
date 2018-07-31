@@ -1,7 +1,9 @@
 #!/usr/bin/env node
 
 import { createServer } from "http";
+import { resolve } from "path";
 require("app-module-path").addPath(__dirname);
+require("app-module-path").addPath(resolve());
 const app = require("./app");
 const debug = require("debug")("shop-api:server");
 const port = normalizePort(process.env.PORT || "3000");

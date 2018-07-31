@@ -1,7 +1,7 @@
 import { Button, Form, Input, Modal, Switch, Table, Tag } from "antd";
 import { WrappedFormUtils } from "antd/lib/form/Form";
 import axios from "axios";
-import SearchBox from "components/SearchBox";
+import SearchBox from "components/SearchBar";
 import { action, observable, reaction } from "mobx";
 import { observer } from "mobx-react";
 import { Component } from "react";
@@ -97,7 +97,7 @@ const Edit = Form.create()(
             const { getFieldDecorator, getFieldValue } = this.props.form;
             return (
                 <Modal
-                    title="添加部门"
+                    title={store.selectedIndex > -1 ? "编辑部门" : "添加部门"}
                     visible={store.editModelVisible}
                     onOk={this.handelSubmit}
                     okText="保存"

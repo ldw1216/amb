@@ -1,5 +1,5 @@
 import Router from "koa-router";
-import { GroupModel } from "../model/group.model";
+import { GroupModel } from "model/group.model";
 const router = new Router({ prefix: "/group" });
 
 router.get("/", async (ctx) => {
