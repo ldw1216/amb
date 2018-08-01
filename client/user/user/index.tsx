@@ -8,6 +8,7 @@ import Edit from "./Edit";
 import store from "./store";
 const { Column } = Table;
 const Option = Select.Option;
+import Section from "components/Section";
 import { observable, toJS } from "mobx";
 import { uniq } from "ramda";
 
@@ -18,7 +19,7 @@ export default class extends Component {
     }
     public render() {
         return (
-            <div>
+            <Section>
                 <SearchBar1 />
                 <SearchBox>
                     <Button onClick={() => store.showEditModel(-1)} type="primary">添加用户</Button>
@@ -38,7 +39,7 @@ export default class extends Component {
                         </LinkGroup>
                     )} />
                 </Table>
-            </div >
+            </Section>
         );
     }
 }

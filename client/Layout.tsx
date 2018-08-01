@@ -69,7 +69,7 @@ class MyLayout extends Component<RouteComponentProps<{}>, {}> {
                         <Route path="/budget" component={BudgetMenu} />
                     </Sider>
                     <Layout style={{ padding: "3px 3px 10px" }}>
-                        <Content style={{ background: "#fff", padding: 24, margin: 0, minHeight: 280 }}>
+                        <Content style={{ padding: 8, margin: 0, minHeight: 280 }}>
                             <div>
                                 <Route exact={true} path="/" component={Home} />
                                 <Route path="/user" component={UserComponent} />
