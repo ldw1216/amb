@@ -1,5 +1,6 @@
 
 declare namespace amb {
+    // 用户
     interface IUser {
         _id: string
         createdAt: string
@@ -13,7 +14,9 @@ declare namespace amb {
         removed: boolean
         remark: string
     }
-    interface IGroup {
+
+    // 阿米巴组
+    interface IGroup { 
         _id: string
         sector: string | { name: string } // 大部门
         name: string // 阿米巴组
@@ -21,6 +24,8 @@ declare namespace amb {
         admin: string // 负责人
         available: boolean // 状态
     }
+
+    // 预算提报周期
     interface IPeriod {
         _id: string
         durationFormat?: string // 时间 格式化后的 duration get
@@ -30,6 +35,14 @@ declare namespace amb {
         quarters: Array<"一季度" | "二季度" | "三季度" | "四季度"> // 季度
         groups: Array<string> // 阿米巴组
         allGroup: boolean // 全部阿米巴组
+    }
+
+    // 年度费用项目
+    interface ICost{
+        id: number | string
+        _id?: string
+        year?: number
+        options?: Array<{_id?: string, id: string, name?: string, type?: '财务' | '阿米巴'}>
     }
 }
 
