@@ -9,7 +9,7 @@ router.post("/login", async (ctx) => {
         ctx.session!.user = user;
         return ctx.body = { msg: "登录成功！" };
     } else {
-        return ctx.body = { errCode: 32323, msg: "用户名或密码错误！" };
+        return ctx.throw(400, "用户名或密码错误！");
     }
 });
 

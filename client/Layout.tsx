@@ -58,7 +58,7 @@ class MyLayout extends Component<RouteComponentProps<{}>, {}> {
                     <div style={{ float: "right", color: "white" }}>
                         <Dropdown overlay={menu}>
                             <span style={{ cursor: "pointer" }} className="ant-dropdown-link">
-                                欢迎您: {user.account}<Icon type="down" />
+                                欢迎您: {user.name} ({user.account}) <Icon type="down" />
                             </span>
                         </Dropdown>
                     </div>

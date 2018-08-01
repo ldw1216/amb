@@ -1,12 +1,14 @@
 import { Button, Form, Input, message, Modal } from "antd";
-
 import axios from "axios";
+import { toJS } from "mobx";
+import { observer } from "mobx-react";
 import { Component } from "react";
-// import { user } from '../authority/authStore'
+import store from "store/index";
 
-const user = { _id: 33 };
-
+const user = store.user;
 const FormItem = Form.Item;
+
+@observer
 class Password extends Component<{ match: any, form: any }>  {
     public state = {
         loading: false,
@@ -19,7 +21,6 @@ class Password extends Component<{ match: any, form: any }>  {
         this.setState({
             visible: true,
         });
-        console.log("showModal", this.state);
     }
 
     // 提交新密码
@@ -27,13 +28,11 @@ class Password extends Component<{ match: any, form: any }>  {
         this.props.form.validateFields((err: any, values: any) => {
             if (!err) {
                 const val = { ...values, _id: user._id };
-                axios.post("/authority/user/update", val)
-                    .then((res) => {
-                        if (res.data.errcode) { return message.error(res.data.msg); }
+                axios.post("/user/password", val).then((res) => res.data)
+                    .then((data) => {
+                        if (data.errcode) { return message.error(data.msg); }
                         this.setState({ loading: false, visible: false });
-                        return message.success("密码修改成功");
-                    })
-                    .catch((res) => message.error("密码修改失败"));
+                    });
             }
             this.setState({
                 loading: false,
@@ -52,7 +51,7 @@ class Password extends Component<{ match: any, form: any }>  {
     public render() {
         const { visible, loading } = this.state;
         const { getFieldDecorator } = this.props.form;
-        console.log(this.state);
+        const formItemLayout = { labelCol: { span: 6 }, wrapperCol: { span: 16 } };
         return (
             <span>
                 <span style={{ display: "block" }} onClick={this.showModal}>修改密码</span>
@@ -66,24 +65,24 @@ class Password extends Component<{ match: any, form: any }>  {
                             <Button key="back" size="small" onClick={this.handleCancel}>返回</Button>,
                             <Button key="submit" type="primary" size="small" loading={loading} onClick={this.handleOk}>
                                 提交
-            </Button>,
+                            </Button>,
                         ]}
                     >   <br />
-                        <FormItem label="原密码:" className="flex">
+                        <FormItem {...formItemLayout} label="原密码:">
                             {getFieldDecorator("password", {
                                 rules: [{ required: true, message: "必须填写此字字段" }],
                             })(
                                 <Input type="password" style={{ width: "55%" }} placeholder="原密码" />,
                             )}
                         </FormItem>
-                        <FormItem label="新密码:" className="flex">
+                        <FormItem {...formItemLayout} label="新密码:">
                             {getFieldDecorator("xpassword", {
                                 rules: [{ required: true, message: "必须填写此字字段" }],
                             })(
                                 <Input type="password" style={{ width: "55%" }} placeholder="新密码" />,
                             )}
                         </FormItem>
-                        <FormItem label="确认密码:" className="flex">
+                        <FormItem {...formItemLayout} label="确认密码:">
                             {getFieldDecorator("spassword", {
                                 rules: [{ required: true, message: "必须填写此字字段" }],
                             })(

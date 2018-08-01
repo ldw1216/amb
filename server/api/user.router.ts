@@ -18,11 +18,6 @@ router.post("/", async (ctx) => {
     ctx.body = { msg: "保存成功" };
 });
 
-router.post("/:id", async (ctx) => {
-    await UserModel.findByIdAndUpdate(ctx.params.id, ctx.request.body);
-    ctx.body = { msg: "保存成功" };
-});
-
 router.get("/resetPassword/:id", async (ctx) => {
     await UserModel.findOneAndUpdate(ctx.params.id, { password: "111111" });
     ctx.body = { msg: "修改密码成功!" };
@@ -32,4 +27,21 @@ router.get("/me", async (ctx) => {
     ctx.body = ctx.session!.user;
 });
 
+router.post("/password", async (ctx) => {
+    const body = ctx.request.body as any;
+    const data = await UserModel.findById(body._id) as any;
+    if (body.password !== data.password) return ctx.throw(400, "原密码输入错误！");
+    if (body.xpassword !== body.spassword) return ctx.throw(400, "两次新密码不一致！");
+    try {
+        await UserModel.findByIdAndUpdate(body._id, { password: body.xpassword });
+    } catch (e) {
+        return ctx.throw(400, "用户名或密码错误");
+    }
+    return ctx.body = { code: 200, msg: "密码更新成功" };
+});
+
+router.post("/:id", async (ctx) => {
+    await UserModel.findByIdAndUpdate(ctx.params.id, ctx.request.body);
+    ctx.body = { msg: "保存成功" };
+});
 export default router;
