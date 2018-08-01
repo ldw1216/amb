@@ -1,24 +1,13 @@
 import { Button, Form } from "antd";
 import axios from "axios";
 import SearchBar from "components/SearchBar";
+import Table from "components/Table";
 import { observable, toJS } from "mobx";
 import { observer } from "mobx-react";
 import { Component } from "react";
 import styled from "styled-components";
 import store from "./store";
 import Tr from "./Tr";
-
-const Table = styled.table`
-    width: 100%;
-    td {
-        padding: 10px;
-        text-align: center;
-        border: 1px solid #eee;
-    }
-    .ant-form-item{
-        margin-bottom: 0;
-    }
-`;
 
 @observer
 export default class extends Component {
