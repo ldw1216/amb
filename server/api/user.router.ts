@@ -28,4 +28,8 @@ router.get("/resetPassword/:id", async (ctx) => {
     ctx.body = { msg: "修改密码成功!" };
 });
 
+router.get("/me", async (ctx) => {
+    ctx.body = ctx.session!.user;
+});
+
 export default router;

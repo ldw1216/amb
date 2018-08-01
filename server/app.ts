@@ -6,6 +6,7 @@ import path from "path";
 import tracer from "model/log.model";
 import sourceMapSupport from "source-map-support";
 import router from "./api";
+import authority from "./authority";
 
 const app = new Koa();
 const json = require("koa-json");
@@ -38,8 +39,9 @@ app.use(async (ctx, next) => {
         ctx.body = "ok";
     } else { await next(); }
 });
-app.keys = ["some secret li amb"];
 
+// middleware
+app.keys = ["some secret li amb"];
 app.use(session({
     key: "koa:sess33", /** (string) cookie key (default is koa:sess) */
     maxAge: 86400000, /** (number) maxAge in ms (default is 1 days) */
@@ -47,7 +49,6 @@ app.use(session({
     httpOnly: true, /** (boolean) httpOnly or not (default true) */
     signed: true, /** (boolean) signed or not (default true) */
 } as any, app));
-// middlewares
 
 app.use(bodyparser({
     enableTypes: ["json", "form", "text"],
@@ -63,6 +64,7 @@ app.use(async (ctx: any, next: any) => {
     console.log(`${ctx.method} ${ctx.url} - ${ms}ms`);
 });
 
+app.use(authority);
 app.use(router.routes());
 
 // error-handling

@@ -20,7 +20,8 @@
                 ],
                 "alias": {
                     "components": "./client/components",
-                    "config": "./config"
+                    "config": "./config",
+                    "store": "./client/store"
                 }
             }
         ]

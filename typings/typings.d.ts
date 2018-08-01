@@ -2,17 +2,17 @@
 declare namespace amb {
     // 用户
     interface IUser {
-        _id: string
-        createdAt: string
+        _id?: string
+        createdAt?: string
         name: string // 姓名
         account: string // 账号
-        password: string // 密码
+        password?: string // 密码
         role: "admin" | "general" // 账号角色
         groups: Array<string | { _id: string, name: string }> // 阿米巴组
         available: boolean // 状态
-        extranet: boolean
-        removed: boolean
-        remark: string
+        extranet?: boolean
+        removed?: boolean
+        remark?: string
     }
 
     // 阿米巴组

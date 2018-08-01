@@ -1,31 +1,29 @@
 import { message } from "antd";
 import { Button, Input } from "antd";
-import axios from "axios";
 import { observable, toJS } from "mobx";
 import { observer } from "mobx-react";
 import { Component } from "react";
 import { RouteComponentProps } from "react-router-dom";
-// import { login } from "../authority/authStore";
+import store from "store/index";
+
+const userStore = store.user;
 
 @observer
 export default class extends Component<RouteComponentProps<{}>> {
-    public data = observable({
-        phone: "",
+    @observable private data = {
+        account: "",
         password: "",
-    });
+    };
     public submit = async (e: any) => {
         e.preventDefault();
-        const { phone, password } = toJS(this.data);
-        if (!phone || !password) { return message.error(<span style={{ color: "red" }}>账号密码必填！</span>); }
-        const data = await axios.post("/sign/login", { phone, password }).then((res) => (res.data));
+        const { account, password } = this.data;
+        if (!account || !password) { return message.error(<span style={{ color: "red" }}>账号密码必填！</span>); }
+        const data = await userStore.login(this.data.account, this.data.password);
         if (data.msg === "登录成功！") {
-            // login();
-            return this.props.history.push("/indent/particulars/list");
+            await userStore.getMe();
+            return this.props.history.push("/");
         }
         message.error(<span style={{ color: "red" }}>{data.msg || "账号密码错误！"}</span>);
-    }
-    public handelChange = (key: string, value: string) => {
-        this.setState({ [key]: value });
     }
     public render() {
         return (
@@ -35,7 +33,7 @@ export default class extends Component<RouteComponentProps<{}>> {
                     <div style={{ padding: 15, background: "white" }}>
                         <h4 style={{ textAlign: "center", color: "#656565" }}>欢迎登录好看阿米巴系统</h4>
                         <div style={{ margin: "20px 0" }}>
-                            <Input value={this.data.phone} onChange={(e) => this.data.phone = e.target.value} placeholder="用户名" />
+                            <Input value={this.data.account} onChange={(e) => this.data.account = e.target.value} placeholder="用户名" />
                         </div>
                         <div style={{ margin: "20px 0" }}>
                             <Input value={this.data.password} type="password" onChange={(e) => this.data.password = e.target.value} placeholder="密码" />

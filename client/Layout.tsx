@@ -1,25 +1,31 @@
 import { Dropdown, Icon, Layout, Menu, message } from "antd";
 import axios from "axios";
-import { observer } from "mobx-react";
+import { inject, observer } from "mobx-react";
 import React, { Component } from "react";
 import { Link, Route, RouteComponentProps, withRouter } from "react-router-dom";
+import store from "store/index";
 import styled from "styled-components";
 import Budget, { BudgetMenu } from "./budget";
 import Password from "./UpdatePassword";
-import User, { UserMenu } from "./user";
+import UserComponent, { UserMenu } from "./user";
 
+const user = store.user;
 const { Header, Content, Sider } = Layout;
-const user = { userName: "test", _id: "testId" };
 
-const Root = styled.div`
+const Logo = styled.div`
+    float: left;
+    padding-right: 100px;
+    font-size: 20px;
+    color: #ffffff;
 `;
+
 @observer
 class MyLayout extends Component<RouteComponentProps<{}>, {}> {
     public state = {
         collapsed: false,
     };
     public componentDidMount() {
-        // login();
+        store.user.getMe();
     }
     public render() {
         const curMainMenu = cutout(location.pathname);
@@ -34,49 +40,45 @@ class MyLayout extends Component<RouteComponentProps<{}>, {}> {
             </Menu >
         );
         return (
-            <Root>
-                <Layout style={{ minHeight: "100vh" }}>
-                    <Header className="header">
-                        <div style={{ float: "left", paddingRight: 100, fontSize: 20, color: "#ffffff" }} className="logo">
-                            好看阿米巴管理平台
+            <Layout style={{ minHeight: "100vh" }}>
+                <Header className="header">
+                    <Logo>好看阿米巴管理平台</Logo>
+                    <div style={{ float: "left" }}>
+                        <Menu
+                            theme="dark"
+                            mode="horizontal"
+                            defaultSelectedKeys={[curMainMenu]}
+                            style={{ lineHeight: "64px" }}
+                        >
+                            <Menu.Item key="/budget"><Link to="/budget">预算</Link></Menu.Item>
+                            <Menu.Item key="/user"><Link to="/user">系统配置</Link></Menu.Item>
+                        </Menu>
                     </div>
-                        <div style={{ float: "left" }}>
-                            <Menu
-                                theme="dark"
-                                mode="horizontal"
-                                defaultSelectedKeys={[curMainMenu]}
-                                style={{ lineHeight: "64px" }}
-                            >
-                                <Menu.Item key="/budget"><Link to="/budget">预算</Link></Menu.Item>
-                                <Menu.Item key="/user"><Link to="/user">系统配置</Link></Menu.Item>
-                            </Menu>
-                        </div>
 
-                        <div style={{ float: "right", color: "white" }}>
-                            <Dropdown overlay={menu}>
-                                <span style={{ cursor: "pointer" }} className="ant-dropdown-link">
-                                    欢迎您: {user.userName}<Icon type="down" />
-                                </span>
-                            </Dropdown>
-                        </div>
-                    </Header>
-                    <Layout>
-                        <Sider collapsible={true} collapsed={this.state.collapsed} onCollapse={this.onCollapse} width={200}>
-                            <Route path="/user" component={UserMenu} />
-                            <Route path="/budget" component={BudgetMenu} />
-                        </Sider>
-                        <Layout style={{ padding: "3px 3px 10px" }}>
-                            <Content style={{ background: "#fff", padding: 24, margin: 0, minHeight: 280 }}>
-                                <div>
-                                    <Route exact={true} path="/" component={Home} />
-                                    <Route path="/user" component={User} />
-                                    <Route path="/budget" component={Budget} />
-                                </div>
-                            </Content>
-                        </Layout>
+                    <div style={{ float: "right", color: "white" }}>
+                        <Dropdown overlay={menu}>
+                            <span style={{ cursor: "pointer" }} className="ant-dropdown-link">
+                                欢迎您: {user.account}<Icon type="down" />
+                            </span>
+                        </Dropdown>
+                    </div>
+                </Header>
+                <Layout>
+                    <Sider collapsible={true} collapsed={this.state.collapsed} onCollapse={this.onCollapse} width={200}>
+                        <Route path="/user" component={UserMenu} />
+                        <Route path="/budget" component={BudgetMenu} />
+                    </Sider>
+                    <Layout style={{ padding: "3px 3px 10px" }}>
+                        <Content style={{ background: "#fff", padding: 24, margin: 0, minHeight: 280 }}>
+                            <div>
+                                <Route exact={true} path="/" component={Home} />
+                                <Route path="/user" component={UserComponent} />
+                                <Route path="/budget" component={Budget} />
+                            </div>
+                        </Content>
                     </Layout>
                 </Layout>
-            </Root>
+            </Layout>
         );
     }
 
