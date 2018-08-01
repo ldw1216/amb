@@ -10,7 +10,7 @@ export default class extends PureComponent {
     public render() {
         return (
             <Section>
-                <Tabs defaultActiveKey="2">
+                <Tabs defaultActiveKey="1">
                     <TabPane tab="提报时间控制" key="1">
                         <Period />
                     </TabPane>
