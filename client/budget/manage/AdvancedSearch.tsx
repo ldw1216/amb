@@ -4,7 +4,7 @@ import { SearchDataType, SearchRange } from "config/config";
 import { observer } from "mobx-react";
 import { Component } from "react";
 import styled from "styled-components";
-import Store from "./Store";
+import Store from "./store";
 
 const Option = Select.Option;
 

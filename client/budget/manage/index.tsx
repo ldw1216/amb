@@ -8,33 +8,71 @@ import styled from "styled-components";
 import AdvancedSearch from "./AdvancedSearch";
 import Store from "./store";
 
+const Root = styled.div`
+    &&&&&&&& table {
+        thead th{
+            background: #f8f8f8;
+        }
+        th{
+            white-space: nowrap;
+            padding: 10px 20px
+        }
+        td{
+            text-align: center;
+        }
+    }
+`;
 const store = new Store();
 
-const dataSource = [{
-    key: "1",
-    name: <span>"胡彦斌"</span>,
-    age: 32,
-    address: "西湖区湖底公园1号",
-}, {
-    key: "2",
-    name: "胡彦祖",
-    age: 42,
-    address: "西湖区湖底公园1号",
-}];
-
-const columns = [{
-    title: "姓名",
-    dataIndex: "name",
-    key: "name",
-}, {
-    title: "年龄",
-    dataIndex: "age",
-    key: "age",
-}, {
-    title: "住址",
-    dataIndex: "address",
-    key: "address",
-}];
+const row = { type: "收入", key: 1 } as any;
+const dataSource = [row];
+const columns = [
+    {
+        title: "2018",
+        dataIndex: "type",
+        key: "type",
+        fixed: "left",
+    } as any,
+];
+for (let i = 1; i < 13; i++) {
+    columns.push({
+        title: `${i}月`,
+        dataIndex: `month${i}`,
+        key: `month${i}`,
+        children: [
+            {
+                title: `预算`,
+                dataIndex: `budget_m${i}`,
+                key: `budget_m${i}`,
+            },
+            {
+                title: `占收入比`,
+                dataIndex: `budget/income_m${i}`,
+                key: `budget/income_m${i}`,
+            },
+            {
+                title: `实际`,
+                dataIndex: `real_m${i}`,
+                key: `real_m${i}`,
+            },
+            {
+                title: `占收入比`,
+                dataIndex: `real/income_m${i}`,
+                key: `real/income_m${i}`,
+            },
+            {
+                title: `预算完成率`,
+                dataIndex: `real/budget_m${i}`,
+                key: `real/budget_m${i}`,
+            },
+        ],
+    });
+    row[`budget_m${i}`] = 33;
+    row[`budget/income_m${i}`] = 33;
+    row[`real_m${i}`] = 33;
+    row[`real/income_m${i}`] = 33;
+    row[`real/budget_m${i}`] = 33;
+}
 
 @observer
 export default class extends Component {
@@ -49,7 +87,7 @@ export default class extends Component {
     }
     public render() {
         return (
-            <div>
+            <Root>
                 <Section>
                     <SearchBar style={{ marginBottom: 0 }}>
                         <Button onClick={this.showAdvancedSearch} type="primary">自定义指标</Button>
@@ -58,14 +96,14 @@ export default class extends Component {
                     {this.advancedSearchDisplay && <AdvancedSearch store={store} />}
                 </Section>
                 <Section>
-                    <Table dataSource={dataSource} columns={columns} />
+                    <Table pagination={false} scroll={{ x: "auto" }} bordered size="small" dataSource={dataSource} columns={columns} />
                 </Section>
                 <Section>
                     <SearchBar>
                         <span style={{ marginRight: 28 }}>待审核</span><Button type="primary">修改预算</Button>
                     </SearchBar>
                 </Section>
-            </div>
+            </Root>
         );
     }
 }
