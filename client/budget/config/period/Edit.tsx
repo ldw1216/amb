@@ -1,15 +1,18 @@
 import { DatePicker, Form, Icon, Input, Modal, Radio, Select, Switch, Tooltip } from "antd";
 import { FormComponentProps } from "antd/lib/form";
 import axios from "axios";
+import Checkbox from "components/Checkbox";
 import { observable, reaction } from "mobx";
 import { observer } from "mobx-react";
+import moment from "moment";
 import { Component } from "react";
 import styled from "styled-components";
 import store from "./store";
+
+const CheckboxItem = Checkbox.CheckboxItem;
 const FormItem = Form.Item;
 const Option = Select.Option;
 const { RangePicker } = DatePicker;
-import moment from "moment";
 
 @observer
 class Edit extends Component<FormComponentProps> {
@@ -41,6 +44,7 @@ class Edit extends Component<FormComponentProps> {
                 onOk={this.handelSubmit}
                 okText="保存"
                 onCancel={store.hideEditModel}
+                width={600}
             >
                 <Form>
                     <FormItem label="提报时间" {...formItemLayout} >
@@ -61,7 +65,9 @@ class Edit extends Component<FormComponentProps> {
 
                     <FormItem label="季度" {...formItemLayout} >
                         {getFieldDecorator("quarters", { rules: [{ required: true, message: "此字段必填" }] })(
-                            <Quarter />,
+                            <Checkbox>
+                                {["一季度", "二季度", "三季度", "四季度"].map((item) => <CheckboxItem key={item} value={item}>{item}</CheckboxItem>)}
+                            </Checkbox>,
                         )}
                     </FormItem>
                     <FormItem label="阿米巴组" {...formItemLayout} >

@@ -1,4 +1,4 @@
-import { Component } from "react";
+import React, { Children, cloneElement, Component, ReactNode } from "react";
 import styled from "styled-components";
 
 const Root = styled.div`
@@ -7,8 +7,8 @@ const Root = styled.div`
 `;
 const Item = styled.div`
     display: inline-block;
-    padding: 0px 5px;
-    margin: 0 2px;
+    padding: 0px 10px;
+    margin: 0 8px;
     line-height: 1.6;
     border-radius: 4px;
     cursor: pointer;
@@ -19,8 +19,10 @@ const Item = styled.div`
 `;
 
 class Checkbox extends Component<{ onChange?: (value: string[]) => void, value?: string[] }> {
+    public static CheckboxItem = (props: { children?: ReactNode, value: string }) => {
+        return props.children as JSX.Element;
+    }
     public handleChange = (value: string) => {
-
         if (this.props.onChange) {
             this.props.value!.includes(value) ?
                 this.props.onChange(this.props.value!.filter((item) => item !== value)) :
@@ -29,9 +31,15 @@ class Checkbox extends Component<{ onChange?: (value: string[]) => void, value?:
     }
     public render() {
         const value = this.props.value || [];
+
         return (
             <Root>
-                {["一季度", "二季度", "三季度", "四季度"].map((item) => <Item key={item} onClick={() => this.handleChange(item)} className={value.includes(item) ? "active" : ""}>{item}</Item>)}
+                {Children.map(this.props.children, (child, i) => {
+                    if (React.isValidElement(child)) {
+                        const props = child.props as any;
+                        return <Item onClick={() => this.handleChange(props.value)} className={value.includes(props.value) ? "active" : ""}>{child}</Item>;
+                    }
+                })}
             </Root>
         );
     }
