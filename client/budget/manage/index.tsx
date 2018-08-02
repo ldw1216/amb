@@ -98,10 +98,12 @@ export default class extends Component {
                                     <td>研发-人工智能</td>
                                 </tr>
                             </thead>
-                            <tr>
-                                <td>asdf</td>
-                                <td>ds</td>
-                            </tr>
+                            <tbody>
+                                <tr>
+                                    <td>asdf</td>
+                                    <td>ds</td>
+                                </tr>
+                            </tbody>
                         </Table1>
                     </TableBox>
                 </Section>

@@ -39,6 +39,7 @@ class Checkbox extends Component<{ onChange?: (value: string[]) => void, value?:
                         const props = child.props as any;
                         return <Item onClick={() => this.handleChange(props.value)} className={value.includes(props.value) ? "active" : ""}>{child}</Item>;
                     }
+                    return this.props.children;
                 })}
             </Root>
         );
