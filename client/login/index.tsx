@@ -4,7 +4,7 @@ import { observable, toJS } from "mobx";
 import { observer } from "mobx-react";
 import { Component } from "react";
 import { RouteComponentProps } from "react-router-dom";
-import store from "store/index";
+import store from "../store";
 
 const userStore = store.user;
 

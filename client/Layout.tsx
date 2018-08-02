@@ -3,9 +3,9 @@ import axios from "axios";
 import { inject, observer } from "mobx-react";
 import React, { Component } from "react";
 import { Link, Route, RouteComponentProps, withRouter } from "react-router-dom";
-import store from "store/index";
 import styled from "styled-components";
 import Budget, { BudgetMenu } from "./budget";
+import store from "./store";
 import Password from "./UpdatePassword";
 import UserComponent, { UserMenu } from "./user";
 
