@@ -18,6 +18,13 @@ const FormItem = Form.Item;
 
 @observer
 class EditModal extends Component<FormComponentProps> {
+    private handelSubmit = () => {
+        this.props.form.validateFields((err, values) => {
+            if (!err) {
+                store.save(values).then(() => this.props.form.resetFields());
+            }
+        });
+    }
     public render() {
         const { getFieldDecorator } = this.props.form;
         const formItemLayout = { labelCol: { span: 6 }, wrapperCol: { span: 16 } };
@@ -26,7 +33,7 @@ class EditModal extends Component<FormComponentProps> {
             <Modal
                 title={store.visibleProject._id ? `编辑预算项目-${subjectTypeText}` : `新增预算项目-${subjectTypeText}`}
                 visible={store.displayEditor}
-                onOk={() => store.save({})}
+                onOk={this.handelSubmit}
                 onCancel={store.hideProjectEditor}
             >
                 <Form>
