@@ -114,7 +114,8 @@ class SubjectStore {
         await axios.post(url, data);
     }
 }
-
+const store = new Store();
 export {
-    Store as default,
+    store as default,
+    Store,
 };

@@ -7,7 +7,7 @@ import React, { Component } from 'react';
 import styled from 'styled-components';
 import AdvancedSearch from './AdvancedSearch';
 import SubjectEditor from './components/SubjectEditor';
-import Store from './Store';
+import store from './Store';
 
 const Root = styled.div`
     &&&&&&&& table {
@@ -26,7 +26,6 @@ const Root = styled.div`
 
 @observer
 export default class extends Component {
-    public store = new Store();
     @observable private advancedSearchDisplay = false;
     @action.bound private showAdvancedSearch() {
         this.advancedSearchDisplay = true;
@@ -37,7 +36,6 @@ export default class extends Component {
         document.removeEventListener('click', this.hideAdvancedSearch);
     }
     public render() {
-        const store = this.store;
         return (
             <Root>
                 <Section>

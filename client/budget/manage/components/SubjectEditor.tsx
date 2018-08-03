@@ -4,6 +4,7 @@ import { ComponentDecorator, FormComponentProps } from 'antd/lib/form/Form';
 import { BudgetSubjectType, BudgetType } from 'config/config';
 import { observer } from 'mobx-react';
 import { Component } from 'react';
+import rootUser from 'store/index';
 import store from '../Store';
 
 const subjectStore = store.subject;
@@ -23,7 +24,7 @@ class EditModal extends Component<FormComponentProps> {
     private handelSubmit = () => {
         this.props.form.validateFields((err, values) => {
             if (!err) {
-                subjectStore.save(values).then(() => this.props.form.resetFields());
+                subjectStore.save({ ...values, year: rootUser.user.period!.year }).then(() => this.props.form.resetFields());
             }
         });
     }
