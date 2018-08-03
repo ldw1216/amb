@@ -6,7 +6,7 @@ import { observer } from 'mobx-react';
 import React, { Component } from 'react';
 import styled from 'styled-components';
 import AdvancedSearch from './AdvancedSearch';
-import ProjectEditor from './components/ProjectEditor';
+import SubjectEditor from './components/SubjectEditor';
 import Store, { subjectStore } from './Store';
 
 const Root = styled.div`
@@ -54,7 +54,7 @@ export default class extends Component {
                         <span style={{ marginRight: 28 }}>待审核</span><Button type="primary">修改预算</Button>
                     </SearchBar>
                 </Section>
-                <ProjectEditor />
+                <SubjectEditor />
             </Root>
         );
     }

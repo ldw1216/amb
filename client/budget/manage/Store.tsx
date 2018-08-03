@@ -1,14 +1,21 @@
 import { Icon, Input, Select } from 'antd';
+import axios from 'axios';
 import createValidator from 'components/createValidator';
 import { SearchDataType, SearchRange } from 'config/config';
-import { BudgetProjectType, BudgetType } from 'config/config';
+import { BudgetSubjectType, BudgetType } from 'config/config';
 import { action, observable } from 'mobx';
 import React from 'react';
-import ProjectTitle from './components/ProjectTitle';
+import SubjectTitle from './components/SubjectTitle';
 import TypeSelector from './components/TypeSelector';
 
+const 收入标题 =  <SubjectTitle><span key="1">收入</span><Icon key="2" onClick={() => subjectStore.showProjectEditor({ subjectType: BudgetSubjectType.收入 })} type="plus" /></SubjectTitle>;
+
 const row = { project: '大数据收入', type: <TypeSelector />, key: '1' } as any;
-const row1 = { project: <ProjectTitle><span key="1">收入</span><Icon key="2" onClick={() => subjectStore.showProjectEditor({ subjectType: BudgetProjectType.收入 })} type="plus" /></ProjectTitle>, type: '', key: 0 } as any;
+const row1 = {
+    project: 收入标题,
+    type: '3',
+    key: 0,
+} as any;
 const dataSource = [row1, row];
 
 const columns = [
@@ -89,8 +96,8 @@ class Store {
 }
 
 class SubjectStore {
-    @observable public displayEditor = true; // 显示编辑项目
-    @observable public visibleProject: amb.IBudgetSubject = { subjectType: BudgetProjectType.收入 };
+    @observable public displayEditor = false; // 显示编辑项目
+    @observable public visibleProject: amb.IBudgetSubject = { subjectType: BudgetSubjectType.收入 };
     @action.bound public showProjectEditor(data: amb.IBudgetSubject) {
         this.displayEditor = true;
         this.visibleProject = data;
@@ -99,8 +106,9 @@ class SubjectStore {
         this.displayEditor = false;
         this.visibleProject = {};
     }
-    @action.bound public save(data: amb.IBudgetSubject) {
-        console.log('保存');
+    @action.bound public async save(data: amb.IBudgetSubject) {
+        const url = '/subject' + (data._id ? '/' + data._id : '');
+        await axios.post(url, data);
     }
 }
 

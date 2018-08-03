@@ -1,7 +1,7 @@
 import { Button, Form, Input, InputNumber, Modal } from 'antd';
 import { Omit } from 'antd/lib/_util/type';
 import { ComponentDecorator, FormComponentProps } from 'antd/lib/form/Form';
-import { BudgetProjectType, BudgetType } from 'config/config';
+import { BudgetSubjectType, BudgetType } from 'config/config';
 import { observer } from 'mobx-react';
 import { Component } from 'react';
 import { subjectStore as store } from '../Store';
@@ -21,7 +21,7 @@ class EditModal extends Component<FormComponentProps> {
     public render() {
         const { getFieldDecorator } = this.props.form;
         const formItemLayout = { labelCol: { span: 6 }, wrapperCol: { span: 16 } };
-        const subjectTypeText = store.visibleProject.subjectType === BudgetProjectType.收入 ? '收入' : '成本';
+        const subjectTypeText = store.visibleProject.subjectType === BudgetSubjectType.收入 ? '收入' : '成本';
         return (
             <Modal
                 title={store.visibleProject._id ? `编辑预算项目-${subjectTypeText}` : `新增预算项目-${subjectTypeText}`}

@@ -9,7 +9,7 @@ export enum SearchDataType {
     '预算占比' = '预算占比', '实际完成' = '实际完成', '实际占比' = '实际占比', '预算完成率' = '预算完成率',
 }
 
-export enum BudgetProjectType {
+export enum BudgetSubjectType {
     收入 = 'income',
     成本 = 'cost',
     费用 = 'expense',
