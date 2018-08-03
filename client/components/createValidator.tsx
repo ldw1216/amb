@@ -2,9 +2,9 @@
  * 表单验证组件 使用方式见 ./createValidatorTest.tsx
  */
 
-import { observable, toJS } from "mobx";
-import { observer } from "mobx-react";
-import { cloneElement, Component } from "react";
+import { observable, toJS } from 'mobx';
+import { observer } from 'mobx-react';
+import { cloneElement, Component } from 'react';
 
 export interface IValidateFormProps {
     validate(): void;
@@ -88,7 +88,7 @@ export default createValidator;
 
 function validateWithRules(rules: IValidationRule[], value: any) {
     for (const rule of rules) {
-        if (rule.required && (value === undefined || value === "")) {
+        if (rule.required && (value === undefined || value === '')) {
             return rule.msg;
         }
         if (rule.pattern && !rule.pattern.test(value)) {

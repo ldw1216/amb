@@ -1,17 +1,34 @@
-import { Input } from "antd";
-import createValidator from "components/createValidator";
-import { SearchDataType, SearchRange } from "config/config";
-import { observable } from "mobx";
-import React from "react";
+import { Icon, Input, Select } from 'antd';
+import createValidator from 'components/createValidator';
+import { SearchDataType, SearchRange } from 'config/config';
+import { BudgetProjectType, BudgetType } from 'config/config';
+import { action, observable } from 'mobx';
+import React from 'react';
+import ProjectTitle from './components/ProjectTitle';
+import TypeSelector from './components/TypeSelector';
 
-const row = { type: "收入", key: 1 } as any;
-const dataSource = [row];
+const row = { project: '大数据收入', type: <TypeSelector />, key: '1' } as any;
+const row1 = { project: <ProjectTitle><span key="1">收入</span><Icon key="2" onClick={() => subjectStore.showProjectEditor({ subjectType: BudgetProjectType.收入 })} type="plus" /></ProjectTitle>, type: '', key: 0 } as any;
+const dataSource = [row1, row];
+
 const columns = [
     {
-        title: "2018",
-        dataIndex: "type",
-        key: "type",
-        fixed: "left",
+        title: '2018',
+        dataIndex: 'head',
+        key: 'head',
+        fixed: 'left',
+        children: [
+            {
+                title: `财务`,
+                dataIndex: `project`,
+                key: `project`,
+            },
+            {
+                title: `类型`,
+                dataIndex: `type`,
+                key: `type`,
+            },
+        ],
     } as any,
 ];
 for (let i = 1; i < 13; i++) {
@@ -48,13 +65,19 @@ for (let i = 1; i < 13; i++) {
         ],
     });
     row[`budget_m${i}`] = <Input />;
-    row[`budget/income_m${i}`] = 44;
+    row[`budget/income_m${i}`] = 441;
     row[`real_m${i}`] = 33;
     row[`real/income_m${i}`] = 33;
     row[`real/budget_m${i}`] = 33;
+
+    row1[`budget_m${i}`] = <Input />;
+    row1[`budget/income_m${i}`] = 441;
+    row1[`real_m${i}`] = 33;
+    row1[`real/income_m${i}`] = 33;
+    row1[`real/budget_m${i}`] = 33;
 }
 
-export default class Store {
+class Store {
     public validator = createValidator();
     @observable public dataSource = dataSource;
     @observable public columns = columns;
@@ -64,3 +87,27 @@ export default class Store {
         dataTypes: Object.keys(SearchDataType),
     };
 }
+
+class SubjectStore {
+    @observable public displayEditor = true; // 显示编辑项目
+    @observable public visibleProject: amb.IBudgetSubject = { subjectType: BudgetProjectType.收入 };
+    @action.bound public showProjectEditor(data: amb.IBudgetSubject) {
+        this.displayEditor = true;
+        this.visibleProject = data;
+    }
+    @action.bound public hideProjectEditor() {
+        this.displayEditor = false;
+        this.visibleProject = {};
+    }
+    @action.bound public save(data: amb.IBudgetSubject) {
+        console.log('保存');
+    }
+}
+
+const subjectStore = new SubjectStore();
+
+export {
+    subjectStore,
+    Store,
+    Store as default,
+};

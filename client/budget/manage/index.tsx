@@ -1,12 +1,13 @@
-import { Affix, Button, Input, Table } from "antd";
-import { SearchBar } from "components/SearchBar";
-import Section from "components/Section";
-import { action, observable } from "mobx";
-import { observer } from "mobx-react";
-import React, { Component } from "react";
-import styled from "styled-components";
-import AdvancedSearch from "./AdvancedSearch";
-import Store from "./store";
+import { Affix, Button, Input, Table } from 'antd';
+import { SearchBar } from 'components/SearchBar';
+import Section from 'components/Section';
+import { action, observable } from 'mobx';
+import { observer } from 'mobx-react';
+import React, { Component } from 'react';
+import styled from 'styled-components';
+import AdvancedSearch from './AdvancedSearch';
+import ProjectEditor from './components/ProjectEditor';
+import Store, { subjectStore } from './Store';
 
 const Root = styled.div`
     &&&&&&&& table {
@@ -23,17 +24,17 @@ const Root = styled.div`
     }
 `;
 const store = new Store();
-console.log(store.dataSource);
+
 @observer
 export default class extends Component {
     @observable private advancedSearchDisplay = false;
     @action.bound private showAdvancedSearch() {
         this.advancedSearchDisplay = true;
-        document.addEventListener("click", this.hideAdvancedSearch);
+        document.addEventListener('click', this.hideAdvancedSearch);
     }
     @action.bound private hideAdvancedSearch() {
         this.advancedSearchDisplay = false;
-        document.removeEventListener("click", this.hideAdvancedSearch);
+        document.removeEventListener('click', this.hideAdvancedSearch);
     }
     public render() {
         return (
@@ -46,13 +47,14 @@ export default class extends Component {
                     {this.advancedSearchDisplay && <AdvancedSearch store={store} />}
                 </Section>
                 <Section>
-                    <Table pagination={false} scroll={{ x: "auto" }} bordered size="small" dataSource={store.dataSource} columns={store.columns} />
+                    <Table pagination={false} scroll={{ x: 'auto' }} bordered size="small" dataSource={store.dataSource} columns={store.columns} />
                 </Section>
                 <Section>
                     <SearchBar>
                         <span style={{ marginRight: 28 }}>待审核</span><Button type="primary">修改预算</Button>
                     </SearchBar>
                 </Section>
+                <ProjectEditor />
             </Root>
         );
     }

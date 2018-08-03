@@ -1,8 +1,8 @@
-import { Tabs } from "antd";
-import Section from "components/Section";
-import { PureComponent } from "react";
-import Cost from "./cost";
-import Period from "./period";
+import { Tabs } from 'antd';
+import Section from 'components/Section';
+import { PureComponent } from 'react';
+import ExpenseType from './expenseType';
+import Period from './period';
 
 const TabPane = Tabs.TabPane;
 
@@ -15,7 +15,7 @@ export default class extends PureComponent {
                         <Period />
                     </TabPane>
                     <TabPane tab="费用项目设置" key="2">
-                        <Cost />
+                        <ExpenseType />
                     </TabPane>
                 </Tabs>
             </Section>

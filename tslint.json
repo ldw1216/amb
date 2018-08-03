@@ -5,14 +5,19 @@
     ],
     "jsRules": {},
     "rules": {
-        "object-literal-sort-keys":false,
+        "object-literal-sort-keys": false,
         "no-console": false,
         "max-line-length": false,
         "max-classes-per-file": false,
         "no-var-requires": false,
         "curly": false,
         "no-unused-expression": false,
-        "member-ordering": false
+        "member-ordering": false,
+        "quotemark": [
+            true,
+            "single",
+            "jsx-double"
+        ]
     },
     "rulesDirectory": []
 }
