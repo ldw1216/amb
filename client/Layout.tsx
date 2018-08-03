@@ -1,13 +1,12 @@
-import { Dropdown, Icon, Layout, Menu, message } from "antd";
-import axios from "axios";
-import { inject, observer } from "mobx-react";
-import React, { Component } from "react";
-import { Link, Route, RouteComponentProps, withRouter } from "react-router-dom";
-import styled from "styled-components";
-import Budget, { BudgetMenu } from "./budget";
-import store from "./store";
-import Password from "./UpdatePassword";
-import UserComponent, { UserMenu } from "./user";
+import { Dropdown, Icon, Layout, Menu, message } from 'antd';
+import axios from 'axios';
+import {  observer } from 'mobx-react';
+import React, { Component } from 'react';
+import importedComponent from 'react-imported-component';
+import { Link, Route, RouteComponentProps, withRouter } from 'react-router-dom';
+import styled from 'styled-components';
+import store from './store';
+import Password from './UpdatePassword';
 
 const user = store.user;
 const { Header, Content, Sider } = Layout;
@@ -28,6 +27,7 @@ class MyLayout extends Component<RouteComponentProps<{}>, {}> {
         store.user.getMe();
     }
     public render() {
+        if (!store.user._id) return null;
         const curMainMenu = cutout(location.pathname);
         const menu = (
             <Menu>
@@ -37,27 +37,27 @@ class MyLayout extends Component<RouteComponentProps<{}>, {}> {
                 <Menu.Item key="1">
                     <a target="_blank" onClick={this.logout}>退出</a>
                 </Menu.Item>
-            </Menu >
+            </Menu>
         );
         return (
-            <Layout style={{ minHeight: "100vh" }}>
+            <Layout style={{ minHeight: '100vh' }}>
                 <Header className="header">
                     <Logo>好看阿米巴管理平台</Logo>
-                    <div style={{ float: "left" }}>
+                    <div style={{ float: 'left' }}>
                         <Menu
                             theme="dark"
                             mode="horizontal"
                             defaultSelectedKeys={[curMainMenu]}
-                            style={{ lineHeight: "64px" }}
+                            style={{ lineHeight: '64px' }}
                         >
                             <Menu.Item key="/budget"><Link to="/budget">预算</Link></Menu.Item>
                             <Menu.Item key="/user"><Link to="/user">系统配置</Link></Menu.Item>
                         </Menu>
                     </div>
 
-                    <div style={{ float: "right", color: "white" }}>
+                    <div style={{ float: 'right', color: 'white' }}>
                         <Dropdown overlay={menu}>
-                            <span style={{ cursor: "pointer" }} className="ant-dropdown-link">
+                            <span style={{ cursor: 'pointer' }} className="ant-dropdown-link">
                                 欢迎您: {user.name} ({user.account}) <Icon type="down" />
                             </span>
                         </Dropdown>
@@ -65,15 +65,15 @@ class MyLayout extends Component<RouteComponentProps<{}>, {}> {
                 </Header>
                 <Layout>
                     <Sider collapsible={true} collapsed={this.state.collapsed} onCollapse={this.onCollapse} width={200}>
-                        <Route path="/user" component={UserMenu} />
-                        <Route path="/budget" component={BudgetMenu} />
+                        <Route path="/user" component={importedComponent(() => import('./user').then((mod) => mod.UserMenu))} />
+                        <Route path="/budget" component={importedComponent(() => import('./budget').then((mod) => mod.BudgetMenu))} />
                     </Sider>
-                    <Layout style={{ padding: "3px 3px 10px" }}>
+                    <Layout style={{ padding: '3px 3px 10px' }}>
                         <Content style={{ padding: 8, margin: 0, minHeight: 280 }}>
                             <div>
                                 <Route exact={true} path="/" component={Home} />
-                                <Route path="/user" component={UserComponent} />
-                                <Route path="/budget" component={Budget} />
+                                <Route path="/user" component={importedComponent(() => import('./user'))} />
+                                <Route path="/budget" component={importedComponent(() => import('./budget'))} />
                             </div>
                         </Content>
                     </Layout>
@@ -87,9 +87,9 @@ class MyLayout extends Component<RouteComponentProps<{}>, {}> {
     }
     private logout = async (e: any) => {
         e.preventDefault();
-        const data = await axios.get("/sign/logout").then((res) => (res.data));
-        if (data.msg === "退出成功！") { return this.props.history.push("/login/"); }
-        return message.error(<span style={{ color: "red" }}>用户退出失败</span>);
+        const data = await axios.get('/sign/logout').then((res) => (res.data));
+        if (data.msg === '退出成功！') { return this.props.history.push('/login/'); }
+        return message.error(<span style={{ color: 'red' }}>用户退出失败</span>);
     }
 }
 
@@ -102,5 +102,5 @@ function Home() {
 }
 
 function cutout(pathname: string) {
-    return "/" + pathname.split("/")[1];
+    return '/' + pathname.split('/')[1];
 }

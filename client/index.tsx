@@ -1,26 +1,25 @@
-(window as any).React = require("react");
-import { LocaleProvider } from "antd";
-import zh_CN from "antd/lib/locale-provider/zh_CN";
-import { Provider } from "mobx-react";
-import "moment/locale/zh-cn";
-import { render } from "react-dom";
-import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
-import "./axios-init";
-import Layout from "./Layout";
-import Login from "./login";
-import store from "./store";
+(window as any).React = require('react');
+import { LocaleProvider } from 'antd';
+import zh_CN from 'antd/lib/locale-provider/zh_CN';
+import { Provider } from 'mobx-react';
+import 'moment/locale/zh-cn';
+import { render } from 'react-dom';
+import universal from 'react-imported-component';
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import './axios-init';
+import store from './store';
 
 render(
     <LocaleProvider locale={zh_CN}>
         <Provider store={store}>
             <Router>
                 <Switch>
-                    <Route path="/login" component={Login} />
-                    <Route path="/" component={Layout} />
+                    <Route path="/login" component={universal(() => import('./login'))} />
+                    <Route path="/" component={universal(() => import('./Layout'))} />
                 </Switch>
             </Router>
         </Provider>
     </LocaleProvider>
     ,
-    document.getElementById("root"),
+    document.getElementById('root'),
 );

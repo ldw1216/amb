@@ -1,4 +1,4 @@
-import { BudgetProjectType, BudgetType } from 'config/config'
+import { BudgetSubjectType, BudgetType } from 'config/config'
 
 
 declare global {
@@ -53,7 +53,7 @@ declare global {
             id?: string;
             year?: number;
             ambGroup?: string; // 阿米巴组
-            subjectType?: BudgetProjectType;  // 收入主类型
+            subjectType?: BudgetSubjectType;  // 收入主类型
             name?: string; // 类型名称
             sort?: string; // 排序
         }
@@ -65,7 +65,7 @@ declare global {
             year: number; // 年份
             budgets: Array<{
                 month: number; // 月份
-                projectType: BudgetProjectType; // 类型
+                projectType: BudgetSubjectType; // 类型
                 project: string; // 子类型
                 type: BudgetType
                 money: number; // 预算金额

@@ -4,7 +4,9 @@ import { ComponentDecorator, FormComponentProps } from 'antd/lib/form/Form';
 import { BudgetSubjectType, BudgetType } from 'config/config';
 import { observer } from 'mobx-react';
 import { Component } from 'react';
-import { subjectStore as store } from '../Store';
+import store from '../Store';
+
+const subjectStore = store.subject;
 
 const FormItem = Form.Item;
 
@@ -21,20 +23,20 @@ class EditModal extends Component<FormComponentProps> {
     private handelSubmit = () => {
         this.props.form.validateFields((err, values) => {
             if (!err) {
-                store.save(values).then(() => this.props.form.resetFields());
+                subjectStore.save(values).then(() => this.props.form.resetFields());
             }
         });
     }
     public render() {
         const { getFieldDecorator } = this.props.form;
         const formItemLayout = { labelCol: { span: 6 }, wrapperCol: { span: 16 } };
-        const subjectTypeText = store.visibleProject.subjectType === BudgetSubjectType.收入 ? '收入' : '成本';
+        const subjectTypeText = subjectStore.visibleProject.subjectType === BudgetSubjectType.收入 ? '收入' : '成本';
         return (
             <Modal
-                title={store.visibleProject._id ? `编辑预算项目-${subjectTypeText}` : `新增预算项目-${subjectTypeText}`}
-                visible={store.displayEditor}
+                title={subjectStore.visibleProject._id ? `编辑预算项目-${subjectTypeText}` : `新增预算项目-${subjectTypeText}`}
+                visible={subjectStore.displayEditor}
                 onOk={this.handelSubmit}
-                onCancel={store.hideProjectEditor}
+                onCancel={subjectStore.hideProjectEditor}
             >
                 <Form>
                     <FormItem label="名称" {...formItemLayout} >

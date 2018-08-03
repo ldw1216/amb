@@ -1,14 +1,13 @@
-import { Icon, Menu } from "antd";
-import { Component } from "react";
-import { Link, Route, Switch } from "react-router-dom";
-import Config from "./config";
-import Manage from "./manage";
+import { Icon, Menu } from 'antd';
+import { Component } from 'react';
+import importedComponent from 'react-imported-component';
+import { Link, Route, Switch } from 'react-router-dom';
 class Index extends Component {
     public render() {
         return (
             <Switch>
-                <Route path="/budget/config" component={Config} />
-                <Route path="/budget/manage" component={Manage} />
+                <Route path="/budget/config" component={importedComponent(() => import('./config'))} />
+                <Route path="/budget/manage" component={importedComponent(() => import('./manage'))} />
             </Switch>
         );
     }
@@ -25,7 +24,7 @@ export class BudgetMenu extends Component<any, {}> {
                 mode="inline"
                 theme="dark"
                 defaultSelectedKeys={[pathname]}
-                defaultOpenKeys={[pathname.replace(/\/[^/]+$/, "")]}
+                defaultOpenKeys={[pathname.replace(/\/[^/]+$/, '')]}
             >
                 <Menu.Item key="/budget/config"><Link to="/budget/config"><Icon type="pie-chart" /> <span>预算配置</span></Link></Menu.Item>
                 <Menu.Item key="/budget/manage"><Link to="/budget/manage"><Icon type="pie-chart" /> <span>预算管理</span></Link></Menu.Item>

@@ -5,11 +5,12 @@ import { SearchDataType, SearchRange } from 'config/config';
 import { BudgetSubjectType, BudgetType } from 'config/config';
 import { action, observable } from 'mobx';
 import React from 'react';
+import userStore from 'store/index';
 import SubjectTitle from './components/SubjectTitle';
 import TypeSelector from './components/TypeSelector';
 
-const 收入标题 =  <SubjectTitle><span key="1">收入</span><Icon key="2" onClick={() => subjectStore.showProjectEditor({ subjectType: BudgetSubjectType.收入 })} type="plus" /></SubjectTitle>;
-
+const 收入标题 =  <SubjectTitle><span key="1">收入</span><Icon key="2" onClick={() => store.subject.showProjectEditor({ subjectType: BudgetSubjectType.收入 })} type="plus" /></SubjectTitle>;
+console.log('asdf');
 const row = { project: '大数据收入', type: <TypeSelector />, key: '1' } as any;
 const row1 = {
     project: 收入标题,
@@ -86,6 +87,8 @@ for (let i = 1; i < 13; i++) {
 
 class Store {
     public validator = createValidator();
+    public subject = new SubjectStore();
+    @observable public period = userStore.user.period;
     @observable public dataSource = dataSource;
     @observable public columns = columns;
     @observable public condition = {
@@ -112,10 +115,6 @@ class SubjectStore {
     }
 }
 
-const subjectStore = new SubjectStore();
-
 export {
-    subjectStore,
-    Store,
     Store as default,
 };
