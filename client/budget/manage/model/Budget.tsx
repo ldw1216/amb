@@ -66,9 +66,9 @@ export default class Budget {
          * 3、 保存或关闭时，删除dom元素
          */
 
-        const div = document.getElementById('root')!.appendChild(document.createElement('div'));
-        const subject = new Subject(type);
-        render(<SubjectEditor subject={subject} />, div);
+        const container = document.getElementById('root')!.appendChild(document.createElement('div'));
+        const subject = new Subject(type, this.year, this.group._id, container);
+        render(<SubjectEditor subject={subject} />, container);
     }
     @computed get dataSource() {
         // const row = { project: '大数据收入', type: <TypeSelector />, key: '1' } as any;

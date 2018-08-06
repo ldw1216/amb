@@ -9,15 +9,11 @@ router.get('/', async (ctx) => {
 
 // year?: number;
 // ambGroup?: string; // 阿米巴组
-// subjectType?: BudgetProjectType;  // 收入主类型
+// type?: BudgetProjectType;  // 收入主类型
 
 router.post('/', async (ctx) => {
     const data = ctx.request.body as amb.IBudgetSubject;
-    const period = await getCurrentPeriod(ctx.session!.user.groups.map((item: any) => item._id)) as amb.IPeriod;
-    if (period === undefined) ctx.throw(400, '没有可用预算周期！');
     // 获取用户id等信息
-    console.log({ ...data, year: period.year, ambGroup: ctx.session!.user }, period, ctx.session!.user.groups.map((item: any) => item._id));
-    return;
     await new SubjectModel(ctx.request.body).save();
     ctx.body = { msg: '保存成功' };
 });

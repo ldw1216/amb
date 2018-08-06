@@ -6,9 +6,15 @@ export default class Subject {
     // tslint:disable-next-line:variable-name
     @observable public _id: string = '';
     @observable public type: BudgetSubjectType;
+    @observable public year: number;
+    @observable public ambGroup: string;
+
     @observable public visibleEditor = true; // 显示编辑项目
-    constructor(type: BudgetSubjectType) {
+    constructor(type: BudgetSubjectType, year: number, ambGroup: string, public container?: HTMLElement) {
         this.type = type;
+        this.year = year;
+        this.ambGroup = ambGroup;
+        this.container = container;
     }
     @action.bound public showProjectEditor(data: amb.IBudgetSubject) {
         this.visibleEditor = true;
@@ -16,9 +22,15 @@ export default class Subject {
     }
     @action.bound public hideProjectEditor() {
         this.visibleEditor = false;
+        this.container && this.container.remove();
     }
     @action.bound public async save(data: amb.IBudgetSubject) {
         const url = '/subject' + (data._id ? '/' + data._id : '');
+        data.type = this.type;
+        data.year = this.year;
+        data.ambGroup = this.ambGroup;
         await axios.post(url, data);
+        console.log(this.container);
+        this.hideProjectEditor();
     }
 }

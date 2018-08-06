@@ -38,6 +38,7 @@ class EditModal extends Component<FormComponentProps & { subject: Subject }> {
                 visible={subject.visibleEditor}
                 onOk={this.handelSubmit}
                 onCancel={subject.hideProjectEditor}
+                destroyOnClose={true}
             >
                 <Form>
                     <FormItem label="名称" {...formItemLayout} >
