@@ -3,28 +3,18 @@ import { ComponentDecorator, FormComponentProps } from 'antd/lib/form/Form';
 import { BudgetSubjectType, BudgetType } from 'config/config';
 import { observer } from 'mobx-react';
 import { Component } from 'react';
+import Budget from '../model/Budget';
 import Subject from '../model/Subject';
-
-// year?: number;
-// ambGroup?: string; // 阿米巴组
-// subjectType?: BudgetProjectType;  // 收入主类型
 
 const FormItem = Form.Item;
 
-// _id?: string
-//             id?: string;
-//             year?: number;
-//             ambGroup?: string; // 阿米巴组
-//             subjectType?: BudgetProjectType;  // 收入主类型
-//             name?: string; // 类型名称
-//             sort?: string; // 排序
-
 @observer
-class EditModal extends Component<FormComponentProps & { subject: Subject }> {
+class EditModal extends Component<FormComponentProps & { subject: Subject, budget: Budget }> {
     private handelSubmit = () => {
         this.props.form.validateFields((err, values) => {
             if (!err) {
                 this.props.subject.save({ ...values }).then(() => this.props.form.resetFields());
+                this.props.budget.fetchSubjects();
             }
         });
     }
@@ -57,4 +47,4 @@ class EditModal extends Component<FormComponentProps & { subject: Subject }> {
     }
 }
 
-export default Form.create<Subject>()(EditModal);
+export default Form.create<{ subject: Subject, budget: Budget }>()(EditModal);

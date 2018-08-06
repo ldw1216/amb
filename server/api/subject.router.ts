@@ -4,12 +4,9 @@ import { SubjectModel } from 'model/subject.model';
 const router = new Router({ prefix: '/subject' });
 
 router.get('/', async (ctx) => {
-    ctx.body = await SubjectModel.find().populate('sector', ['name', '_id']);
+    const { year, ambGroup } = ctx.query;
+    ctx.body = await SubjectModel.find({ year, ambGroup });
 });
-
-// year?: number;
-// ambGroup?: string; // 阿米巴组
-// type?: BudgetProjectType;  // 收入主类型
 
 router.post('/', async (ctx) => {
     const data = ctx.request.body as amb.IBudgetSubject;

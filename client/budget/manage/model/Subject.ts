@@ -5,15 +5,18 @@ import { action, observable } from 'mobx';
 export default class Subject {
     // tslint:disable-next-line:variable-name
     @observable public _id: string = '';
+    @observable public name: string = '';
     @observable public type: BudgetSubjectType;
     @observable public year: number;
     @observable public ambGroup: string;
 
     @observable public visibleEditor = true; // 显示编辑项目
-    constructor(type: BudgetSubjectType, year: number, ambGroup: string, public container?: HTMLElement) {
-        this.type = type;
-        this.year = year;
-        this.ambGroup = ambGroup;
+    constructor(data: amb.IBudgetSubject, public container?: HTMLElement) {
+        this._id = data._id || '';
+        this.type = data.type!;
+        this.name = data.name || '';
+        this.year = data.year!;
+        this.ambGroup = data.ambGroup!;
         this.container = container;
     }
     @action.bound public showProjectEditor(data: amb.IBudgetSubject) {

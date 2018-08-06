@@ -19,7 +19,7 @@ class BudgetItem {
 }
 
 // 预算行（某个项目的预算，比如人工成本预算）
-export class ProjectBudget {
+export class SubjectBudget {
     @observable public user?: string;
     @observable public ambGroup?: string;
     @observable public period?: string;
@@ -33,20 +33,26 @@ export class ProjectBudget {
 export default class Budget {
     @observable public year: number; // 预算周期
     @observable public group: amb.IGroup; // 预算周期
-    @observable public BudgetList: ProjectBudget[] = []; // 预算数据
+    @observable public BudgetList: SubjectBudget[] = []; // 预算数据
+    @observable public subjects: Subject[] = [];
 
     constructor(year: number, group: amb.IGroup, list?: amb.IBudget[]) {
         this.year = year;
         this.group = group;
-        if (list) {
-            // 初始化预算数据
-        }
+        this.fetchSubjects();
     }
     // 从数据库初始化数据 - 通过接口从数据库拉取数据
     @action.bound public async importByMongo() {
         const data: amb.IBudget = await axios.get('/').then((res) => res.data);
         return data;
         // 通过接口从数据库拉取数据
+    }
+
+    @action.bound public fetchSubjects() {
+        // 从数据库拉取项目
+        axios.get(`/subject`, { params: { year: this.year, ambGroup: this.group._id || this.group } }).then((res) => {
+            this.subjects = res.data.map((item: amb.IBudgetSubject) => new Subject(item));
+        });
     }
     // 增加一个预算
     @action.bound public addBudgetRow() {
@@ -59,41 +65,59 @@ export default class Budget {
     }
 
     // 添加项目
-    @action.bound public addProject(type: BudgetSubjectType) {
-        /**
-         * 1、 插入dom 元素
-         * 2、 在dom 元素中渲染modal组件
-         * 3、 保存或关闭时，删除dom元素
-         */
-
+    @action.bound private addProject(type: BudgetSubjectType) {
         const container = document.getElementById('root')!.appendChild(document.createElement('div'));
-        const subject = new Subject(type, this.year, this.group._id, container);
-        render(<SubjectEditor subject={subject} />, container);
+        const subject = new Subject({ type, year: this.year, ambGroup: this.group._id }, container);
+        render(<SubjectEditor subject={subject} budget={this} />, container);
     }
     @computed get dataSource() {
         // const row = { project: '大数据收入', type: <TypeSelector />, key: '1' } as any;
-        const 收入标题 = <SubjectTitle><span>收入</span><Icon onClick={() => this.addProject(BudgetSubjectType.收入)} type="plus" /></SubjectTitle>;
-        const 收入 = {
-            project: 收入标题,
-            type: '3',
+        const 收入汇总标题 = <SubjectTitle><span>收入</span><Icon onClick={() => this.addProject(BudgetSubjectType.收入)} type="plus" /></SubjectTitle>;
+        const 收入汇总 = {
             key: 0,
+            project: 收入汇总标题,
+            type: '3',
         } as any;
         // 添加收入 、 成本 、 费用 、 毛利
         for (let i = 1; i < 13; i++) {
-            收入[`budget_m${i}`] = <Input />;
-            收入[`budget/income_m${i}`] = 441;
-            收入[`real_m${i}`] = 33;
-            收入[`real/income_m${i}`] = 33;
-            收入[`real/budget_m${i}`] = 33;
+            收入汇总[`budget_m${i}`] = <Input />;
+            收入汇总[`budget/income_m${i}`] = 441;
+            收入汇总[`real_m${i}`] = 33;
+            收入汇总[`real/income_m${i}`] = 33;
+            收入汇总[`real/budget_m${i}`] = 33;
 
-            收入[`budget_m${i}`] = <Input />;
-            收入[`budget/income_m${i}`] = 441;
-            收入[`real_m${i}`] = 33;
-            收入[`real/income_m${i}`] = 33;
-            收入[`real/budget_m${i}`] = 33;
+            收入汇总[`budget_m${i}`] = <Input />;
+            收入汇总[`budget/income_m${i}`] = 441;
+            收入汇总[`real_m${i}`] = 33;
+            收入汇总[`real/income_m${i}`] = 33;
+            收入汇总[`real/budget_m${i}`] = 33;
         }
+        // 增加收入项目
+        const 收入项目s = this.subjects.map((item, index) => {
+            const 收入项目标题 = item.name;
+            const row = {} as any;
+            for (let i = 1; i < 13; i++) {
+                row[`budget_m${i}`] = <Input />;
+                row[`budget/income_m${i}`] = 441;
+                row[`real_m${i}`] = 33;
+                row[`real/income_m${i}`] = 33;
+                row[`real/budget_m${i}`] = 33;
 
-        const dataSource = [收入];
+                row[`budget_m${i}`] = <Input />;
+                row[`budget/income_m${i}`] = 441;
+                row[`real_m${i}`] = 33;
+                row[`real/income_m${i}`] = 33;
+                row[`real/budget_m${i}`] = 33;
+            }
+            return {
+                key: '收入' + index,
+                project: 收入项目标题,
+                type: 4,
+                ...row,
+            };
+        });
+        console.log(收入项目s);
+        const dataSource = [收入汇总].concat(收入项目s);
         return dataSource;
     }
     @computed get columns() {
