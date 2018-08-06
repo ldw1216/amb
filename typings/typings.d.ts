@@ -53,7 +53,7 @@ declare global {
             id?: string;
             year?: number;
             ambGroup?: string; // 阿米巴组
-            subjectType?: BudgetSubjectType;  // 收入主类型
+            type?: BudgetSubjectType;  // 收入主类型
             name?: string; // 类型名称
             sort?: string; // 排序
         }
@@ -65,8 +65,8 @@ declare global {
             year: number; // 年份
             budgets: Array<{
                 month: number; // 月份
-                projectType: BudgetSubjectType; // 类型
-                project: string; // 子类型
+                subjectType: BudgetSubjectType; // 类型
+                subjectSubType: string; // 子类型
                 type: BudgetType
                 money: number; // 预算金额
             }>;

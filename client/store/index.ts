@@ -9,7 +9,6 @@ export class User implements amb.IUser {
     @observable public role: 'general' | 'admin' = 'general';
     @observable public groups = [];
     @observable public available: boolean = true;
-    @observable public period?: amb.IPeriod;
 
     @action.bound
     public login(account: string, password: string) {

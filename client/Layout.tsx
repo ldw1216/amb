@@ -1,15 +1,24 @@
 import { Dropdown, Icon, Layout, Menu, message } from 'antd';
 import axios from 'axios';
-import {  observer } from 'mobx-react';
+import { observer } from 'mobx-react';
 import React, { Component } from 'react';
 import importedComponent from 'react-imported-component';
-import { Link, Route, RouteComponentProps, withRouter } from 'react-router-dom';
+import { Link, NavLink, Redirect, Route, RouteComponentProps, withRouter } from 'react-router-dom';
 import styled from 'styled-components';
 import store from './store';
 import Password from './UpdatePassword';
 
 const user = store.user;
 const { Header, Content, Sider } = Layout;
+
+const Root = styled.div`
+    @keyframes animation
+    {
+    from {opacity: 0;}
+    to {opacity: 1;}
+    }
+    animation: animation 600ms;
+`;
 
 const Logo = styled.div`
     float: left;
@@ -70,11 +79,12 @@ class MyLayout extends Component<RouteComponentProps<{}>, {}> {
                     </Sider>
                     <Layout style={{ padding: '3px 3px 10px' }}>
                         <Content style={{ padding: 8, margin: 0, minHeight: 280 }}>
-                            <div>
+                            <Root key={location.pathname}>
                                 <Route exact={true} path="/" component={Home} />
                                 <Route path="/user" component={importedComponent(() => import('./user'))} />
                                 <Route path="/budget" component={importedComponent(() => import('./budget'))} />
-                            </div>
+                                <Route key={location.pathname} path="/test/:id" component={TestComponent} />
+                            </Root>
                         </Content>
                     </Layout>
                 </Layout>
@@ -104,3 +114,32 @@ function Home() {
 function cutout(pathname: string) {
     return '/' + pathname.split('/')[1];
 }
+
+class TestComponent extends Component {
+    public state = { aa: '33' };
+    public componentDidMount() {
+        console.log('componentDidMount');
+    }
+
+    public render() {
+        console.log('renderrender');
+        return (
+            <div>{location.href.includes('aa') && <Redirect push to="/test/bb" />}
+                <div key={this.state.aa}>{location.href} === {this.state.aa}</div>
+                <NavLink className="as" to="/test/aa">aa</NavLink> |
+                <Link to="/test/bb">bb</Link>
+                <button onClick={() => <Redirect push to="/test/bb" />}>33</button>
+            </div>
+        );
+    }
+}
+
+// const TestComponent = withRouter((props) => {
+//     return(
+//         <div>
+//             <NavLink className="as" to="/test/aa">aa</NavLink> |
+//             <Link to="/test/bb">bb</Link>
+//             <button onClick={() => props.history.push('/test/bb')}>cc</button>
+//         </div>
+//     );
+// });

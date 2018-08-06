@@ -1,13 +1,13 @@
 import { Button, Form, Input, InputNumber, Modal } from 'antd';
-import { Omit } from 'antd/lib/_util/type';
 import { ComponentDecorator, FormComponentProps } from 'antd/lib/form/Form';
 import { BudgetSubjectType, BudgetType } from 'config/config';
 import { observer } from 'mobx-react';
 import { Component } from 'react';
-import rootUser from 'store/index';
-import store from '../Store';
+import Subject from '../model/Subject';
 
-const subjectStore = store.subject;
+// year?: number;
+// ambGroup?: string; // 阿米巴组
+// subjectType?: BudgetProjectType;  // 收入主类型
 
 const FormItem = Form.Item;
 
@@ -20,24 +20,24 @@ const FormItem = Form.Item;
 //             sort?: string; // 排序
 
 @observer
-class EditModal extends Component<FormComponentProps> {
+class EditModal extends Component<FormComponentProps & { subject: Subject }> {
     private handelSubmit = () => {
         this.props.form.validateFields((err, values) => {
             if (!err) {
-                subjectStore.save({ ...values, year: rootUser.user.period!.year }).then(() => this.props.form.resetFields());
+                this.props.subject.save({ ...values }).then(() => this.props.form.resetFields());
             }
         });
     }
     public render() {
-        const { getFieldDecorator } = this.props.form;
+        const { form: { getFieldDecorator }, subject } = this.props;
         const formItemLayout = { labelCol: { span: 6 }, wrapperCol: { span: 16 } };
-        const subjectTypeText = subjectStore.visibleProject.subjectType === BudgetSubjectType.收入 ? '收入' : '成本';
+        const subjectTypeText = subject.type === BudgetSubjectType.收入 ? '收入' : '成本';
         return (
             <Modal
-                title={subjectStore.visibleProject._id ? `编辑预算项目-${subjectTypeText}` : `新增预算项目-${subjectTypeText}`}
-                visible={subjectStore.displayEditor}
+                title={subject._id ? `编辑预算项目-${subjectTypeText}` : `新增预算项目-${subjectTypeText}`}
+                visible={subject.visibleEditor}
                 onOk={this.handelSubmit}
-                onCancel={subjectStore.hideProjectEditor}
+                onCancel={subject.hideProjectEditor}
             >
                 <Form>
                     <FormItem label="名称" {...formItemLayout} >
@@ -56,4 +56,4 @@ class EditModal extends Component<FormComponentProps> {
     }
 }
 
-export default Form.create()(EditModal);
+export default Form.create<Subject>()(EditModal);

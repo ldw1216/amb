@@ -5,9 +5,11 @@ import { action, observable } from 'mobx';
 import { observer } from 'mobx-react';
 import React, { Component } from 'react';
 import styled from 'styled-components';
-import AdvancedSearch from './AdvancedSearch';
+import rootStore from '../../store';
+import AdvancedSearch from './components/AdvancedSearch';
 import SubjectEditor from './components/SubjectEditor';
-import store from './Store';
+import store from './store';
+store.fetchCurrentUserBudgetList();
 
 const Root = styled.div`
     &&&&&&&& table {
@@ -36,6 +38,7 @@ export default class extends Component {
         document.removeEventListener('click', this.hideAdvancedSearch);
     }
     public render() {
+        console.log(rootStore);
         return (
             <Root>
                 <Section>
@@ -45,15 +48,17 @@ export default class extends Component {
                     </SearchBar>
                     {this.advancedSearchDisplay && <AdvancedSearch store={store} />}
                 </Section>
-                <Section>
-                    <Table pagination={false} scroll={{ x: 'auto' }} bordered size="small" dataSource={store.dataSource} columns={store.columns} />
-                </Section>
+                {store.currentUserBudgetList.map((item) => (
+                    <Section key={item.year + item.group._id}>
+                        <Table pagination={false} scroll={{ x: 'auto' }} bordered size="small" dataSource={item.dataSource} columns={item.columns} />
+                    </Section>
+                ))}
+
                 <Section>
                     <SearchBar>
                         <span style={{ marginRight: 28 }}>待审核</span><Button type="primary">修改预算</Button>
                     </SearchBar>
                 </Section>
-                <SubjectEditor />
             </Root>
         );
     }

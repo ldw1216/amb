@@ -3,9 +3,8 @@ import Checkbox from 'components/Checkbox';
 import { SearchDataType, SearchRange } from 'config/config';
 import { observer } from 'mobx-react';
 import { Component } from 'react';
-import rootStore from 'store/index';
 import styled from 'styled-components';
-import { Store } from './store';
+import { Store } from '../store';
 
 const Option = Select.Option;
 
