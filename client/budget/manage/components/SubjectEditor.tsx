@@ -14,7 +14,7 @@ class EditModal extends Component<FormComponentProps & { subject: Subject, budge
         this.props.form.validateFields((err, values) => {
             if (!err) {
                 this.props.subject.save({ ...values }).then(() => this.props.form.resetFields());
-                this.props.budget.fetchSubjects();
+                this.props.budget.fetch();
             }
         });
     }

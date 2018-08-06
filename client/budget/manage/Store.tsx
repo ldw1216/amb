@@ -1,7 +1,7 @@
 import axios from 'axios';
 import createValidator from 'components/createValidator';
 import { BudgetSubjectType, SearchDataType, SearchRange } from 'config/config';
-import { observable } from 'mobx';
+import { observable, toJS } from 'mobx';
 import rootStore from 'store/index';
 import Budget from './model/Budget';
 
@@ -17,9 +17,15 @@ export class Store {
     public async fetchCurrentUserBudgetList() {
         // 获取当前用户所属组
         const groups = rootStore.user.groups;
-        // 获取每个组最新的预算数据，如果没有则获取预算周期信息，预算周期信息也没有，则获取当前年份
-        const year = new Date().getFullYear();
-        this.currentUserBudgetList = groups.map((group) => new Budget(year, group));
+        // 获取每个组最新的预算数据，
+        // 获取预算周期信息，如果没有预算周期信息，则获取当前年份
+        const periods = await axios.post('/period/groups', { groups: groups.map((item: any) => item._id) }).then((res) => res.data) as Array<[string, amb.IPeriod | undefined]>;
+        const periodMap = new Map(periods);
+        this.currentUserBudgetList = groups.map((group) => {
+            const period = periodMap.get(group._id);
+            const year = period ? period.year : new Date().getFullYear();
+            return new Budget(year, group, period);
+        });
     }
 }
 

@@ -26,8 +26,7 @@ router.get('/resetPassword/:id', async (ctx) => {
 
 router.get('/me', async (ctx) => {
     const user = ctx.session!.user;
-    const period = await getCurrentPeriod(user.groups.map((item: any) => item._id));
-    ctx.body = { ...user, period };
+    ctx.body = { ...user };
 });
 
 router.post('/password', async (ctx) => {

@@ -15,13 +15,18 @@ const PeriodModel = model<Document & amb.IPeriod>(collectionName, schema);
 
 async function getCurrentPeriod(groupIds: string[]) {
     const periods = await PeriodModel.find({
-        'duration.0': {$lte: new Date()},
-        'duration.1': {$gte: new Date()},
-        '$or': [{ groups: { $in: groupIds } }, { allGroup: true }] },
-    ).sort({_id: -1});
-    return periods[0];
+        'duration.0': { $lte: new Date() },
+        'duration.1': { $gte: new Date() },
+        '$or': [{ groups: { $in: groupIds } }, { allGroup: true }],
+    }).sort({ _id: -1 }).then((list) => list.map((item) => item.toJSON()));
+    return groupIds.map((item) => {
+        return [
+            item,
+            periods.find((period) => period.allGroup === true || period.groups.some((groupId: any) => groupId.toString() === item)),
+        ];
+    });
 }
-
+// getCurrentPeriod(['5b5da558f97e81209d5cfcbd', '5b5da575f97e81209d5cfcbe']).then(console.log);
 export {
     PeriodModel,
     getCurrentPeriod,

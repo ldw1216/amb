@@ -38,7 +38,6 @@ export default class extends Component {
         document.removeEventListener('click', this.hideAdvancedSearch);
     }
     public render() {
-        console.log(rootStore);
         return (
             <Root>
                 <Section>

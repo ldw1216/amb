@@ -7,7 +7,7 @@ export class User implements amb.IUser {
     @observable public name: string = '';
     @observable public account: string = '';
     @observable public role: 'general' | 'admin' = 'general';
-    @observable public groups = [];
+    @observable public groups: amb.IGroup[] = [];
     @observable public available: boolean = true;
 
     @action.bound

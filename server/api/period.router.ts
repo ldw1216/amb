@@ -1,9 +1,13 @@
 import Router from 'koa-router';
-import { PeriodModel } from 'model/period.model';
+import { getCurrentPeriod, PeriodModel } from 'model/period.model';
 const router = new Router({ prefix: '/period' });
 
 router.get('/', async (ctx) => {
     ctx.body = await PeriodModel.find({}).populate('groups', ['name', '_id']);
+});
+
+router.post('/groups', async (ctx) => {
+    ctx.body = await getCurrentPeriod((ctx.request.body as any).groups);
 });
 
 router.post('/', async (ctx) => {
