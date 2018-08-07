@@ -48,7 +48,7 @@ export default class extends Component {
                     {this.advancedSearchDisplay && <AdvancedSearch store={store} />}
                 </Section>
                 {store.currentUserBudgetList.map((item) => (
-                    <Section key={item.year + item.group._id}>
+                    <Section key={item.year + item.group}>
                         <Table pagination={false} scroll={{ x: 'auto' }} bordered size="small" dataSource={item.dataSource} columns={item.columns} />
                     </Section>
                 ))}

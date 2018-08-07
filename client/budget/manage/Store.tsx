@@ -24,7 +24,13 @@ export class Store {
         this.currentUserBudgetList = groups.map((group) => {
             const period = periodMap.get(group._id);
             const year = period ? period.year : new Date().getFullYear();
-            return new Budget(year, group, period);
+            return new Budget({
+                user: rootStore.user._id,
+                group: group._id,
+                period: period && period._id,
+                year,
+                subjectBudgets: [], // 从数据库中获取
+            });
         });
     }
 }

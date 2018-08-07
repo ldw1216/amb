@@ -48,29 +48,38 @@ declare global {
             options?: Array<{ _id?: string, id: string, name?: string, type?: '财务' | '阿米巴' }>
         }
 
+        // 预算子项目， 比如大数据收入，推荐收入，金立商务收入，服务器成本等
         interface IBudgetSubject {
             _id?: string
             id?: string;
             year?: number;
-            ambGroup?: string; // 阿米巴组
-            type?: BudgetSubjectType;  // 收入主类型
+            group?: string; // 阿米巴组
+            type: BudgetSubjectType;  // 收入主类型
             name?: string; // 类型名称
             sort?: string; // 排序
         }
 
         interface IBudget {
+            _id?: string
             user: string;    // 用户id
-            ambGroup: string;  // 阿米巴组id
-            period: string; // 预算周期
+            group: string;  // 阿米巴组id
+            period?: string; // 预算周期
             year: number; // 年份
-            budgets: IBudgetItem[];
+            subjectBudgets: ISubjectBudget[];
         }
 
-        interface IBudgetItem {
-            month: number; // 月份
-            subjectType?: BudgetSubjectType; // 类型
+        // 某个项目的预算
+        interface ISubjectBudget {
+            _id?: string
+            subjectType: BudgetSubjectType; // 类型
             subjectSubType?: string; // 子类型
-            type?: BudgetType
+            type?: BudgetType | undefined  // 财务 阿米巴
+            monthBudgets: IMonthBudget[];
+        }
+
+        // 每个月的预算
+        interface IMonthBudget {
+            month: number; // 月份
             money?: number; // 预算金额
             reality?: number; // 实际预算金额
         }

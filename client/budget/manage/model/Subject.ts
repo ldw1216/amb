@@ -8,7 +8,7 @@ export default class Subject {
     @observable public name: string = '';
     @observable public type: BudgetSubjectType;
     @observable public year: number;
-    @observable public ambGroup: string;
+    @observable public group: string;
 
     @observable public visibleEditor = true; // 显示编辑项目
     constructor(data: amb.IBudgetSubject, public container?: HTMLElement) {
@@ -16,7 +16,7 @@ export default class Subject {
         this.type = data.type!;
         this.name = data.name || '';
         this.year = data.year!;
-        this.ambGroup = data.ambGroup!;
+        this.group = data.group!;
         this.container = container;
     }
     @action.bound public showProjectEditor(data: amb.IBudgetSubject) {
@@ -31,7 +31,7 @@ export default class Subject {
         const url = '/subject' + (data._id ? '/' + data._id : '');
         data.type = this.type;
         data.year = this.year;
-        data.ambGroup = this.ambGroup;
+        data.group = this.group;
         await axios.post(url, data);
         console.log(this.container);
         this.hideProjectEditor();

@@ -4,8 +4,8 @@ import { SubjectModel } from 'model/subject.model';
 const router = new Router({ prefix: '/subject' });
 
 router.get('/', async (ctx) => {
-    const { year, ambGroup } = ctx.query;
-    ctx.body = await SubjectModel.find({ year, ambGroup });
+    const { year, group } = ctx.query;
+    ctx.body = await SubjectModel.find({ year, group });
 });
 
 router.post('/', async (ctx) => {
