@@ -1,7 +1,7 @@
 import { Affix, Button, Input, Table } from 'antd';
 import { SearchBar } from 'components/SearchBar';
 import Section from 'components/Section';
-import { action, observable } from 'mobx';
+import { action, observable, toJS } from 'mobx';
 import { observer } from 'mobx-react';
 import React, { Component } from 'react';
 import styled from 'styled-components';
@@ -53,6 +53,13 @@ export default class extends Component {
                     </Section>
                 ))}
 
+                <Section>
+                    <SearchBar>
+                       <Button>取消</Button>
+                       <Button onClick={() => console.log(toJS(store.currentUserBudgetList))} type="primary">暂存草稿</Button>
+                       <Button>预算提报</Button>
+                    </SearchBar>
+                </Section>
                 <Section>
                     <SearchBar>
                         <span style={{ marginRight: 28 }}>待审核</span><Button type="primary">修改预算</Button>

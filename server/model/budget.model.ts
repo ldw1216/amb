@@ -8,7 +8,8 @@ const budget = new Schema({
     projectType: { type: String, enum: values(BudgetSubjectType), required: true, cn: '类型' },
     projectSubType: { type: SchemaTypes.ObjectId, ref: 'Subject', required: true, cn: '项目子类型' },
     type: { type: String, enum: values(BudgetType), required: true, cn: '项目子类型' },
-    money: { type: Number, required: true, cn: '预算金额' },
+    money: { type: Number, cn: '预算金额' },
+    reality: { type: Number, cn: '实际费用' },
 }, { timestamps: true, toJSON: { virtuals: true } });
 
 const schema = new Schema({

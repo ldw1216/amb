@@ -63,13 +63,16 @@ declare global {
             ambGroup: string;  // 阿米巴组id
             period: string; // 预算周期
             year: number; // 年份
-            budgets: Array<{
-                month: number; // 月份
-                subjectType: BudgetSubjectType; // 类型
-                subjectSubType: string; // 子类型
-                type: BudgetType
-                money: number; // 预算金额
-            }>;
+            budgets: IBudgetItem[];
+        }
+
+        interface IBudgetItem {
+            month: number; // 月份
+            subjectType?: BudgetSubjectType; // 类型
+            subjectSubType?: string; // 子类型
+            type?: BudgetType
+            money?: number; // 预算金额
+            reality?: number; // 实际预算金额
         }
     }
 }

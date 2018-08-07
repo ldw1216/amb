@@ -1,9 +1,9 @@
-import { Icon, Input, Select } from 'antd';
+import { Icon, Input, InputNumber, Select } from 'antd';
 import { SelectProps } from 'antd/lib/select';
 import axios from 'axios';
 import createValidator from 'components/createValidator';
 import { BudgetSubjectType, BudgetType, SearchDataType, SearchRange } from 'config/config';
-import { action, computed, observable } from 'mobx';
+import { action, computed, observable, toJS } from 'mobx';
 import React from 'react';
 import { render } from 'react-dom';
 import rootStore from 'store/index';
@@ -13,21 +13,23 @@ import Subject from './Subject';
 
 const SelectOption = Select.Option;
 const TypeSelector: React.SFC<SelectProps> = (props) => (
-    <Select style={{ width: 80 }} {...props}>
+    <Select style={{ width: 100 }} {...props}>
         {Object.keys(BudgetType).map((item) => <SelectOption key={item} value={item}>{item}</SelectOption>)}
     </Select>
 );
 
 // 预算金额 某个项目，某个月份的预算
-class BudgetItem {
-    public month: number;
-    public projectType?: BudgetSubjectType;
-    public projectSubType?: string;
-    public type?: BudgetType;
-    public money?: number;
-    constructor(month: number, money?: number) {
+class BudgetItem implements amb.IBudgetItem {
+    @observable public month: number;
+    @observable public projectType?: BudgetSubjectType;
+    @observable public projectSubType?: string;
+    @observable public type?: BudgetType;
+    @observable public money?: number;
+    @observable public reality?: number; // 真实金额
+    constructor(month: number, money?: number, reality?: number) {
         this.month = month;
         this.money = money;
+        this.reality = reality;
     }
 }
 
@@ -43,8 +45,6 @@ export class SubjectBudget {
     @observable public year?: number;
     @observable public budgets: BudgetItem[] = [];
 }
-
-// 从哪里知道 预算周期 , 通过数据库查询当前用户属于几个group，查询完成后初始化BudgetPeriodList
 
 // 预算数据
 export default class Budget {
@@ -111,35 +111,29 @@ export default class Budget {
             type: '',
         } as any;
         // 添加收入 、 成本 、 费用 、 毛利
-        for (let i = 1; i < 13; i++) {
-            收入汇总[`budget_m${i}`] = <Input />;
-            收入汇总[`budget/income_m${i}`] = 441;
-            收入汇总[`real_m${i}`] = 33;
-            收入汇总[`real/income_m${i}`] = 33;
-            收入汇总[`real/budget_m${i}`] = 33;
-
-            收入汇总[`budget_m${i}`] = <Input />;
-            收入汇总[`budget/income_m${i}`] = 441;
-            收入汇总[`real_m${i}`] = 33;
-            收入汇总[`real/income_m${i}`] = 33;
-            收入汇总[`real/budget_m${i}`] = 33;
+        for (let i = 0; i < 12; i++) {
+            收入汇总[`预算_${i}月`] = '';
+            收入汇总[`预算占收入比_${i}月`] = 441;
+            收入汇总[`真实收入_${i}月`] = 33;
+            收入汇总[`实际占收入比_${i}`] = 33;
+            收入汇总[`预算完成率_${i}月`] = 33;
         }
 
         // 增加收入项目
         const 收入项目s = this.budgetList.map((budgetRow, index) => {
             const 收入项目标题 = budgetRow.subjectName;
             const row = {} as any;
-            budgetRow.budgets.forEach((budget, i) => {
-                row[`budget_money${i}`] = <Input value={budget.money} onChange={(e) => budget.money = parseInt(e.target.value, 10)} />;
-                row[`budget/income_m${i}`] = 88; // 收入占比
-                row[`real_money${i}`] = 33; // 真实收入
-                row[`real/income_m${i}`] = 44; // 真实收入
-                row[`finishRate${i}`] = 33; // 预算完成率
+            budgetRow.budgets.forEach((budget, i) => { // budget.money = parseFloat(value ? value.toString() : '0')
+                row[`预算_${i}月`] = <InputNumber value={budget.money} onChange={(value) => budget.money = parseFloat(value ? value.toString() : '0')} />;
+                row[`预算占收入比_${i}月`] = 88;
+                row[`真实收入_${i}月`] = <InputNumber value={budget.reality} onChange={(value) => budget.reality = parseFloat(value ? value.toString() : '0')} />;
+                row[`实际占收入比_${i}`] = 44;
+                row[`预算完成率_${i}月`] = '';
             });
             return {
                 key: '收入' + index,
                 project: 收入项目标题,
-                type: <TypeSelector onChange={console.log} />,
+                type: <TypeSelector onChange={(type) => budgetRow.type = type.toString()} />,
                 ...row,
             };
         });
@@ -148,7 +142,6 @@ export default class Budget {
         return dataSource;
     }
     @computed get columns() {
-
         const columns = [
             {
                 title: '2018',
@@ -177,28 +170,28 @@ export default class Budget {
                 children: [
                     {
                         title: `预算`,
-                        dataIndex: `budget_money${i}`,
-                        key: `budget_money${i}`,
+                        dataIndex: `预算_${i}月`,
+                        key: `预算_${i}月`,
                     },
                     {
                         title: `占收入比`,
-                        dataIndex: `budget/income_m${i}`,
-                        key: `budget/income_m${i}`,
+                        dataIndex: `预算占收入比_${i}月`,
+                        key: `预算占收入比_${i}月`,
                     },
                     {
                         title: `实际`,
-                        dataIndex: `real_m${i}`,
-                        key: `real_m${i}`,
+                        dataIndex: `真实收入_${i}月`,
+                        key: `真实收入_${i}月`,
                     },
                     {
                         title: `占收入比`,
-                        dataIndex: `real/income_m${i}`,
-                        key: `real/income_m${i}`,
+                        dataIndex: `实际占收入比_${i}`,
+                        key: `实际占收入比_${i}`,
                     },
                     {
                         title: `预算完成率`,
-                        dataIndex: `finishRate${i}`,
-                        key: `finishRate${i}`,
+                        dataIndex: `预算完成率_${i}月`,
+                        key: `预算完成率_${i}月`,
                     },
                 ],
             });
