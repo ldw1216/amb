@@ -5,7 +5,7 @@ import { BudgetSubjectType, BudgetType, SearchDataType, SearchRange } from 'conf
 import { action, computed, observable, toJS } from 'mobx';
 import React from 'react';
 import { render } from 'react-dom';
-import rootStore from 'store/index';
+import rootStore from '../../../store';
 import SubjectEditor from '../components/SubjectEditor';
 import SubjectTitle from '../components/SubjectTitle';
 import MonthBudget from './MonthBudget';
@@ -78,7 +78,6 @@ export default class Budget implements amb.IBudget {
                 const budgetItem = new MonthBudget(i);
                 monthBudgets.push(budgetItem);
             }
-            console.log(option.name);
             // 每一行预算的数据
             subjectBudgets.push(new SubjectBudget({
                 _id: '', // 从数据库中获取

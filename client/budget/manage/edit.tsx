@@ -1,10 +1,9 @@
 import { Affix, Button, Input, Table } from 'antd';
-import { SearchBar, ToolBar } from 'components/SearchBar';
+import { SearchBar } from 'components/SearchBar';
 import Section from 'components/Section';
 import { action, observable, toJS } from 'mobx';
 import { observer } from 'mobx-react';
 import React, { Component } from 'react';
-import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import rootStore from '../../store';
 import AdvancedSearch from './components/AdvancedSearch';
@@ -13,12 +12,6 @@ import store from './store';
 store.fetchCurrentUserBudgetList();
 
 const { TextArea } = Input;
-
-const Title = styled.span`
-    font-size: 16px;
-    line-height: 2;
-    margin-right: 15px;
-`;
 
 const Root = styled.div`
     &&&&&&&& table {
@@ -58,15 +51,11 @@ export default class extends Component {
                 </Section>
                 {store.currentUserBudgetList.map((item) => (
                     <Section key={item.year + item.group}>
-                        <ToolBar>
-                            <Title>待审核</Title>
-                            <Link to={`/budget/edit/${item.group}`}><Button>修改预算</Button></Link>
-                        </ToolBar>
                         <Table pagination={false} scroll={{ x: 'auto' }} bordered size="small" dataSource={item.dataSource} columns={item.columns} />
                     </Section>
                 ))}
                 <Section>
-                    <div><Title>预算说明:</Title></div>
+                    <div style={{ fontSize: 15, marginBottom: 10 }}>预算说明:</div>
                     <div>
                         <TextArea />
                     </div>

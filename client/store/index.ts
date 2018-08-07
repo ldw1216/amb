@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { action, observable, toJS, when } from 'mobx';
-import User from './User';
+import User from 'store/User';
 
 export class Store {
     public user = new User();
