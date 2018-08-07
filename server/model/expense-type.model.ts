@@ -13,7 +13,7 @@ const schema = new Schema({
     remark: String,
 }, { timestamps: true, toJSON: { virtuals: true } });
 
-const ExpenseTypeModel = model<Document & amb.IExpense>(collectionName, schema);
+const ExpenseTypeModel = model<Document & amb.IExpenseType>(collectionName, schema);
 
 export {
     ExpenseTypeModel,

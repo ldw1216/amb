@@ -2,7 +2,7 @@ import axios from 'axios';
 import { action, observable, observe, toJS } from 'mobx';
 
 class Store {
-    @observable public data = [] as amb.IExpense[];
+    @observable public data = [] as amb.IExpenseType[];
 
     @action.bound
     public async save(values: any, id?: string) {

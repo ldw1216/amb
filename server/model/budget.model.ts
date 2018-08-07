@@ -11,7 +11,7 @@ const MonthBudget = new Schema({
 
 const SubjectBudget = new Schema({
     subjectType: { type: String, enum: values(BudgetSubjectType), required: true, cn: '类型' },
-    subjectSubType: { type: SchemaTypes.ObjectId, ref: 'Subject', required: true, cn: '项目子类型' },
+    subjectSubType: { type: SchemaTypes.ObjectId, required: true, cn: '项目子类型' }, // ref: 'Subject' , 'ExpenseType',
     type: { type: String, enum: values(BudgetType), required: true, cn: '项目子类型' },
     monthBudgets: { type: [MonthBudget], required: true, cn: '每月预算' },
 }, { timestamps: true, toJSON: { virtuals: true } });

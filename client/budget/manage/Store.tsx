@@ -27,6 +27,7 @@ export class Store {
             return new Budget({
                 user: rootStore.user._id,
                 group: group._id,
+                groupName: group.name,
                 period: period && period._id,
                 year,
                 subjectBudgets: [], // 从数据库中获取

@@ -41,11 +41,16 @@ declare global {
         }
 
         // 年度费用项目
-        interface IExpense {
+        interface IExpenseType {
             id: number | string
             _id?: string
             year?: number
-            options?: Array<{ _id?: string, id: string, name?: string, type?: '财务' | '阿米巴' }>
+            options: IExpenseTypeOption[]
+        }
+
+        // 费用详细
+        interface IExpenseTypeOption {
+            _id?: string, id?: string, name: string, type: BudgetType
         }
 
         // 预算子项目， 比如大数据收入，推荐收入，金立商务收入，服务器成本等

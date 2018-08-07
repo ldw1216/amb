@@ -52,7 +52,7 @@
 
 
 ## 项目部署
-+ 运行 `npm run build` 文件会打包到 `/dist`文件夹 直接运行 node dist/server 可启动项目
++ 运行 `npm run build` 文件会打包到 `/dist`文件夹 直接运行 node dist/server 可启动项目 或 npm start 启动项目
 
 ## 开发规范
 + 所有数据库文件放入 `/server/model` 文件夹下，定义数据库时 一并定义 interface 到 `/typings`文件夹下，定义到 namespace amb  且使用I开头

@@ -5,9 +5,12 @@ import { BudgetSubjectType, BudgetType, SearchDataType, SearchRange } from 'conf
 import { action, computed, observable, toJS } from 'mobx';
 import React from 'react';
 import { render } from 'react-dom';
+import rootStore from 'store/index';
 import SubjectEditor from '../components/SubjectEditor';
 import SubjectTitle from '../components/SubjectTitle';
+import MonthBudget from './MonthBudget';
 import Subject from './Subject';
+import SubjectBudget from './SubjectBudget';
 
 const SelectOption = Select.Option;
 const TypeSelector: React.SFC<SelectProps> = (props) => (
@@ -16,79 +19,76 @@ const TypeSelector: React.SFC<SelectProps> = (props) => (
     </Select>
 );
 
-// 预算金额 某个项目，某个月份的预算
-class MonthBudget implements amb.IMonthBudget {
-    @observable public month: number;
-    @observable public money?: number;
-    @observable public reality?: number; // 真实金额
-    constructor(month: number, money?: number, reality?: number) {
-        this.month = month;
-        this.money = money;
-        this.reality = reality;
-    }
-}
-
-// 预算行（某个项目的预算，比如人工成本预算）
-export class SubjectBudget implements amb.ISubjectBudget {
-    // tslint:disable-next-line:variable-name
-    @observable public _id?: string;
-    @observable public subjectType: BudgetSubjectType;
-    @observable public subjectSubType?: string; // 子类型id
-    @observable public type?: BudgetType;
-    @observable public monthBudgets: MonthBudget[] = [];
-    constructor(data: amb.ISubjectBudget) {
-        this._id = data._id;
-        this.subjectType = data.subjectType;
-        this.subjectSubType = data.subjectSubType; // 子类型id
-        this.type = data.type;
-        this.monthBudgets = data.monthBudgets || [];
-    }
-}
-
 // 预算数据
 export default class Budget implements amb.IBudget {
     // tslint:disable-next-line:variable-name
     public _id?: string;
     @observable public user: string;
     @observable public group: string;
+    @observable public groupName: string;
     @observable public period?: string;
     @observable public year: number;
-    @observable public budgetList: SubjectBudget[] = []; // 预算数据 每行为一个元素
     @observable public subjectBudgets: SubjectBudget[] = [];
     @observable public subjects: amb.IBudgetSubject[] = [];
 
-    constructor(data: amb.IBudget) {
+    constructor(data: amb.IBudget & { groupName: string }) {
         this._id = data._id;
         this.user = data.user; // 预算周期
         this.group = data.group; // 预算周期
+        this.groupName = data.groupName;
         this.period = data.period;
         this.year = data.year; // 预算周期
         this.subjectBudgets = data.subjectBudgets || [];
 
+        Object.defineProperties(this, {
+            groupName: { enumerable: false },
+            subjects: { enumerable: false },
+        });
         this.fetch();
     }
 
-    @action.bound public fetch() {
+    @computed get expenseTypes(): amb.IExpenseTypeOption[] {
+        const data = rootStore.expenseTypes.find((item) => item.year === this.year);
+        return data ? data.options : [];
+    }
+
+    @action.bound public async fetch() {
         // 从数据库拉取项目
-        axios.get(`/subject`, { params: { year: this.year, group: this.group } }).then((res) => {
-            this.subjects = res.data.map((item: amb.IBudgetSubject) => new Subject(item));
-            this.subjectBudgets = this.subjects.map((subject) => {
-                // 生成收入预算数据
-                const monthBudgets: MonthBudget[] = [];
-                for (let i = 0; i < 12; i++) {
-                    const budgetItem = new MonthBudget(i);
-                    monthBudgets.push(budgetItem);
-                }
-                // 每一行预算的数据
-                return new SubjectBudget({
-                    _id: '', // 从数据库中获取
-                    subjectType: subject.type,
-                    subjectSubType: subject._id,
-                    type: undefined, // 从数据库中获取
-                    monthBudgets,
-                });
+        this.subjects = await axios.get(`/subject`, { params: { year: this.year, group: this.group } }).then((res) => res.data.map((item: amb.IBudgetSubject) => new Subject(item)));
+        const subjectBudgets = this.subjects.map((subject) => {
+            // 生成收入预算数据
+            const monthBudgets: MonthBudget[] = [];
+            for (let i = 0; i < 12; i++) {
+                const budgetItem = new MonthBudget(i);
+                monthBudgets.push(budgetItem);
+            }
+            // 每一行预算的数据
+            return new SubjectBudget({
+                _id: '', // 从数据库中获取
+                subjectType: subject.type,
+                subjectSubType: subject._id,
+                type: undefined, // 从数据库中获取
+                monthBudgets,
             });
         });
+        this.expenseTypes.forEach((option, optionIndex) => {
+            // 生成收入预算数据
+            const monthBudgets: MonthBudget[] = [];
+            for (let i = 0; i < 12; i++) {
+                const budgetItem = new MonthBudget(i);
+                monthBudgets.push(budgetItem);
+            }
+            console.log(option.name);
+            // 每一行预算的数据
+            subjectBudgets.push(new SubjectBudget({
+                _id: '', // 从数据库中获取
+                subjectType: BudgetSubjectType.费用,
+                subjectSubType: option._id,
+                type: option.type, // 从数据库中获取
+                monthBudgets,
+            }));
+        });
+        this.subjectBudgets = subjectBudgets;
     }
     // 增加一个预算
     @action.bound public addBudgetRow() {
@@ -107,49 +107,56 @@ export default class Budget implements amb.IBudget {
         render(<SubjectEditor subject={subject} budget={this} />, container);
     }
     @computed get dataSource() {
-        // const row = { project: '大数据收入', type: <TypeSelector />, key: '1' } as any;
-        const 收入汇总标题 = <SubjectTitle><span>收入</span><Icon onClick={() => this.addProject(BudgetSubjectType.收入)} type="plus" /></SubjectTitle>;
-        const 成本汇总标题 = <SubjectTitle><span>成本</span><Icon onClick={() => this.addProject(BudgetSubjectType.成本)} type="plus" /></SubjectTitle>;
-        const 收入汇总 = {
+        const incomeAmount = {
             key: '收入汇总',
-            subject: 收入汇总标题,
-            type: '',
+            subject: <SubjectTitle><span>收入</span><Icon onClick={() => this.addProject(BudgetSubjectType.收入)} type="plus" /></SubjectTitle>,
+            type: undefined,
         } as any;
-        const 成本汇总 = {
+        const costAmount = {
             key: '成本汇总',
-            subject: 成本汇总标题,
-            type: '',
+            subject: <SubjectTitle><span>成本</span><Icon onClick={() => this.addProject(BudgetSubjectType.成本)} type="plus" /></SubjectTitle>,
+            type: undefined,
         } as any;
-        // 添加收入 、 成本 、 费用 、 毛利
+        const expenseAmount = {
+            key: '费用汇总',
+            subject: <SubjectTitle><span>费用</span></SubjectTitle>,
+            type: undefined,
+        } as any;
+        // 添加收入汇总
         for (let i = 0; i < 12; i++) {
-            收入汇总[`预算_${i}月`] = '';
-            收入汇总[`预算占收入比_${i}月`] = '';
-            收入汇总[`真实收入_${i}月`] = '';
-            收入汇总[`实际占收入比_${i}`] = '';
-            收入汇总[`预算完成率_${i}月`] = '';
+            incomeAmount[`预算_${i}月`] = '';
+            incomeAmount[`预算占收入比_${i}月`] = '';
+            incomeAmount[`真实收入_${i}月`] = '';
+            incomeAmount[`实际占收入比_${i}`] = '';
+            incomeAmount[`预算完成率_${i}月`] = '';
         }
 
-        // 增加收入项目
-        const 收入项目s = this.subjectBudgets.map((subjectBudget, subjectBudgetIndex) => {
-            const subject = this.subjects.find((item) => item._id === subjectBudget.subjectSubType) ;
-            const 收入项目标题 = subject && subject.name;
-            const row = {} as any;
+        const incomeRows = [] as any[]; // 收入数据
+        const costRows = [] as any[]; // 成本数据
+        const expenseRows = [] as any[]; // 费用数据
+
+        this.subjectBudgets.map((subjectBudget, subjectBudgetIndex) => {
+            const subject = this.subjects.find((item) => item._id === subjectBudget.subjectSubType);
+            const expense = this.expenseTypes.find((item) => item._id === subjectBudget.subjectSubType);
+
+            const row = {
+                key: subjectBudgetIndex,
+                subject: <div style={{ textAlign: 'left', paddingLeft: 18 }}>{subject && subject.name || expense && expense.name}</div>,
+                type: <TypeSelector value={subjectBudget.type} onChange={(type) => subjectBudget.type = type.toString() as BudgetType} />,
+            } as any;
             subjectBudget.monthBudgets.forEach((monthBudget, i) => { // budget.money = parseFloat(value ? value.toString() : '0')
-                row[`预算_${i}月`] = <InputNumber value={monthBudget.money} onChange={(value) => monthBudget.money = parseFloat(value ? value.toString() : '0')} />;
+                row[`预算_${i}月`] = <InputNumber value={monthBudget.money} onChange={(value) => monthBudget.money = parseFloat(value ? value.toString() : '0') || 0} />;
                 row[`预算占收入比_${i}月`] = 88;
-                row[`真实收入_${i}月`] = <InputNumber value={monthBudget.reality} onChange={(value) => monthBudget.reality = parseFloat(value ? value.toString() : '0')} />;
+                row[`真实收入_${i}月`] = <InputNumber value={monthBudget.reality} onChange={(value) => monthBudget.reality = parseFloat(value ? value.toString() : '0') || 0} />;
                 row[`实际占收入比_${i}`] = 44;
                 row[`预算完成率_${i}月`] = '';
             });
-            return {
-                key: '收入' + subjectBudgetIndex,
-                subject: 收入项目标题,
-                type: <TypeSelector onChange={(type) => subjectBudget.type = type.toString() as BudgetType} />,
-                ...row,
-            };
+            if (subjectBudget.subjectType === BudgetSubjectType.收入) incomeRows.push(row);
+            if (subjectBudget.subjectType === BudgetSubjectType.成本) costRows.push(row);
+            if (subjectBudget.subjectType === BudgetSubjectType.费用) expenseRows.push(row);
         });
 
-        const dataSource = [收入汇总].concat(收入项目s).concat(成本汇总);
+        const dataSource = [incomeAmount].concat(incomeRows, costAmount, costRows, expenseAmount, expenseRows);
         return dataSource;
     }
     @computed get columns() {
@@ -161,7 +168,7 @@ export default class Budget implements amb.IBudget {
                 fixed: 'left',
                 children: [
                     {
-                        title: `财务`,
+                        title: this.groupName,
                         dataIndex: `subject`,
                         key: `subject`,
                     },

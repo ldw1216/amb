@@ -21,7 +21,7 @@ const FormItem = Form.Item;
 const Option = Select.Option;
 
 @observer
-class Tr extends Component<FormComponentProps & { data: amb.IExpense }> {
+class Tr extends Component<FormComponentProps & { data: amb.IExpenseType }> {
     public componentDidMount() {
         const { data } = this.props;
         const values = {
@@ -83,4 +83,4 @@ class Tr extends Component<FormComponentProps & { data: amb.IExpense }> {
     }
 }
 
-export default Form.create<{ data: amb.IExpense }>()(Tr);
+export default Form.create<{ data: amb.IExpenseType }>()(Tr);
