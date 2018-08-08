@@ -13,6 +13,7 @@
         "curly": false,
         "no-unused-expression": false,
         "member-ordering": false,
+        "variable-name": false,
         "quotemark": [
             true,
             "single",

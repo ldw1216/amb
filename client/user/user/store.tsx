@@ -1,5 +1,5 @@
-import axios from "axios";
-import { action, observable, observe, toJS } from "mobx";
+import axios from 'axios';
+import { action, observable, observe, toJS } from 'mobx';
 
 class Store {
     @observable public data = [] as amb.IUser[];
@@ -24,9 +24,9 @@ class Store {
     public async save(values: any) {
         const edit = this.data[this.selectedIndex];
         if (edit) {
-            await axios.post("/user/" + edit._id, values);
+            await axios.post('/user/' + edit._id, values);
         } else {
-            await axios.post("/user", values);
+            await axios.post('/user', values);
         }
         this.hideEditModel();
         await this.fetch();
@@ -39,13 +39,13 @@ class Store {
 
     @action.bound
     public async fetch() {
-        this.data = await axios.get("/user", { params: { condition: this.condition } }).then((res) => res.data);
-        this.groups = await axios.get("/group").then((res) => res.data);
+        this.data = await axios.get('/user', { params: { condition: this.condition } }).then((res) => res.data);
+        this.groups = await axios.get('/group').then((res) => res.data);
     }
 
     @action.bound
     public async resetPassword(id: string) {
-        await axios.get("/user/resetPassword/" + id);
+        await axios.get('/user/resetPassword/' + id);
     }
 }
 

@@ -1,15 +1,17 @@
-import { Affix, Button, Input, Table } from 'antd';
+import { Affix, Button, Checkbox, Input, Table } from 'antd';
 import { SearchBar } from 'components/SearchBar';
 import Section from 'components/Section';
-import { action, observable, toJS } from 'mobx';
+import { action, computed, observable, toJS } from 'mobx';
 import { observer } from 'mobx-react';
 import React, { Component } from 'react';
+import { RouteComponentProps } from 'react-router-dom';
 import styled from 'styled-components';
 import rootStore from '../../store';
 import AdvancedSearch from './components/AdvancedSearch';
 import SubjectEditor from './components/SubjectEditor';
+import Budget from './model/Budget';
+import BudgetTable from './model/BudgetTable';
 import store from './store';
-store.fetchCurrentUserBudgetList();
 
 const { TextArea } = Input;
 
@@ -29,31 +31,24 @@ const Root = styled.div`
 `;
 
 @observer
-export default class extends Component {
-    @observable private advancedSearchDisplay = false;
-    @action.bound private showAdvancedSearch() {
-        this.advancedSearchDisplay = true;
-        document.addEventListener('click', this.hideAdvancedSearch);
-    }
-    @action.bound private hideAdvancedSearch() {
-        this.advancedSearchDisplay = false;
-        document.removeEventListener('click', this.hideAdvancedSearch);
+export default class extends Component<RouteComponentProps<{ groupId: string }>> {
+    @observable private budgetTable?: BudgetTable;
+    @observable private 是否显示预算占比: boolean = true;
+    public componentDidMount() {
+        const groupId = this.props.match.params.groupId;
+        store.getBudgetTable(groupId).then((res) => this.budgetTable = res);
     }
     public render() {
         return (
             <Root>
                 <Section>
                     <SearchBar style={{ marginBottom: 0 }}>
-                        <Button onClick={this.showAdvancedSearch} type="primary">自定义指标</Button>
-                        <Button type="primary">全部导出</Button>
+                        <Checkbox checked={this.是否显示预算占比} onChange={(e) => this.是否显示预算占比 = e.target.checked} >显示预算占比</Checkbox>
                     </SearchBar>
-                    {this.advancedSearchDisplay && <AdvancedSearch store={store} />}
                 </Section>
-                {store.currentUserBudgetList.map((item) => (
-                    <Section key={item.year + item.group}>
-                        <Table pagination={false} scroll={{ x: 'auto' }} bordered size="small" dataSource={item.dataSource} columns={item.columns} />
-                    </Section>
-                ))}
+                <Section>
+                    {this.budgetTable && <Table pagination={false} scroll={{ x: 'auto' }} bordered size="small" dataSource={this.budgetTable.dataSource} columns={this.budgetTable.columns} />}
+                </Section>
                 <Section>
                     <div style={{ fontSize: 15, marginBottom: 10 }}>预算说明:</div>
                     <div>
@@ -62,14 +57,9 @@ export default class extends Component {
                 </Section>
                 <Section>
                     <SearchBar>
-                        <Button>取消</Button>
+                        <Button onClick={console.log}>取消</Button>
                         <Button onClick={() => console.log(toJS(store.currentUserBudgetList))} type="primary">暂存草稿</Button>
                         <Button>预算提报</Button>
-                    </SearchBar>
-                </Section>
-                <Section>
-                    <SearchBar>
-                        <span style={{ marginRight: 28 }}>待审核</span><Button type="primary">修改预算</Button>
                     </SearchBar>
                 </Section>
             </Root>

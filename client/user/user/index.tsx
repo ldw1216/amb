@@ -1,16 +1,16 @@
-import { Button, Select, Table, Tag } from "antd";
-import LinkGroup from "components/LinkGroup";
-import SearchBox, { SearchItem } from "components/SearchBar";
-import { Role } from "config/config";
-import { observer } from "mobx-react";
-import { Component } from "react";
-import Edit from "./Edit";
-import store from "./store";
+import { Button, Select, Table, Tag } from 'antd';
+import LinkGroup from 'components/LinkGroup';
+import SearchBox, { SearchItem } from 'components/SearchBar';
+import { Role } from 'config/config';
+import { observer } from 'mobx-react';
+import { Component } from 'react';
+import Edit from './Edit';
+import store from './store';
 const { Column } = Table;
 const Option = Select.Option;
-import Section from "components/Section";
-import { observable, toJS } from "mobx";
-import { uniq } from "ramda";
+import Section from 'components/Section';
+import { observable, toJS } from 'mobx';
+import { uniq } from 'ramda';
 
 @observer
 export default class extends Component {
@@ -30,7 +30,7 @@ export default class extends Component {
                     <Column title="姓名" dataIndex="name" />
                     <Column title="账号" dataIndex="account" />
                     <Column title="账号角色" dataIndex="role" render={(text) => Role[text]} />
-                    <Column title="关联阿米巴组" dataIndex="groups" render={(text) => text.map((item: any) => item.name).join("，")} />
+                    <Column title="关联阿米巴组" dataIndex="groups" render={(text) => text.map((item: any) => item.name).join('，')} />
                     <Column title="账号状态" dataIndex="available" render={(text) => text ? <Tag color="green">有效</Tag> : <Tag>无效</Tag>} />
                     <Column title="操作" dataIndex="_id" render={(id, __, selectedIndex) => (
                         <LinkGroup>

@@ -6,6 +6,7 @@ router.get('/', async (ctx) => {
     ctx.body = await PeriodModel.find({}).populate('groups', ['name', '_id']);
 });
 
+// 获取每个组的当前排期
 router.post('/groups', async (ctx) => {
     ctx.body = await getCurrentPeriod((ctx.request.body as any).groups);
 });

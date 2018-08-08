@@ -13,6 +13,10 @@ const schema = new Schema({
 
 const PeriodModel = model<Document & amb.IPeriod>(collectionName, schema);
 
+/**
+ *
+ * @param groupIds 获取每个组的当前排期
+ */
 async function getCurrentPeriod(groupIds: string[]) {
     const periods = await PeriodModel.find({
         'duration.0': { $lte: new Date() },

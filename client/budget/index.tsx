@@ -8,6 +8,7 @@ class Index extends Component {
             <Switch>
                 <Route path="/budget/config" component={importedComponent(() => import('./config'))} />
                 <Route path="/budget/manage" component={importedComponent(() => import('./manage'))} />
+                <Route path="/budget/edit/:groupId" component={importedComponent(() => import('./manage/edit'))} />
             </Switch>
         );
     }

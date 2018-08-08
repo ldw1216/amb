@@ -56,11 +56,11 @@ export default class extends Component {
                     </SearchBar>
                     {this.advancedSearchDisplay && <AdvancedSearch store={store} />}
                 </Section>
-                {store.currentUserBudgetList.map((item) => (
-                    <Section key={item.year + item.group}>
+                {store.currentUserBudgetTables.map((item) => (
+                    <Section key={item.budget.year + item.budget.group}>
                         <ToolBar>
                             <Title>待审核</Title>
-                            <Link to={`/budget/edit/${item.group}`}><Button>修改预算</Button></Link>
+                            <Link to={`/budget/edit/${item.budget.group}`}><Button>修改预算</Button></Link>
                         </ToolBar>
                         <Table pagination={false} scroll={{ x: 'auto' }} bordered size="small" dataSource={item.dataSource} columns={item.columns} />
                     </Section>

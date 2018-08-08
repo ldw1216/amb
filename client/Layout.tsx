@@ -83,7 +83,6 @@ class MyLayout extends Component<RouteComponentProps<{}>, {}> {
                                 <Route exact={true} path="/" component={Home} />
                                 <Route path="/user" component={importedComponent(() => import('./user'))} />
                                 <Route path="/budget" component={importedComponent(() => import('./budget'))} />
-                                <Route path="/budget/edit/:id" component={importedComponent(() => import('./budget'))} />
                                 <Route key={location.pathname} path="/test/:id" component={TestComponent} />
                             </Root>
                         </Content>
