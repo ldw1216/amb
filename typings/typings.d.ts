@@ -1,4 +1,4 @@
-import { BudgetSubjectType, BudgetType } from 'config/config'
+import { BudgetSubjectType, BudgetType, ApprovalState } from 'config/config'
 
 
 declare global {
@@ -66,6 +66,7 @@ declare global {
 
         interface IBudget {
             _id?: string
+            approvalState?: ApprovalState; // 审批状态
             user: string;    // 用户id
             group: string;  // 阿米巴组id
             period?: string; // 预算周期

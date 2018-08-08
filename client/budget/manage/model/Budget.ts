@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { BudgetSubjectType, BudgetType, SearchDataType, SearchRange } from 'config/config';
+import { ApprovalState, BudgetSubjectType, BudgetType, SearchDataType, SearchRange } from 'config/config';
 import { action, computed, observable, toJS } from 'mobx';
 import rootStore from '../../../store';
 import MonthBudget from './MonthBudget';
@@ -10,6 +10,7 @@ import SubjectBudget from './SubjectBudget';
 export default class Budget implements amb.IBudget {
     // tslint:disable-next-line:variable-name
     public _id?: string;
+    @observable public approvalState?: ApprovalState;
     @observable public user: string;
     @observable public group: string;
     @observable public groupName: string;
@@ -77,9 +78,9 @@ export default class Budget implements amb.IBudget {
         });
         this.subjectBudgets = subjectBudgets;
     }
-    // 增加一个预算
-    @action.bound public addBudgetRow() {
-        //
+    // 保存预算
+    @action.bound public async save() {
+        console.log(toJS(this));
     }
 
     // 删除预算行 - 同时删除预算类型

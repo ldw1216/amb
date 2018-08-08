@@ -1,6 +1,7 @@
 import { Affix, Button, Checkbox, Input, Table } from 'antd';
 import { SearchBar } from 'components/SearchBar';
 import Section, { TableSection } from 'components/Section';
+import { ApprovalState } from 'config/config';
 import { action, autorun, computed, observable, runInAction, toJS } from 'mobx';
 import { observer } from 'mobx-react';
 import React, { Component } from 'react';
@@ -44,6 +45,9 @@ export default class extends Component<RouteComponentProps<{ groupId: string }>>
             this.budgetTable.visibleTitles = this.budgetTable.allTitles;
         }
     }
+    private save = (approvalState: ApprovalState) => {
+        this.budget!.save();
+    }
 
     public render() {
         return (
@@ -69,8 +73,8 @@ export default class extends Component<RouteComponentProps<{ groupId: string }>>
                 <Section>
                     <SearchBar>
                         <Button onClick={console.log}>取消</Button>
-                        <Button onClick={() => console.log(toJS(store.currentUserBudgetList))} type="primary">暂存草稿</Button>
-                        <Button>预算提报</Button>
+                        <Button onClick={() => this.save(ApprovalState.草稿)} type="primary">暂存草稿</Button>
+                        <Button onClick={() => this.save(ApprovalState.已提报未审核)}>预算提报</Button>
                     </SearchBar>
                 </Section>
             </div>

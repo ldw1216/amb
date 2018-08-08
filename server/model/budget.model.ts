@@ -1,4 +1,4 @@
-import { BudgetSubjectType, BudgetType } from 'config/config';
+import { ApprovalState, BudgetSubjectType, BudgetType } from 'config/config';
 import { Document, model, Schema, SchemaTypes } from 'mongoose';
 import { values } from 'ramda';
 const collectionName = 'Budget';
@@ -17,6 +17,7 @@ const SubjectBudget = new Schema({
 }, { timestamps: true, toJSON: { virtuals: true } });
 
 const schema = new Schema({
+    approvalState: {type: Number, enum: Object.keys(ApprovalState), default: ApprovalState.草稿, required: true, cn: '审核状态' },
     user: { type: SchemaTypes.ObjectId, ref: 'User', required: true, cn: '用户' },
     group: { type: SchemaTypes.ObjectId, ref: 'Group', required: true, cn: '阿米巴组' },
     period: { type: SchemaTypes.ObjectId, ref: 'Period', required: true, cn: '预算周期' },

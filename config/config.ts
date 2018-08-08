@@ -19,3 +19,10 @@ export enum BudgetType {
     阿米巴 = '阿米巴',
     财务 = '财务',
 }
+
+export enum ApprovalState {
+    草稿 = 0,
+    已提报未审核 = 4,
+    审核拒绝 = 8,
+    已通过审核 = 12,
+}
