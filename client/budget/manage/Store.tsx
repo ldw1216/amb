@@ -16,19 +16,13 @@ export class Store {
         dataTypes: Object.keys(SearchDataType),
     };
 
+    @computed get currentUserBudgetTables() {
+        return this.currentUserBudgetList.map((item) => new BudgetTable(item));
+    }
+
     @action.bound public async getBudget(groupId: string) {
         if (this.currentUserBudgetList.length === 0) await this.fetchCurrentUserBudgetList();
         return this.currentUserBudgetList.find((item) => item.group === groupId);
-    }
-
-    @action.bound public async getBudgetTable(groupId: string) {
-        if (this.currentUserBudgetList.length === 0) await this.fetchCurrentUserBudgetList();
-        const budget = this.currentUserBudgetList.find((item) => item.group === groupId);
-        if (budget) return new BudgetTable(budget);
-    }
-
-    @computed get currentUserBudgetTables() {
-        return this.currentUserBudgetList.map((item) => new BudgetTable(item));
     }
 
     // 获取当前用户的预算周期列表
@@ -49,6 +43,7 @@ export class Store {
                 period: period && period._id,
                 year,
                 subjectBudgets: [], // 从数据库中获取
+                remark: '', // 从数据库中读取
             });
         });
     }

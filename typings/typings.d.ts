@@ -71,6 +71,7 @@ declare global {
             period?: string; // 预算周期
             year: number; // 年份
             subjectBudgets: ISubjectBudget[];
+            remark?: string // 备注
         }
 
         // 某个项目的预算

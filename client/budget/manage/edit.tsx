@@ -1,58 +1,69 @@
 import { Affix, Button, Checkbox, Input, Table } from 'antd';
 import { SearchBar } from 'components/SearchBar';
-import Section from 'components/Section';
-import { action, computed, observable, toJS } from 'mobx';
+import Section, { TableSection } from 'components/Section';
+import { action, autorun, computed, observable, runInAction, toJS } from 'mobx';
 import { observer } from 'mobx-react';
 import React, { Component } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 import styled from 'styled-components';
-import rootStore from '../../store';
-import AdvancedSearch from './components/AdvancedSearch';
-import SubjectEditor from './components/SubjectEditor';
 import Budget from './model/Budget';
 import BudgetTable from './model/BudgetTable';
 import store from './store';
 
 const { TextArea } = Input;
 
-const Root = styled.div`
-    &&&&&&&& table {
-        thead th{
-            background: #f8f8f8;
-        }
-        th{
-            white-space: nowrap;
-            padding: 10px 20px
-        }
-        td{
-            text-align: center;
-        }
-    }
-`;
-
 @observer
 export default class extends Component<RouteComponentProps<{ groupId: string }>> {
+    @observable private budget?: Budget;
     @observable private budgetTable?: BudgetTable;
-    @observable private 是否显示预算占比: boolean = true;
     public componentDidMount() {
         const groupId = this.props.match.params.groupId;
-        store.getBudgetTable(groupId).then((res) => this.budgetTable = res);
+        store.getBudget(groupId).then((res) => {
+            if (!res) return;
+            runInAction(() => {
+                const budgetTable = new BudgetTable(res);
+                budgetTable.allTitles = budgetTable.visibleTitles = budgetTable.allTitles
+                    .filter(([key]) => !['实际收入', '预算完成率', '实际占收入比'].includes(key));
+                this.budget = res;
+                this.budgetTable = budgetTable;
+            });
+        });
     }
+    private handleRemarkChange = (e: any) => {
+        if (this.budget) this.budget.remark = e.target.value;
+    }
+    @computed get 显示收入占比() {
+        if (!this.budgetTable) return false;
+        return !!this.budgetTable.visibleTitles.find(([key]) => key === '预算占收入比');
+    }
+    @action private 处理收入占比是否显示 = () => {
+        if (!this.budgetTable) return;
+        if (this.显示收入占比) {
+            this.budgetTable.visibleTitles = this.budgetTable.visibleTitles.filter(([key]) => key !== '预算占收入比');
+        } else {
+            this.budgetTable.visibleTitles = this.budgetTable.allTitles;
+        }
+    }
+
     public render() {
         return (
-            <Root>
+            <div>
                 <Section>
                     <SearchBar style={{ marginBottom: 0 }}>
-                        <Checkbox checked={this.是否显示预算占比} onChange={(e) => this.是否显示预算占比 = e.target.checked} >显示预算占比</Checkbox>
+                        <Checkbox checked={this.显示收入占比} onChange={this.处理收入占比是否显示} >显示预算占比</Checkbox>
                     </SearchBar>
                 </Section>
-                <Section>
+                <TableSection>
                     {this.budgetTable && <Table pagination={false} scroll={{ x: 'auto' }} bordered size="small" dataSource={this.budgetTable.dataSource} columns={this.budgetTable.columns} />}
-                </Section>
+                </TableSection>
                 <Section>
                     <div style={{ fontSize: 15, marginBottom: 10 }}>预算说明:</div>
                     <div>
-                        <TextArea />
+                        <TextArea
+                            defaultValue={this.budget && this.budget.remark}
+                            autosize={{ minRows: 3, maxRows: 9 }}
+                            onBlur={this.handleRemarkChange}
+                        />
                     </div>
                 </Section>
                 <Section>
@@ -62,7 +73,7 @@ export default class extends Component<RouteComponentProps<{ groupId: string }>>
                         <Button>预算提报</Button>
                     </SearchBar>
                 </Section>
-            </Root>
+            </div>
         );
     }
 }

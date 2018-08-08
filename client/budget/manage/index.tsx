@@ -1,6 +1,6 @@
 import { Affix, Button, Input, Table } from 'antd';
 import { SearchBar, ToolBar } from 'components/SearchBar';
-import Section from 'components/Section';
+import Section, { TableSection } from 'components/Section';
 import { action, observable, toJS } from 'mobx';
 import { observer } from 'mobx-react';
 import React, { Component } from 'react';
@@ -20,21 +20,6 @@ const Title = styled.span`
     margin-right: 15px;
 `;
 
-const Root = styled.div`
-    &&&&&&&& table {
-        thead th{
-            background: #f8f8f8;
-        }
-        th{
-            white-space: nowrap;
-            padding: 10px 20px
-        }
-        td{
-            text-align: center;
-        }
-    }
-`;
-
 @observer
 export default class extends Component {
     @observable private advancedSearchDisplay = false;
@@ -48,7 +33,7 @@ export default class extends Component {
     }
     public render() {
         return (
-            <Root>
+            <div>
                 <Section>
                     <SearchBar style={{ marginBottom: 0 }}>
                         <Button onClick={this.showAdvancedSearch} type="primary">自定义指标</Button>
@@ -56,14 +41,14 @@ export default class extends Component {
                     </SearchBar>
                     {this.advancedSearchDisplay && <AdvancedSearch store={store} />}
                 </Section>
-                {store.currentUserBudgetTables.map((item) => (
-                    <Section key={item.budget.year + item.budget.group}>
+                {store.currentUserBudgetTables && store.currentUserBudgetTables.map((item) => (
+                    <TableSection key={item.budget.year + item.budget.group}>
                         <ToolBar>
                             <Title>待审核</Title>
                             <Link to={`/budget/edit/${item.budget.group}`}><Button>修改预算</Button></Link>
                         </ToolBar>
                         <Table pagination={false} scroll={{ x: 'auto' }} bordered size="small" dataSource={item.dataSource} columns={item.columns} />
-                    </Section>
+                    </TableSection>
                 ))}
                 <Section>
                     <div><Title>预算说明:</Title></div>
@@ -83,7 +68,7 @@ export default class extends Component {
                         <span style={{ marginRight: 28 }}>待审核</span><Button type="primary">修改预算</Button>
                     </SearchBar>
                 </Section>
-            </Root>
+            </div>
         );
     }
 }

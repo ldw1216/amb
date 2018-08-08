@@ -1,13 +1,7 @@
-import { Icon, Input, InputNumber, Select } from 'antd';
-import { SelectProps } from 'antd/lib/select';
 import axios from 'axios';
 import { BudgetSubjectType, BudgetType, SearchDataType, SearchRange } from 'config/config';
 import { action, computed, observable, toJS } from 'mobx';
-import React from 'react';
-import { render } from 'react-dom';
 import rootStore from '../../../store';
-import SubjectEditor from '../components/SubjectEditor';
-import SubjectTitle from '../components/SubjectTitle';
 import MonthBudget from './MonthBudget';
 import Subject from './Subject';
 import SubjectBudget from './SubjectBudget';
@@ -23,6 +17,7 @@ export default class Budget implements amb.IBudget {
     @observable public year: number;
     @observable public subjectBudgets: SubjectBudget[] = [];
     @observable public subjects: amb.IBudgetSubject[] = [];
+    @observable public remark?: string;
 
     constructor(data: amb.IBudget & { groupName: string }) {
         this._id = data._id;
@@ -32,7 +27,7 @@ export default class Budget implements amb.IBudget {
         this.period = data.period;
         this.year = data.year; // 预算周期
         this.subjectBudgets = data.subjectBudgets || [];
-
+        this.remark = data.remark;
         Object.defineProperties(this, {
             groupName: { enumerable: false },
             subjects: { enumerable: false },
@@ -88,7 +83,7 @@ export default class Budget implements amb.IBudget {
     }
 
     // 删除预算行 - 同时删除预算类型
-    @action.bound public removeBudgetRow(id: string) {
-        //
-    }
+    // @action.bound public removeBudgetRow(id: string) {
+    //     //
+    // }
 }
