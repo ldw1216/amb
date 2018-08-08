@@ -21,13 +21,22 @@ export default class Budget implements amb.IBudget {
     @observable public remark?: string;
 
     constructor(data: amb.IBudget & { groupName: string }) {
+        const subjectBudgets = (data.subjectBudgets || []).map((subjectBudget) => {
+            if (subjectBudget instanceof SubjectBudget) return subjectBudget;
+            const monthBudgets = subjectBudget.monthBudgets.map((monthBudget) => {
+                if (monthBudget instanceof MonthBudget) return monthBudget;
+                return new MonthBudget(monthBudget.month, monthBudget.money, monthBudget.reality, monthBudget._id);
+            });
+            return new SubjectBudget(subjectBudget);
+        });
+
         this._id = data._id;
         this.user = data.user; // 预算周期
         this.group = data.group; // 预算周期
         this.groupName = data.groupName;
         this.period = data.period;
         this.year = data.year; // 预算周期
-        this.subjectBudgets = data.subjectBudgets || [];
+        this.subjectBudgets = subjectBudgets;
         this.remark = data.remark;
         Object.defineProperties(this, {
             groupName: { enumerable: false },
@@ -53,7 +62,7 @@ export default class Budget implements amb.IBudget {
             }
             // 每一行预算的数据
             return new SubjectBudget({
-                _id: '', // 从数据库中获取
+                // _id: '', // 从数据库中获取
                 subjectType: subject.type,
                 subjectSubType: subject._id,
                 type: undefined, // 从数据库中获取
@@ -69,7 +78,7 @@ export default class Budget implements amb.IBudget {
             }
             // 每一行预算的数据
             subjectBudgets.push(new SubjectBudget({
-                _id: '', // 从数据库中获取
+                // _id: '', // 从数据库中获取
                 subjectType: BudgetSubjectType.费用,
                 subjectSubType: option._id,
                 type: option.type, // 从数据库中获取
@@ -80,7 +89,7 @@ export default class Budget implements amb.IBudget {
     }
     // 保存预算
     @action.bound public async save() {
-        console.log(toJS(this));
+        return axios.post('/budget', this);
     }
 
     // 删除预算行 - 同时删除预算类型

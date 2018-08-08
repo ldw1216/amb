@@ -86,6 +86,7 @@ declare global {
 
         // 每个月的预算
         interface IMonthBudget {
+            _id?: string
             month: number; // 月份
             money?: number; // 预算金额
             reality?: number; // 实际预算金额

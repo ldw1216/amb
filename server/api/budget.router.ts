@@ -1,13 +1,19 @@
 import Router from 'koa-router';
 import { BudgetModel } from 'model/budget.model';
-const router = new Router({ prefix: '/period' });
+const router = new Router({ prefix: '/budget' });
 
 router.get('/', async (ctx) => {
     ctx.body = await BudgetModel.find({});
 });
 
+router.get('/group/:groupId/year/:year', async (ctx) => {
+    ctx.body = await BudgetModel.find({ group: ctx.params.groupId, year: parseInt(ctx.params.year, 10) })
+        .sort({ _id: -1 })
+        .limit(1)
+        .then((list) => list[0]);
+});
+
 router.post('/', async (ctx) => {
-    return console.log(ctx.request.body);
     await new BudgetModel(ctx.request.body).save();
     ctx.body = { msg: '保存成功' };
 });
