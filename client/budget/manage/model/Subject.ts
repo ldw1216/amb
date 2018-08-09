@@ -3,29 +3,34 @@
  */
 
 import axios from 'axios';
-import { BudgetSubjectType } from 'config/config';
+import { BudgetSubjectType, BudgetType } from 'config/config';
 import { action, observable } from 'mobx';
 
-export default class Subject {
+export default class Subject implements amb.IBudgetSubject {
     // tslint:disable-next-line:variable-name
-    @observable public _id: string = '';
+    @observable public _id?: string = '';
     @observable public name: string = '';
-    @observable public type: BudgetSubjectType;
+    @observable public subjectType: BudgetSubjectType;
+    @observable public budgetType: BudgetType;
     @observable public year: number;
     @observable public group: string;
+    @observable public sort?: number;
 
     @observable public visibleEditor = true; // 显示编辑项目
     constructor(data: amb.IBudgetSubject, public container?: HTMLElement) {
-        this._id = data._id || '';
-        this.type = data.type!;
+        this._id = data._id;
         this.name = data.name || '';
+        this.subjectType = data.subjectType;
+        this.budgetType = data.budgetType!;
         this.year = data.year!;
         this.group = data.group!;
+        this.sort = data.sort;
         this.container = container;
+        Object.defineProperties(this, { container: { enumerable: false } });
     }
     @action.bound public showProjectEditor(data: amb.IBudgetSubject) {
         this.visibleEditor = true;
-        this.type = data.type!;
+        this.subjectType = data.subjectType!;
     }
     @action.bound public hideProjectEditor() {
         this.visibleEditor = false;
@@ -33,11 +38,7 @@ export default class Subject {
     }
     @action.bound public async save(data: amb.IBudgetSubject) {
         const url = '/subject' + (data._id ? '/' + data._id : '');
-        data.type = this.type;
-        data.year = this.year;
-        data.group = this.group;
-        await axios.post(url, data);
-        console.log(this.container);
+        await axios.post(url, Object.assign(this, data));
         this.hideProjectEditor();
     }
 }

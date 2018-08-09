@@ -50,7 +50,7 @@ declare global {
 
         // 费用详细
         interface IExpenseTypeOption {
-            _id?: string, id?: string, name: string, type: BudgetType
+            _id?: string, id?: string, name?: string, type?: BudgetType
         }
 
         // 预算子项目， 比如大数据收入，推荐收入，金立商务收入，服务器成本等
@@ -59,9 +59,10 @@ declare global {
             id?: string;
             year?: number;
             group?: string; // 阿米巴组
-            type: BudgetSubjectType;  // 收入主类型
+            subjectType: BudgetSubjectType;  // 收入主类型
+            budgetType?: BudgetType;  // 收入主类型
             name?: string; // 类型名称
-            sort?: string; // 排序
+            sort?: number; // 排序
         }
 
         interface IBudget {
@@ -71,25 +72,25 @@ declare global {
             group: string;  // 阿米巴组id
             period?: string; // 预算周期
             year: number; // 年份
-            subjectBudgets: ISubjectBudget[];
+            monthBudgets: IMonthBudget[] // 各月的预算
             remark?: string // 备注
         }
 
-        // 某个项目的预算
         interface ISubjectBudget {
             _id?: string
-            subjectType: BudgetSubjectType; // 类型
-            subjectSubType?: string; // 子类型
-            type?: BudgetType | undefined  // 财务 阿米巴
-            monthBudgets: IMonthBudget[];
+            subjectId: string
+            subjectType: BudgetSubjectType // 类型
+            subjectSubType: string // 子类型
+            subjectName: string
+            budget?: number
+            reality?: number
         }
 
         // 每个月的预算
         interface IMonthBudget {
             _id?: string
-            month: number; // 月份
-            money?: number; // 预算金额
-            reality?: number; // 实际预算金额
+            month: number;
+            subjectBudgets: ISubjectBudget[]
         }
     }
 }
