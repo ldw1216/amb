@@ -1,5 +1,4 @@
 import { Affix, Button, Checkbox, Input, Table } from 'antd';
-import axios from 'axios';
 import { SearchBar } from 'components/SearchBar';
 import Section, { TableSection } from 'components/Section';
 import { ApprovalState } from 'config/config';
@@ -7,12 +6,10 @@ import { action, autorun, computed, observable, runInAction, toJS } from 'mobx';
 import { observer } from 'mobx-react';
 import React, { Component } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
-import styled from 'styled-components';
+import BudgetRemark from './components/BudgetRemark';
 import Budget from './model/Budget';
 import BudgetTable from './model/BudgetTable';
 import store from './store';
-
-const { TextArea } = Input;
 
 @observer
 export default class extends Component<RouteComponentProps<{ groupId: string }>> {
@@ -31,9 +28,6 @@ export default class extends Component<RouteComponentProps<{ groupId: string }>>
             });
         });
     }
-    private handleRemarkChange = (e: any) => {
-        if (this.budget) this.budget.remark = e.target.value;
-    }
     @computed get 显示收入占比() {
         if (!this.budgetTable) return false;
         return !!this.budgetTable.visibleTitles.find(([key]) => key === '预算占收入比');
@@ -47,11 +41,12 @@ export default class extends Component<RouteComponentProps<{ groupId: string }>>
         }
     }
     private save = async (approvalState: ApprovalState) => {
-        this.budget!.save();
+        await this.budget!.save();
+        await store.fetchCurrentUserBudgetList();
+        this.componentDidMount();
     }
 
     public render() {
-        console.log(toJS(this.budget));
         return (
             <div>
                 <Section>
@@ -62,17 +57,7 @@ export default class extends Component<RouteComponentProps<{ groupId: string }>>
                 <TableSection>
                     {this.budgetTable && <Table pagination={false} scroll={{ x: 'auto' }} bordered size="small" dataSource={this.budgetTable.dataSource} columns={this.budgetTable.columns} />}
                 </TableSection>
-                <Section>
-                    <div style={{ fontSize: 15, marginBottom: 10 }}>预算说明:</div>
-                    {this.budget && this.budget.subjectBudgets[0].type}
-                    <div>
-                        <TextArea
-                            defaultValue={this.budget && this.budget.remark}
-                            autosize={{ minRows: 3, maxRows: 9 }}
-                            onBlur={this.handleRemarkChange}
-                        />
-                    </div>
-                </Section>
+                <BudgetRemark budget={this.budget} />
                 <Section>
                     <SearchBar>
                         <Button onClick={console.log}>取消</Button>

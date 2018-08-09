@@ -25,6 +25,7 @@ export class Store {
 
     // 获取当前用户的预算周期列表
     public async fetchCurrentUserBudgetList() {
+        console.log('重新获取数据');
         // 获取当前用户所属组
         const groups = rootStore.user.groups;
         // 获取预算周期信息，如果没有预算周期信息，则获取当前年份
@@ -40,7 +41,9 @@ export class Store {
             const year = period ? period.year : new Date().getFullYear();
             const budget = budgets.find((item) => item.group === group._id);
             const subjectBudgets = budget ? budget.subjectBudgets : [];
+            // 如果预算周期不一致，则不生成_id (还未实现)
             return new Budget({
+                _id: budget && budget._id,
                 user: rootStore.user._id,
                 group: group._id,
                 groupName: group.name,

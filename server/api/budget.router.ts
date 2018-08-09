@@ -14,7 +14,13 @@ router.get('/group/:groupId/year/:year', async (ctx) => {
 });
 
 router.post('/', async (ctx) => {
-    await new BudgetModel(ctx.request.body).save();
+    const budget = ctx.request.body as amb.IBudget;
+    if (!budget._id) {
+        await new BudgetModel(ctx.request.body).save();
+    } else {
+        // await BudgetModel.findByIdAndUpdate(budget._id, budget, { new: true });
+    }
+
     ctx.body = { msg: '保存成功' };
 });
 
