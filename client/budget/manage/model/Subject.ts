@@ -1,3 +1,7 @@
+/**
+ * 项目 （收入、成本、费用 的子项目）
+ */
+
 import axios from 'axios';
 import { BudgetSubjectType } from 'config/config';
 import { action, observable } from 'mobx';

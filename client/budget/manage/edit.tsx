@@ -48,10 +48,10 @@ export default class extends Component<RouteComponentProps<{ groupId: string }>>
     }
     private save = async (approvalState: ApprovalState) => {
         this.budget!.save();
-
     }
 
     public render() {
+        console.log(toJS(this.budget));
         return (
             <div>
                 <Section>
@@ -64,6 +64,7 @@ export default class extends Component<RouteComponentProps<{ groupId: string }>>
                 </TableSection>
                 <Section>
                     <div style={{ fontSize: 15, marginBottom: 10 }}>预算说明:</div>
+                    {this.budget && this.budget.subjectBudgets[0].type}
                     <div>
                         <TextArea
                             defaultValue={this.budget && this.budget.remark}

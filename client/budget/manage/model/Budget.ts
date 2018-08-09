@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { ApprovalState, BudgetSubjectType, BudgetType, SearchDataType, SearchRange } from 'config/config';
-import { action, computed, observable, toJS } from 'mobx';
+import { action, computed, observable, runInAction, toJS } from 'mobx';
 import rootStore from '../../../store';
 import MonthBudget from './MonthBudget';
 import Subject from './Subject';
@@ -52,40 +52,45 @@ export default class Budget implements amb.IBudget {
 
     @action.bound public async fetch() {
         // 从数据库拉取项目
-        this.subjects = await axios.get(`/subject`, { params: { year: this.year, group: this.group } }).then((res) => res.data.map((item: amb.IBudgetSubject) => new Subject(item)));
-        const subjectBudgets = this.subjects.map((subject) => {
-            // 生成收入预算数据
-            const monthBudgets: MonthBudget[] = [];
-            for (let i = 0; i < 12; i++) {
-                const budgetItem = new MonthBudget(i);
-                monthBudgets.push(budgetItem);
-            }
+        const subjects: amb.IBudgetSubject[] = await axios.get(`/subject`, { params: { year: this.year, group: this.group } }).then((res) => res.data.map((item: amb.IBudgetSubject) => new Subject(item)));
+
+        const subjectBudgets = subjects.map((subject) => {
+            const subjectBudget = this.subjectBudgets.find((item) => item.subjectSubType === subject._id);
+            if (subjectBudget) return subjectBudget;
             // 每一行预算的数据
             return new SubjectBudget({
-                // _id: '', // 从数据库中获取
                 subjectType: subject.type,
                 subjectSubType: subject._id,
-                type: undefined, // 从数据库中获取
-                monthBudgets,
+                type: undefined,
+                monthBudgets: this.createMonthBudgets(),
             });
         });
+
         this.expenseTypes.forEach((option, optionIndex) => {
-            // 生成收入预算数据
-            const monthBudgets: MonthBudget[] = [];
-            for (let i = 0; i < 12; i++) {
-                const budgetItem = new MonthBudget(i);
-                monthBudgets.push(budgetItem);
-            }
-            // 每一行预算的数据
+            const subjectBudget = this.subjectBudgets.find((item) => item.subjectSubType === option._id);
+            if (subjectBudget) return subjectBudgets.push(subjectBudget);
+            // 每一行费用预算的数据
             subjectBudgets.push(new SubjectBudget({
-                // _id: '', // 从数据库中获取
                 subjectType: BudgetSubjectType.费用,
                 subjectSubType: option._id,
                 type: option.type, // 从数据库中获取
-                monthBudgets,
+                monthBudgets: this.createMonthBudgets(),
             }));
         });
-        this.subjectBudgets = subjectBudgets;
+
+        runInAction(() => {
+            this.subjects = subjects;
+            this.subjectBudgets = subjectBudgets;
+        });
+    }
+
+    private createMonthBudgets() {
+        const monthBudgets: MonthBudget[] = [];
+        for (let i = 0; i < 12; i++) {
+            const budgetItem = new MonthBudget(i);
+            monthBudgets.push(budgetItem);
+        }
+        return monthBudgets;
     }
     // 保存预算
     @action.bound public async save() {
