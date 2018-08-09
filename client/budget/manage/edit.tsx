@@ -41,11 +41,16 @@ export default class extends Component<RouteComponentProps<{ groupId: string }>>
         }
     }
     private save = async (approvalState: ApprovalState) => {
-        await this.budget!.save();
+        if (!this.budget) return;
+        this.budget.approvalState = approvalState;
+        await this.budget.save();
+        this.reset();
+    }
+
+    private reset = async () => {
         await store.fetchCurrentUserBudgetList();
         this.componentDidMount();
     }
-
     public render() {
         return (
             <div>
@@ -60,7 +65,7 @@ export default class extends Component<RouteComponentProps<{ groupId: string }>>
                 <BudgetRemark budget={this.budget} />
                 <Section>
                     <SearchBar>
-                        <Button onClick={console.log}>取消</Button>
+                        <Button onClick={this.reset}>取消</Button>
                         <Button onClick={() => this.save(ApprovalState.草稿)} type="primary">暂存草稿</Button>
                         <Button onClick={() => this.save(ApprovalState.已提报未审核)}>预算提报</Button>
                     </SearchBar>

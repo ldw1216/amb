@@ -18,9 +18,8 @@ router.post('/', async (ctx) => {
     if (!budget._id) {
         await new BudgetModel(ctx.request.body).save();
     } else {
-        // await BudgetModel.findByIdAndUpdate(budget._id, budget, { new: true });
+        await BudgetModel.findByIdAndUpdate(budget._id, budget);
     }
-
     ctx.body = { msg: '保存成功' };
 });
 

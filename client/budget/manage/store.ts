@@ -25,7 +25,6 @@ export class Store {
 
     // 获取当前用户的预算周期列表
     public async fetchCurrentUserBudgetList() {
-        console.log('重新获取数据');
         // 获取当前用户所属组
         const groups = rootStore.user.groups;
         // 获取预算周期信息，如果没有预算周期信息，则获取当前年份
