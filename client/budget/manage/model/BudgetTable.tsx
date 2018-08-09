@@ -54,6 +54,12 @@ export default class BudgetTable {
         if (this.period.quarters.includes('四季度')) months.push(9, 10, 11);
         return months;
     }
+    private getBudgetValue(month: number, subjectId: string) {
+        const monthBuget = this.budget.monthBudgets.find((item) => item.month === month);
+        if (!monthBuget) return;
+        // monthBuget.subjectBudgets.find(({}) => )
+        // return mon
+    }
     @computed get dataSource() {
         const incomeAmount = {
             key: '收入汇总',
@@ -83,12 +89,20 @@ export default class BudgetTable {
         const costRows = [] as any[]; // 成本数据
         const expenseRows = [] as any[]; // 费用数据
         // 每个项目一行，添加数据，修改数据 填加完数据以后跟据提报周期确定哪几个季度是可编辑的
-        this.budget.subjects.concat(this.expenseSubjects as any).forEach((subject) => {
+        this.budget.subjects.concat(this.expenseSubjects).forEach((subject) => {
             const row = {
                 key: subject._id,
                 subject: <div style={{ textAlign: 'left', paddingLeft: 18 }}>{subject && subject.name}</div>,
                 type: <TypeSelector value={subject.budgetType} />,
             } as any;
+
+            this.budget.monthBudgets.forEach((monthBudget, i) => {
+
+            });
+
+            this.editableMonths.forEach((i) => {
+                row[`预算_${i}月`] = <InputNumber value={3} />;
+            });
 
             // this.budget.monthBudgets.forEach((monthBudget, i) => {
             //     row[`预算_${i}月`] = <InputNumber value={monthBudget.money} onChange={(value) => monthBudget.money = parseFloat(value ? value.toString() : '0') || 0} />;
