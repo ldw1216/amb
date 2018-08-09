@@ -1,9 +1,10 @@
+import { BudgetType } from 'config/config';
 import { Document, model, Schema, SchemaTypes } from 'mongoose';
 const collectionName = 'ExpenseType';
 
 const optionSchema = new Schema({
     name: { type: String, required: true },
-    type: { type: String, enum: ['财务', '阿米巴'], default: '财务' },
+    budgetType: { type: String, enum: Object.keys(BudgetType), default: '财务' },
 }, { timestamps: true, toJSON: { virtuals: true } });
 
 const schema = new Schema({

@@ -1,11 +1,11 @@
-import { Button, Table } from "antd";
-import LinkGroup from "components/LinkGroup";
-import SearchBar from "components/SearchBar";
-import { observer } from "mobx-react";
-import moment from "moment";
-import { Component } from "react";
-import Edit from "./Edit";
-import store from "./store";
+import { Button, Table } from 'antd';
+import LinkGroup from 'components/LinkGroup';
+import SearchBar from 'components/SearchBar';
+import { observer } from 'mobx-react';
+import moment from 'moment';
+import { Component } from 'react';
+import Edit from './Edit';
+import store from './store';
 
 const Column = Table.Column;
 
@@ -25,8 +25,8 @@ export default class extends Component {
                     <Column title="时间" dataIndex="durationFormat" />
                     <Column title="状态" dataIndex="state" />
                     <Column title="年度" dataIndex="year" />
-                    <Column title="季度" dataIndex="quarters" render={(value) => value.join(" ")} />
-                    <Column title="阿米巴组" dataIndex="allGroup" render={(text, record: any) => text ? "全部" : record.groups.map((item: any) => item.name).join(" ")} />
+                    <Column title="季度" dataIndex="quarters" render={(value) => value.join(' ')} />
+                    <Column title="阿米巴组" dataIndex="allGroup" render={(text, record: any) => text ? '全部' : record.groups.map((item: any) => item.name).join(' ')} />
                     <Column title="操作" render={(_, __, index) => (
                         <LinkGroup>
                             <a onClick={() => store.showEditModel(index)}>修改</a>

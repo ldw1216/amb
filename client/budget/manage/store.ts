@@ -1,13 +1,14 @@
 import axios from 'axios';
 import createValidator from 'components/createValidator';
 import { BudgetSubjectType, SearchDataType, SearchRange } from 'config/config';
-import { action, computed, observable, toJS } from 'mobx';
+import { action, computed, observable, runInAction, toJS } from 'mobx';
 import rootStore from '../../store';
 import Budget from './model/Budget';
 import BudgetTable from './model/BudgetTable';
 
 export class Store {
     @observable public currentUserBudgetList: Budget[] = []; // 当前用户的预算列表
+    @observable public periods: amb.IPeriod[] = []; // 当前用户的预算列表
 
     @observable public condition = {
         year: new Date().getFullYear(),
@@ -16,7 +17,12 @@ export class Store {
     };
 
     @computed get currentUserBudgetTables() {
-        return this.currentUserBudgetList.map((item) => new BudgetTable(item));
+
+        return this.currentUserBudgetList.map((item) => new BudgetTable(
+            item,
+            this.periods.find(({ _id }) => _id === item.period),
+            false,
+        ));
     }
     @action.bound public async getBudget(groupId: string) {
         if (this.currentUserBudgetList.length === 0) await this.fetchCurrentUserBudgetList();
@@ -24,7 +30,7 @@ export class Store {
     }
 
     // 获取当前用户的预算周期列表
-    public async fetchCurrentUserBudgetList() {
+    @action.bound public async fetchCurrentUserBudgetList() {
         // 获取当前用户所属组
         const groups = rootStore.user.groups;
         // 获取预算周期信息，如果没有预算周期信息，则获取当前年份
@@ -35,11 +41,11 @@ export class Store {
             else return Promise.resolve(undefined);
         })).then((list) => list.filter((item) => item));
 
-        this.currentUserBudgetList = groups.map((group) => {
+        const currentUserBudgetList = groups.map((group) => {
             const period = periods.find(([groupId]) => groupId === group._id)![1];
             const year = period ? period.year : new Date().getFullYear();
             const budget = budgets.find((item) => item.group === group._id);
-            const subjectBudgets = budget ? budget.subjectBudgets : [];
+            const monthBudgets = budget ? budget.monthBudgets : [];
             // 如果预算周期不一致，则不生成_id (还未实现)
             return new Budget({
                 _id: budget && budget._id,
@@ -48,10 +54,16 @@ export class Store {
                 groupName: group.name,
                 period: period && period._id,
                 year,
-                subjectBudgets, // 从数据库中获取
+                monthBudgets, // 从数据库中获取
                 remark: budget && budget.remark, // 从数据库中读取
             });
         });
+
+        runInAction(() => {
+            this.periods = periods.map(([, period]) => period).filter((item) => item) as any[];
+            this.currentUserBudgetList = currentUserBudgetList;
+        });
+
     }
 }
 

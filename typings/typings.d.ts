@@ -50,7 +50,7 @@ declare global {
 
         // 费用详细
         interface IExpenseTypeOption {
-            _id?: string, id?: string, name?: string, type?: BudgetType
+            _id?: string, id?: string, name?: string, budgetType?: BudgetType
         }
 
         // 预算子项目， 比如大数据收入，推荐收入，金立商务收入，服务器成本等
@@ -60,7 +60,7 @@ declare global {
             year?: number;
             group?: string; // 阿米巴组
             subjectType: BudgetSubjectType;  // 收入主类型
-            budgetType?: BudgetType;  // 收入主类型
+            budgetType?: BudgetType;  // 预算类型
             name?: string; // 类型名称
             sort?: number; // 排序
         }

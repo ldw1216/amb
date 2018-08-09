@@ -6,6 +6,7 @@ import { observer } from 'mobx-react';
 import { filter, values } from 'ramda';
 import React from 'react';
 import { render } from 'react-dom';
+import rootStore from 'store/index';
 import SubjectEditor from '../components/SubjectEditor';
 import SubjectTitle from '../components/SubjectTitle';
 import Budget from './Budget';
@@ -24,14 +25,34 @@ export default class BudgetTable {
     @observable public visibleTitles = this.allTitles;
     @observable public visibleType = true;
     @observable public budget: Budget;
-    constructor(budget: Budget) {
+    @observable public period?: amb.IPeriod;
+    @observable public editable: boolean = false;
+    constructor(budget: Budget, period: amb.IPeriod | undefined, editable = false) {
         this.budget = budget;
+        this.period = period;
+        this.editable = editable;
     }
     // 添加项目
     @action.bound private addProject(subjectType: BudgetSubjectType) {
         const container = document.getElementById('root')!.appendChild(document.createElement('div'));
         const subject = new Subject({ subjectType, budgetType: undefined, year: this.budget.year, group: this.budget.group }, container);
         render(<SubjectEditor subject={subject} budget={this.budget} />, container);
+    }
+
+    @computed get expenseSubjects() {
+        const expense = rootStore.expenseTypes.find(({ year }) => year === this.budget.year);
+        return expense ? expense.options.map((item) => ({ ...item, subjectType: BudgetSubjectType.费用 })) : [];
+    }
+
+    // 可提报的月份
+    @computed get editableMonths() {
+        if (!this.period || this.editable) return [];
+        const months = [];
+        if (this.period.quarters.includes('一季度')) months.push(0, 1, 2);
+        if (this.period.quarters.includes('二季度')) months.push(3, 4, 5);
+        if (this.period.quarters.includes('三季度')) months.push(6, 7, 8);
+        if (this.period.quarters.includes('四季度')) months.push(9, 10, 11);
+        return months;
     }
     @computed get dataSource() {
         const incomeAmount = {
@@ -61,7 +82,25 @@ export default class BudgetTable {
         const incomeRows = [] as any[]; // 收入数据
         const costRows = [] as any[]; // 成本数据
         const expenseRows = [] as any[]; // 费用数据
+        // 每个项目一行，添加数据，修改数据 填加完数据以后跟据提报周期确定哪几个季度是可编辑的
+        this.budget.subjects.concat(this.expenseSubjects as any).forEach((subject) => {
+            const row = {
+                key: subject._id,
+                subject: <div style={{ textAlign: 'left', paddingLeft: 18 }}>{subject && subject.name}</div>,
+                type: <TypeSelector value={subject.budgetType} />,
+            } as any;
 
+            // this.budget.monthBudgets.forEach((monthBudget, i) => {
+            //     row[`预算_${i}月`] = <InputNumber value={monthBudget.money} onChange={(value) => monthBudget.money = parseFloat(value ? value.toString() : '0') || 0} />;
+            //     row[`预算占收入比_${i}月`] = 88;
+            //     row[`实际收入_${i}月`] = <InputNumber value={monthBudget.reality} onChange={(value) => monthBudget.reality = parseFloat(value ? value.toString() : '0') || 0} />;
+            //     row[`实际占收入比_${i}月`] = 44;
+            //     row[`预算完成率_${i}月`] = 'a';
+            // });
+            if (subject.subjectType === BudgetSubjectType.收入) incomeRows.push(row);
+            if (subject.subjectType === BudgetSubjectType.成本) costRows.push(row);
+            if (subject.subjectType === BudgetSubjectType.费用) expenseRows.push(row);
+        });
         // this.budget.subjectBudgets.map((subjectBudget, subjectBudgetIndex) => {
         //     const subject = this.budget.subjects.find((item) => item._id === subjectBudget.subjectSubType);
         //     const expense = this.budget.expenseTypes.find((item) => item._id === subjectBudget.subjectSubType);
