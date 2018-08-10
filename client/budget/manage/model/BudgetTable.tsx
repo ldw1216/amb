@@ -76,13 +76,12 @@ export default class BudgetTable {
         if (this.period.quarters.includes('四季度')) months.push(9, 10, 11);
         return months;
     }
-    private getBudgetValue(month: number, subjectSubId: string) {
+    private getBudgetValue(month: number, subject: amb.IBudgetSubject) {
         const defalut = { budget: 0, reality: 0 };
         const monthBuget = this.budget.monthBudgets.find((item) => item.month === month);
         if (!monthBuget) return defalut;
-        const subjectBudget = monthBuget.subjectBudgets.find(({ subjectId }) => subjectSubId === subjectId);
-        if (subjectBudget) return { budget: subjectBudget.budget, reality: subjectBudget.reality };
-        return defalut;
+        const subjectBudget = monthBuget.getSubjectBudget(subject);
+        return subjectBudget || defalut;
     }
 
     // 设置预算值
@@ -109,6 +108,10 @@ export default class BudgetTable {
         if (value.reality) subjectBudget!.reality = value.reality;
     }
 
+    // 收入合计
+    @computed get incomeSum() {
+        return 0;
+    }
     @computed get dataSource() {
         const incomeRows = [] as any[]; // 收入数据
         const costRows = [] as any[]; // 成本数据
@@ -150,19 +153,17 @@ export default class BudgetTable {
             } as any;
 
             this.budget.monthBudgets.forEach((monthBudget, i) => {
-                row[`预算_${i}月`] = this.getBudgetValue(i, subject._id!).budget;
-                row[`预算占收入比_${i}月`] = 88;
-                row[`实际收入_${i}月`] = this.getBudgetValue(i, subject._id!).reality;
+                const data = this.getBudgetValue(i, subject);
+                row[`预算_${i}月`] = data && data.budget;
+                row[`预算占收入比_${i}月`] = '--';
+                row[`实际收入_${i}月`] = this.getBudgetValue(i, subject).reality;
                 row[`实际占收入比_${i}月`] = 44;
                 row[`预算完成率_${i}月`] = 'a';
             });
 
             this.editableMonths.forEach((i) => {
-                row[`预算_${i}月`] = <InputNumber value={this.getBudgetValue(i, subject._id!).budget} onChange={(value) => this.setBudgetValue(i, subject, { budget: parseFloat((value || '0').toString()) })} />;
-                row[`预算占收入比_${i}月`] = 88;
-                row[`实际收入_${i}月`] = <InputNumber value={this.getBudgetValue(i, subject._id!).reality} onChange={(value) => this.setBudgetValue(i, subject, { reality: parseFloat((value || '0').toString()) })} />;
-                row[`实际占收入比_${i}月`] = 44;
-                row[`预算完成率_${i}月`] = 'a';
+                row[`预算_${i}月`] = <InputNumber value={this.getBudgetValue(i, subject).budget} onChange={(value) => this.setBudgetValue(i, subject, { budget: parseFloat((value || '0').toString()) })} />;
+                row[`实际收入_${i}月`] = <InputNumber value={this.getBudgetValue(i, subject).reality} onChange={(value) => this.setBudgetValue(i, subject, { reality: parseFloat((value || '0').toString()) })} />;
             });
             if (subject.subjectType === BudgetSubjectType.收入) incomeRows.push(row);
             if (subject.subjectType === BudgetSubjectType.成本) costRows.push(row);
