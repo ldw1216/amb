@@ -12,9 +12,9 @@ const Option = Select.Option;
 @observer
 class EditModal extends Component<FormComponentProps & { subject: Subject, budget: Budget }> {
     private handelSubmit = () => {
-        this.props.form.validateFields((err, values) => {
+        this.props.form.validateFields(async (err, values) => {
             if (!err) {
-                this.props.subject.save({ ...values }).then(() => this.props.form.resetFields());
+                await this.props.subject.save({ ...values }).then(() => this.props.form.resetFields());
                 this.props.budget.fetchSubjects();
             }
         });

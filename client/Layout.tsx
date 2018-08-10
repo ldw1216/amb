@@ -59,8 +59,8 @@ class MyLayout extends Component<RouteComponentProps<{}>, {}> {
                             defaultSelectedKeys={[curMainMenu]}
                             style={{ lineHeight: '64px' }}
                         >
-                            <Menu.Item key="/budget"><Link to="/budget">预算</Link></Menu.Item>
-                            <Menu.Item key="/user"><Link to="/user">系统配置</Link></Menu.Item>
+                            <Menu.Item key="/budget/totalTable"><Link to="/budget/totalTable">预算</Link></Menu.Item>
+                            <Menu.Item key="/user/sector"><Link to="/user/sector">系统配置</Link></Menu.Item>
                         </Menu>
                     </div>
 

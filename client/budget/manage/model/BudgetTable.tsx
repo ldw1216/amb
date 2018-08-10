@@ -1,18 +1,32 @@
-import { Icon, Input, InputNumber, Select } from 'antd';
+import { Icon, InputNumber, Popconfirm, Select } from 'antd';
 import { SelectProps } from 'antd/lib/select';
-import { BudgetSubjectType, BudgetType, SearchDataType, SearchRange } from 'config/config';
+import { BudgetSubjectType, BudgetType, SearchRange } from 'config/config';
 import { action, computed, observable, toJS } from 'mobx';
 import { observer } from 'mobx-react';
 import { filter, values } from 'ramda';
 import React from 'react';
 import { render } from 'react-dom';
 import rootStore from 'store/index';
+import styled from 'styled-components';
 import SubjectEditor from '../components/SubjectEditor';
 import SubjectTitle from '../components/SubjectTitle';
 import Budget from './Budget';
 import MonthBudget from './MonthBudget';
 import Subject from './Subject';
 import SubjectBudget from './SubjectBudget';
+
+const SubjectSubTitle = styled.div`
+    text-align: left;
+    i{
+        visibility:hidden;
+        margin-right:5px;
+    }
+    &:hover {
+       i{
+           visibility:visible;
+       }
+    }
+`;
 
 const SelectOption = Select.Option;
 const TypeSelector: React.SFC<SelectProps> = (props) => (
@@ -40,7 +54,12 @@ export default class BudgetTable {
         const subject = new Subject({ subjectType, budgetType: undefined, year: this.budget.year, group: this.budget.group }, container);
         render(<SubjectEditor subject={subject} budget={this.budget} />, container);
     }
-
+    // 删除项目
+    @action.bound
+    private async removeProject(subject: Subject) {
+        await subject.remove();
+        this.budget.fetchSubjects();
+    }
     @computed get expenseSubjects() {
         const expense = rootStore.expenseTypes.find(({ year }) => year === this.budget.year);
         return expense ? expense.options.map((item) => ({ ...item, subjectType: BudgetSubjectType.费用 })) : [];
@@ -81,7 +100,7 @@ export default class BudgetTable {
         if (!subjectBudget) {
             subjectBudget = new SubjectBudget({
                 subjectId: subject._id!,
-                subjectType: subject.subjectType,
+                subjectType: subject.subjectType!,
                 subjectName: subject.name!, // 子类型id
             });
             monthBuget.subjectBudgets.push(subjectBudget);
@@ -119,11 +138,15 @@ export default class BudgetTable {
         }
 
         // 每个项目一行，添加数据，修改数据 填加完数据以后跟据提报周期确定哪几个季度是可编辑的
-        this.budget.subjects.concat(this.expenseSubjects).forEach((subject) => {
+        this.budget.subjects.concat(this.expenseSubjects as any).forEach((subject) => {
             const row = {
                 key: subject._id,
-                subject: <div style={{ textAlign: 'left', paddingLeft: 18 }}>{subject && subject.name}</div>,
-                type: <TypeSelector value={subject.budgetType} />,
+                subject: <SubjectSubTitle>
+                    <Popconfirm placement="topLeft" title="确认删除？" onConfirm={() => this.removeProject(subject)} okText="确认" cancelText="取消">
+                        <Icon type="close" />
+                    </Popconfirm>
+                    {subject && subject.name}</SubjectSubTitle >,
+                type: <TypeSelector onChange={(e) => subject.save && subject.save({ budgetType: e as any })} value={subject.budgetType} />,
             } as any;
 
             this.budget.monthBudgets.forEach((monthBudget, i) => {
@@ -165,7 +188,7 @@ export default class BudgetTable {
         const dataSource = [incomeAmount].concat(incomeRows, costAmount, costRows, expenseAmount, expenseRows);
         return dataSource;
     }
-    @computed get columns() {
+    @computed public get columns() {
         const columns = [
             {
                 title: this.budget.year,

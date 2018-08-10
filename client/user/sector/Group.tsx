@@ -1,10 +1,10 @@
-import { Button, Form, Input, InputNumber, Modal, Select, Switch, Table, Tag } from "antd";
-import { WrappedFormUtils } from "antd/lib/form/Form";
-import axios from "axios";
-import SearchBox from "components/SearchBar";
-import { action, observable, reaction } from "mobx";
-import { observer } from "mobx-react";
-import { Component } from "react";
+import { Button, Form, Input, InputNumber, Modal, Select, Switch, Table, Tag } from 'antd';
+import { WrappedFormUtils } from 'antd/lib/form/Form';
+import axios from 'axios';
+import SearchBox from 'components/SearchBar';
+import { action, isComputed, observable, reaction } from 'mobx';
+import { observer } from 'mobx-react';
+import { Component } from 'react';
 
 const { Column } = Table;
 const FormItem = Form.Item;
@@ -16,18 +16,19 @@ class Store {
     @observable public selectedIndex = -1;
     @observable public editModelVisible = false;
     @action.bound
-    public showEditModel(index: number) {
+    public async showEditModel(index: number) {
         this.selectedIndex = index;
         this.editModelVisible = true;
+        this.sectors = await axios.get('/sector').then((res) => res.data);
     }
 
     @action.bound
     public async save(values: any) {
         const edit = this.data[this.selectedIndex];
         if (edit) {
-            await axios.post("/group/" + edit._id, values);
+            await axios.post('/group/' + edit._id, values);
         } else {
-            await axios.post("/group", values);
+            await axios.post('/group', values);
         }
         this.hideEditModel();
         await this.fetch();
@@ -40,8 +41,7 @@ class Store {
 
     @action.bound
     public async fetch() {
-        this.data = await axios.get("/group").then((res) => res.data);
-        this.sectors = await axios.get("/sector").then((res) => res.data);
+        this.data = await axios.get('/group').then((res) => res.data);
     }
 }
 
@@ -63,7 +63,7 @@ export default class extends Component {
                     <Column title="ID" dataIndex="key" render={(_, __, index) => index + 1} />
                     <Column title="大部门" dataIndex="sector.name" />
                     <Column title="阿米巴组" dataIndex="name" />
-                    <Column title="奖金比例" dataIndex="rewardRate" />
+                    <Column title="奖金比例" dataIndex="rewardRate" render={(text) => text + '%'} />
                     <Column title="负责人" dataIndex="admin" />
                     <Column title="状态" dataIndex="available" render={(text) => text ? <Tag color="green">有效</Tag> : <Tag>无效</Tag>} />
                     <Column title="操作" render={(_, __, selectedIndex) => <a onClick={() => { store.showEditModel(selectedIndex); }}>编辑</a>} />
@@ -97,7 +97,7 @@ const Edit = Form.create()(
             const { getFieldDecorator, getFieldValue } = this.props.form;
             return (
                 <Modal
-                    title={store.selectedIndex > -1 ? "编辑阿米巴组" : "添加阿米巴组"}
+                    title={store.selectedIndex > -1 ? '编辑阿米巴组' : '添加阿米巴组'}
                     visible={store.editModelVisible}
                     onOk={this.handelSubmit}
                     okText="保存"
@@ -105,30 +105,33 @@ const Edit = Form.create()(
                 >
                     <Form>
                         <FormItem label="阿米巴组" {...formItemLayout} >
-                            {getFieldDecorator("name", { rules: [{ required: true, message: "此字段必填" }] })(
+                            {getFieldDecorator('name', { rules: [{ required: true, message: '此字段必填' }] })(
                                 <Input placeholder="请输入阿米巴组名称" />,
                             )}
                         </FormItem>
                         <FormItem label="大部门" {...formItemLayout} >
-                            {getFieldDecorator("sector", { rules: [{ required: true, message: "此字段必填" }] })(
+                            {getFieldDecorator('sector', { rules: [{ required: true, message: '此字段必填' }] })(
                                 <Select placeholder="请选择大部门">
                                     {store.sectors.map((item) => <Option key={item._id} value={item._id}>{item.name}</Option>)}
                                 </Select>,
                             )}
                         </FormItem>
                         <FormItem label="奖金比例" {...formItemLayout} >
-                            {getFieldDecorator("rewardRate", { rules: [{ required: true, message: "此字段必填" }] })(
-                                <InputNumber style={{ width: "100%" }} formatter={(value) => `${parseFloat(value as any || "0") * 100}%`} parser={(value) => value ? parseFloat(value.replace("%", "")) / 100 : 0} min={0} max={1} placeholder="请输入将金比例" />,
+                            {getFieldDecorator('rewardRate', {
+                                rules: [{ required: true, message: '此字段必填' }],
+                            })(
+                                <Input type="number" min={0} max={100} step={0.01} addonAfter="%" />,
+                                // <InputNumber style={{ width: '100%' }} formatter={(value) => `${value || 0}%`} parser={(value) => value ? +value.replace(/%/g, '') / 100 : 0} min={0} max={1} step={0.01} />,
                             )}
                         </FormItem>
                         <FormItem label="负责人" {...formItemLayout} >
-                            {getFieldDecorator("admin", { rules: [{ required: true, message: "此字段必填" }] })(
+                            {getFieldDecorator('admin', { rules: [{ required: true, message: '此字段必填' }] })(
                                 <Input placeholder="请输入负责人名称" />,
                             )}
                         </FormItem>
                         <FormItem label="状态" {...formItemLayout} >
-                            {getFieldDecorator("available", { rules: [{ required: true, message: "此字段必填" }], initialValue: true })(
-                                <Switch checked={getFieldValue("available")} checkedChildren="有效" unCheckedChildren="无效" />,
+                            {getFieldDecorator('available', { rules: [{ required: true, message: '此字段必填' }], initialValue: true })(
+                                <Switch checked={getFieldValue('available')} checkedChildren="有效" unCheckedChildren="无效" />,
                             )}
                         </FormItem>
                     </Form>

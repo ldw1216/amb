@@ -17,7 +17,7 @@ export default class Budget implements amb.IBudget {
     @observable public period?: string;
     @observable public year: number;
     @observable public monthBudgets: MonthBudget[] = [];
-    @observable public subjects: amb.IBudgetSubject[] = [];
+    @observable public subjects: Subject[] = [];
     @observable public remark?: string;
 
     constructor(data: amb.IBudget & { groupName: string }) {

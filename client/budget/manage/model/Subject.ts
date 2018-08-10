@@ -10,7 +10,7 @@ export default class Subject implements amb.IBudgetSubject {
     // tslint:disable-next-line:variable-name
     @observable public _id?: string = '';
     @observable public name: string = '';
-    @observable public subjectType: BudgetSubjectType;
+    @observable public subjectType?: BudgetSubjectType;
     @observable public budgetType: BudgetType;
     @observable public year: number;
     @observable public group: string;
@@ -37,8 +37,12 @@ export default class Subject implements amb.IBudgetSubject {
         this.container && this.container.remove();
     }
     @action.bound public async save(data: amb.IBudgetSubject) {
-        const url = '/subject' + (data._id ? '/' + data._id : '');
+        const url = '/subject' + (data._id ? '/' + data._id : '/' + this._id || '');
         await axios.post(url, Object.assign(this, data));
         this.hideProjectEditor();
+    }
+    @action.bound public async remove() {
+        const url = '/subject/' + this._id;
+        // await axios.delete(url);
     }
 }
