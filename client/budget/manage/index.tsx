@@ -9,6 +9,7 @@ import styled from 'styled-components';
 import rootStore from '../../store';
 import AdvancedSearch from './components/AdvancedSearch';
 import SubjectEditor from './components/SubjectEditor';
+import excellentexport from '../../components/excellentexport';
 import store from './store';
 store.fetchCurrentUserBudgetList();
 
@@ -31,13 +32,17 @@ export default class extends Component {
         this.advancedSearchDisplay = false;
         document.removeEventListener('click', this.hideAdvancedSearch);
     }
+    exportExcel = () => {
+        const table = document.getElementsByTagName('table')[0]
+        excellentexport.excel(table, '工作簿1', '阿米巴')
+    }
     public render() {
         return (
             <div>
                 <Section>
                     <SearchBar style={{ marginBottom: 0 }}>
                         <Button onClick={this.showAdvancedSearch} type="primary">自定义指标</Button>
-                        <Button type="primary">全部导出</Button>
+                        <Button type="primary" onClick={this.exportExcel}>全部导出</Button>
                     </SearchBar>
                     {this.advancedSearchDisplay && <AdvancedSearch store={store} />}
                 </Section>
