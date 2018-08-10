@@ -1,5 +1,5 @@
-import React, { Children, cloneElement, Component, ReactNode } from "react";
-import styled from "styled-components";
+import React, { Children, cloneElement, Component, ReactNode } from 'react';
+import styled from 'styled-components';
 
 const Root = styled.div`
     display: inline-block;
@@ -37,7 +37,7 @@ class Checkbox extends Component<{ onChange?: (value: string[]) => void, value?:
                 {Children.map(this.props.children, (child, i) => {
                     if (React.isValidElement(child)) {
                         const props = child.props as any;
-                        return <Item onClick={() => this.handleChange(props.value)} className={value.includes(props.value) ? "active" : ""}>{child}</Item>;
+                        return <Item onClick={() => this.handleChange(props.value)} className={value.includes(props.value) ? 'active' : ''}>{child}</Item>;
                     }
                     return this.props.children;
                 })}

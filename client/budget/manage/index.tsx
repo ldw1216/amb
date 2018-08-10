@@ -37,6 +37,7 @@ export default class extends Component {
         excellentexport.excel(table, '工作簿1', '阿米巴')
     }
     public render() {
+        console.log(toJS(store.currentUserBudgetList));
         return (
             <div>
                 <Section>
@@ -55,12 +56,6 @@ export default class extends Component {
                         <Table pagination={false} scroll={{ x: 'auto' }} bordered size="small" dataSource={item.dataSource} columns={item.columns} />
                     </TableSection>
                 ))}
-                <Section>
-                    <div><Title>预算说明:</Title></div>
-                    <div>
-                        <TextArea />
-                    </div>
-                </Section>
                 <Section>
                     <SearchBar>
                         <Button>取消</Button>

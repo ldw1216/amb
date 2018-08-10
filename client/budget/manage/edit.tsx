@@ -20,7 +20,7 @@ export default class extends Component<RouteComponentProps<{ groupId: string }>>
         store.getBudget(groupId).then((res) => {
             if (!res) return;
             runInAction(() => {
-                const budgetTable = new BudgetTable(res);
+                const budgetTable = new BudgetTable(res, store.periods.find(({ _id }) => _id === res.period), true);
                 budgetTable.allTitles = budgetTable.visibleTitles = budgetTable.allTitles
                     .filter(([key]) => !['实际收入', '预算完成率', '实际占收入比'].includes(key));
                 this.budget = res;

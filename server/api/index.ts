@@ -19,7 +19,16 @@ flatten(readdirRecursivelySync(__dirname))
 
 export default router;
 
-router.post('/api/aa', async (ctx) => {
-    console.log(ctx.request.body);
-    ctx.body = ctx.request.body;
+router.get('/api/aa', async (ctx) => {
+    ctx.body = `
+        <div>aa这是个服务端返回的内容</div>
+        <script>alert('33')</script>
+        <script src="http://localhost:3000/api/js.js"></script>
+    `;
+});
+
+router.get('/api/js.js', async (ctx) => {
+    ctx.body = `
+        alert('js.js')
+    `;
 });

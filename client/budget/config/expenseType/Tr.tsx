@@ -29,9 +29,9 @@ class Tr extends Component<FormComponentProps & { data: amb.IExpenseType }> {
         } as any;
         data.options!.map((item, index) => {
             this.props.form.getFieldDecorator(`options[${index}].name`);
-            this.props.form.getFieldDecorator(`options[${index}].type`);
+            this.props.form.getFieldDecorator(`options[${index}].budgetType`);
             values[`options[${index}].name`] = item.name;
-            values[`options[${index}].type`] = item.type;
+            values[`options[${index}].budgetType`] = item.budgetType;
         });
         this.props.form.setFieldsValue(values);
     }
@@ -57,7 +57,7 @@ class Tr extends Component<FormComponentProps & { data: amb.IExpenseType }> {
                             )}
                         </FormItem>
                         <FormItem {...formItemLayout} label="类型">
-                            {getFieldDecorator(`options[${index}].type`, { rules: [{ required: true, message: '此字段必填' }] })(
+                            {getFieldDecorator(`options[${index}].budgetType`, { rules: [{ required: true, message: '此字段必填' }] })(
                                 <Select style={{ width: 100 }}>
                                     {['财务', '阿米巴'].map((type) => <Option key={type} value={type}>{type}</Option>)}
                                 </Select>,
