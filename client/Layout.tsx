@@ -120,15 +120,17 @@ class TestComponent extends Component {
     public componentDidMount() {
         console.log('componentDidMount');
     }
-
+    public aa = () => {
+        axios.get('/aa').then((res) => {
+            document.getElementById('aa')!.innerHTML = res.data;
+        });
+    }
     public render() {
         console.log('renderrender');
         return (
-            <div>{location.href.includes('aa') && <Redirect push to="/test/bb" />}
-                <div key={this.state.aa}>{location.href} === {this.state.aa}</div>
-                <NavLink className="as" to="/test/aa">aa</NavLink> |
-                <Link to="/test/bb">bb</Link>
-                <button onClick={() => <Redirect push to="/test/bb" />}>33</button>
+            <div>
+                <div id="aa">aa</div>
+                <button onClick={this.aa}>aa</button>
             </div>
         );
     }

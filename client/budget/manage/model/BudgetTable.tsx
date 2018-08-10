@@ -33,7 +33,25 @@ export default class BudgetTable {
         const subject = new Subject({ type, year: this.budget.year, group: this.budget.group }, container);
         render(<SubjectEditor subject={subject} budget={this.budget} />, container);
     }
+
+    // 每个月的总预算收入
+    @computed get budgetIncomeAmountMap() {
+        const map = new Map();
+        // for (let i = 0; i++; i++) {
+        //     map.
+        // }
+
+        return map;
+        // this.budget.subjectBudgets.filter(({ subjectType }) => subjectType === BudgetSubjectType.收入)
+        //     .reduce((x, y) => {
+
+        //     })
+    }
+
     @computed get dataSource() {
+        const incomeRows = [] as any[]; // 收入数据
+        const costRows = [] as any[]; // 成本数据
+        const expenseRows = [] as any[]; // 费用数据
         const incomeAmount = {
             key: '收入汇总',
             subject: <SubjectTitle><span>收入</span><Icon onClick={() => this.addProject(BudgetSubjectType.收入)} type="plus" /></SubjectTitle>,
@@ -58,9 +76,8 @@ export default class BudgetTable {
             incomeAmount[`预算完成率_${i}月`] = '';
         }
 
-        const incomeRows = [] as any[]; // 收入数据
-        const costRows = [] as any[]; // 成本数据
-        const expenseRows = [] as any[]; // 费用数据
+        // 计算总收入
+        console.log(toJS(this.budget.subjectBudgets));
 
         this.budget.subjectBudgets.map((subjectBudget, subjectBudgetIndex) => {
             const subject = this.budget.subjects.find((item) => item._id === subjectBudget.subjectSubType);
