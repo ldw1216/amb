@@ -108,10 +108,6 @@ export default class BudgetTable {
         if (value.reality) subjectBudget!.reality = value.reality;
     }
 
-    // 收入合计
-    @computed get incomeSum() {
-        return 0;
-    }
     @computed get dataSource() {
         const incomeRows = [] as any[]; // 收入数据
         const costRows = [] as any[]; // 成本数据
@@ -132,13 +128,25 @@ export default class BudgetTable {
             type: undefined,
         } as any;
         // 添加收入汇总
-        for (let i = 0; i < 12; i++) {
-            incomeAmount[`预算_${i}月`] = '';
-            incomeAmount[`预算占收入比_${i}月`] = '';
-            incomeAmount[`实际收入_${i}月`] = '';
-            incomeAmount[`实际占收入比_${i}`] = '';
-            incomeAmount[`预算完成率_${i}月`] = '';
-        }
+        this.budget.monthBudgets.forEach((monthBudget, i) => {
+            incomeAmount[`预算_${i}月`] = monthBudget.budgetSum.income;
+            incomeAmount[`预算占收入比_${i}月`] = '--';
+            incomeAmount[`实际收入_${i}月`] = monthBudget.realitySum.income;
+            incomeAmount[`实际占收入比_${i}`] = '--';
+            incomeAmount[`预算完成率_${i}月`] = '--';
+
+            costAmount[`预算_${i}月`] = monthBudget.budgetSum.cost;
+            costAmount[`预算占收入比_${i}月`] = '--';
+            costAmount[`实际收入_${i}月`] = monthBudget.realitySum.cost;
+            costAmount[`实际占收入比_${i}`] = '--';
+            costAmount[`预算完成率_${i}月`] = '--';
+
+            expenseAmount[`预算_${i}月`] = monthBudget.budgetSum.expense;
+            expenseAmount[`预算占收入比_${i}月`] = '--';
+            expenseAmount[`实际收入_${i}月`] = monthBudget.realitySum.expense;
+            expenseAmount[`实际占收入比_${i}`] = '--';
+            expenseAmount[`预算完成率_${i}月`] = '--';
+        });
 
         // 每个项目一行，添加数据，修改数据 填加完数据以后跟据提报周期确定哪几个季度是可编辑的
         this.budget.subjects.concat(this.expenseSubjects as any).forEach((subject) => {
@@ -162,7 +170,7 @@ export default class BudgetTable {
             });
 
             this.editableMonths.forEach((i) => {
-                row[`预算_${i}月`] = <InputNumber value={this.getBudgetValue(i, subject).budget} onChange={(value) => this.setBudgetValue(i, subject, { budget: parseFloat((value || '0').toString()) })} />;
+                row[`预算_${i}月`] = <InputNumber style={{ textAlign: 'right' }} value={this.getBudgetValue(i, subject).budget} onChange={(value) => this.setBudgetValue(i, subject, { budget: parseFloat((value || '0').toString()) })} />;
                 row[`实际收入_${i}月`] = <InputNumber value={this.getBudgetValue(i, subject).reality} onChange={(value) => this.setBudgetValue(i, subject, { reality: parseFloat((value || '0').toString()) })} />;
             });
             if (subject.subjectType === BudgetSubjectType.收入) incomeRows.push(row);
