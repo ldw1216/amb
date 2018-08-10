@@ -9,6 +9,7 @@ class Index extends Component {
                 <Route path="/budget/config" component={importedComponent(() => import('./config'))} />
                 <Route path="/budget/manage" component={importedComponent(() => import('./manage'))} />
                 <Route path="/budget/edit/:groupId" component={importedComponent(() => import('./manage/edit'))} />
+                <Route path="/budget/totalTable" component={importedComponent(() => import('./totalTable'))} />
             </Switch>
         );
     }
@@ -27,6 +28,7 @@ export class BudgetMenu extends Component<any, {}> {
                 defaultSelectedKeys={[pathname]}
                 defaultOpenKeys={[pathname.replace(/\/[^/]+$/, '')]}
             >
+                <Menu.Item key="/budget/totalTable"><Link to="/budget/totalTable"><Icon type="pie-chart" /> <span>预算总表</span></Link></Menu.Item>
                 <Menu.Item key="/budget/config"><Link to="/budget/config"><Icon type="pie-chart" /> <span>预算配置</span></Link></Menu.Item>
                 <Menu.Item key="/budget/manage"><Link to="/budget/manage"><Icon type="pie-chart" /> <span>预算管理</span></Link></Menu.Item>
             </Menu>
