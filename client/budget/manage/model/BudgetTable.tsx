@@ -127,7 +127,11 @@ export default class BudgetTable {
             } as any;
 
             this.budget.monthBudgets.forEach((monthBudget, i) => {
-                //
+                row[`预算_${i}月`] = this.getBudgetValue(i, subject._id!).budget;
+                row[`预算占收入比_${i}月`] = 88;
+                row[`实际收入_${i}月`] = this.getBudgetValue(i, subject._id!).reality;
+                row[`实际占收入比_${i}月`] = 44;
+                row[`预算完成率_${i}月`] = 'a';
             });
 
             this.editableMonths.forEach((i) => {
@@ -141,26 +145,6 @@ export default class BudgetTable {
             if (subject.subjectType === BudgetSubjectType.成本) costRows.push(row);
             if (subject.subjectType === BudgetSubjectType.费用) expenseRows.push(row);
         });
-        // this.budget.subjectBudgets.map((subjectBudget, subjectBudgetIndex) => {
-        //     const subject = this.budget.subjects.find((item) => item._id === subjectBudget.subjectSubType);
-        //     const expense = this.budget.expenseTypes.find((item) => item._id === subjectBudget.subjectSubType);
-
-        //     const row = {
-        //         key: subjectBudgetIndex,
-        //         subject: <div style={{ textAlign: 'left', paddingLeft: 18 }}>{subject && subject.name || expense && expense.name}</div>,
-        //         type: <TypeSelector value={subjectBudget.type} onChange={(type) => subjectBudget.type = type.toString() as BudgetType} />,
-        //     } as any;
-        //     subjectBudget.monthBudgets.forEach((monthBudget, i) => {
-        //         row[`预算_${i}月`] = <InputNumber value={monthBudget.money} onChange={(value) => monthBudget.money = parseFloat(value ? value.toString() : '0') || 0} />;
-        //         row[`预算占收入比_${i}月`] = 88;
-        //         row[`实际收入_${i}月`] = <InputNumber value={monthBudget.reality} onChange={(value) => monthBudget.reality = parseFloat(value ? value.toString() : '0') || 0} />;
-        //         row[`实际占收入比_${i}月`] = 44;
-        //         row[`预算完成率_${i}月`] = 'a';
-        //     });
-        //     if (subjectBudget.subjectType === BudgetSubjectType.收入) incomeRows.push(row);
-        //     if (subjectBudget.subjectType === BudgetSubjectType.成本) costRows.push(row);
-        //     if (subjectBudget.subjectType === BudgetSubjectType.费用) expenseRows.push(row);
-        // });
 
         const dataSource = [incomeAmount].concat(incomeRows, costAmount, costRows, expenseAmount, expenseRows);
         return dataSource;
