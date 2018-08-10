@@ -37,7 +37,8 @@ export default class Subject implements amb.IBudgetSubject {
         this.container && this.container.remove();
     }
     @action.bound public async save(data: amb.IBudgetSubject) {
-        const url = '/subject' + (data._id ? '/' + data._id : '/' + this._id || '');
+        const id = data._id || this._id || '';
+        const url = '/subject/' + id;
         await axios.post(url, Object.assign(this, data));
         this.hideProjectEditor();
     }
