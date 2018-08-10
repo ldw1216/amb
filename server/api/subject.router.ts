@@ -10,7 +10,6 @@ router.get('/', async (ctx) => {
 
 router.post('/', async (ctx) => {
     const data = ctx.request.body as amb.IBudgetSubject;
-    // 获取用户id等信息
     await new SubjectModel(ctx.request.body).save();
     ctx.body = { msg: '保存成功' };
 });
