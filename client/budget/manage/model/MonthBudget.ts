@@ -41,6 +41,7 @@ export default class MonthBudget implements amb.IMonthBudget {
             expense,
         };
     }
+
     constructor(data: amb.IMonthBudget) {
         this._id = data._id;
         this.month = data.month;

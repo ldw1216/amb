@@ -112,6 +112,7 @@ export default class BudgetTable {
         const incomeRows = [] as any[]; // 收入数据
         const costRows = [] as any[]; // 成本数据
         const expenseRows = [] as any[]; // 费用数据
+
         const incomeAmount = {
             key: '收入汇总',
             subject: <SubjectTitle><span>收入</span><Icon onClick={() => this.addProject(BudgetSubjectType.收入)} type="plus" /></SubjectTitle>,
@@ -127,25 +128,25 @@ export default class BudgetTable {
             subject: <SubjectTitle><span>费用</span></SubjectTitle>,
             type: undefined,
         } as any;
-        // 添加收入汇总
+        // 添加收入、成本、费用汇总
         this.budget.monthBudgets.forEach((monthBudget, i) => {
             incomeAmount[`预算_${i}月`] = monthBudget.budgetSum.income;
-            incomeAmount[`预算占收入比_${i}月`] = '--';
+            incomeAmount[`预算占收入比_${i}月`] = '100%';
             incomeAmount[`实际收入_${i}月`] = monthBudget.realitySum.income;
-            incomeAmount[`实际占收入比_${i}`] = '--';
-            incomeAmount[`预算完成率_${i}月`] = '--';
+            incomeAmount[`实际占收入比_${i}月`] = '100%';
+            incomeAmount[`预算完成率_${i}月`] = monthBudget.budgetSum.income ? (monthBudget.realitySum.income / monthBudget.budgetSum.income * 100).toFixed(2) + '%' : '--';
 
             costAmount[`预算_${i}月`] = monthBudget.budgetSum.cost;
-            costAmount[`预算占收入比_${i}月`] = '--';
+            costAmount[`预算占收入比_${i}月`] = monthBudget.budgetSum.income ? (monthBudget.budgetSum.cost / monthBudget.budgetSum.income * 100).toFixed(2) + '%' : '--';
             costAmount[`实际收入_${i}月`] = monthBudget.realitySum.cost;
-            costAmount[`实际占收入比_${i}`] = '--';
-            costAmount[`预算完成率_${i}月`] = '--';
+            costAmount[`实际占收入比_${i}月`] = monthBudget.realitySum.income ? (monthBudget.realitySum.cost / monthBudget.realitySum.income * 100).toFixed(2) + '%' : '--';
+            costAmount[`预算完成率_${i}月`] = monthBudget.budgetSum.cost ? (monthBudget.realitySum.cost / monthBudget.budgetSum.cost * 100).toFixed(2) + '%' : '--';
 
             expenseAmount[`预算_${i}月`] = monthBudget.budgetSum.expense;
-            expenseAmount[`预算占收入比_${i}月`] = '--';
+            expenseAmount[`预算占收入比_${i}月`] = (monthBudget.budgetSum.expense / monthBudget.budgetSum.income * 100).toFixed(2) + '%';
             expenseAmount[`实际收入_${i}月`] = monthBudget.realitySum.expense;
-            expenseAmount[`实际占收入比_${i}`] = '--';
-            expenseAmount[`预算完成率_${i}月`] = '--';
+            expenseAmount[`实际占收入比_${i}月`] = monthBudget.realitySum.income ? (monthBudget.realitySum.expense / monthBudget.realitySum.income * 100).toFixed(2) + '%' : '--';
+            expenseAmount[`预算完成率_${i}月`] = monthBudget.budgetSum.expense ? (monthBudget.realitySum.expense / monthBudget.budgetSum.expense * 100).toFixed(2) + '%' : '--';
         });
 
         // 每个项目一行，添加数据，修改数据 填加完数据以后跟据提报周期确定哪几个季度是可编辑的
