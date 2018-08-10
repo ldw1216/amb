@@ -40,7 +40,6 @@ export class Store {
             if (period) return axios.get(`/budget/group/${groupId}/year/${period.year}`).then((res) => res.data);
             else return Promise.resolve(undefined);
         })).then((list) => list.filter((item) => item));
-
         const currentUserBudgetList = groups.map((group) => {
             const period = periods.find(([groupId]) => groupId === group._id)![1];
             const year = period ? period.year : new Date().getFullYear();

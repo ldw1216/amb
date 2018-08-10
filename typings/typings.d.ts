@@ -65,6 +65,7 @@ declare global {
             sort?: number; // 排序
         }
 
+        // 预算
         interface IBudget {
             _id?: string
             approvalState?: ApprovalState; // 审批状态
@@ -76,21 +77,21 @@ declare global {
             remark?: string // 备注
         }
 
-        interface ISubjectBudget {
-            _id?: string
-            subjectId: string
-            subjectType: BudgetSubjectType // 类型
-            subjectSubType: string // 子类型
-            subjectName: string
-            budget?: number
-            reality?: number
-        }
-
         // 每个月的预算
         interface IMonthBudget {
             _id?: string
             month: number;
             subjectBudgets: ISubjectBudget[]
         }
+
+        interface ISubjectBudget {
+            _id?: string
+            subjectType: BudgetSubjectType // 类型  收入 成本
+            subjectId: string  // 如  大数据收入 技术支持成本 的id
+            subjectName: string
+            budget?: number
+            reality?: number
+        }
+
     }
 }

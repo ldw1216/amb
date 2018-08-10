@@ -15,6 +15,7 @@ router.get('/group/:groupId/year/:year', async (ctx) => {
 
 router.post('/', async (ctx) => {
     const budget = ctx.request.body as amb.IBudget;
+    console.log(budget.monthBudgets[0].subjectBudgets);
     if (!budget._id) {
         await new BudgetModel(ctx.request.body).save();
     } else {

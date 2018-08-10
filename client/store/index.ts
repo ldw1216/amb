@@ -11,6 +11,7 @@ export class Store {
                 this.expenseTypes = res.data;
             });
         });
+        // 切换年度的时候重新读取当年的费用
     }
 }
 

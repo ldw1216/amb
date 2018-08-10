@@ -8,7 +8,6 @@ const SubjectBudget = new Schema({
     reality: { type: Number, cn: '实际费用' },
     subjectId: String,
     subjectType: { type: String, enum: values(BudgetSubjectType), required: true, cn: '类型' },
-    subjectSubType: { type: SchemaTypes.ObjectId, required: true, cn: '项目子类型' }, // ref: 'Subject' , 'ExpenseType',
     subjectName: String,
 }, { timestamps: true, toJSON: { virtuals: true } });
 

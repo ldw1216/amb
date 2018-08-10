@@ -12,8 +12,6 @@ import SubjectEditor from './components/SubjectEditor';
 import store from './store';
 store.fetchCurrentUserBudgetList();
 
-const { TextArea } = Input;
-
 const Title = styled.span`
     font-size: 16px;
     line-height: 2;
@@ -32,7 +30,7 @@ export default class extends Component {
         document.removeEventListener('click', this.hideAdvancedSearch);
     }
     public render() {
-        console.log(toJS(store.currentUserBudgetList));
+        // console.log(toJS(store.currentUserBudgetList));
         return (
             <div>
                 <Section>
