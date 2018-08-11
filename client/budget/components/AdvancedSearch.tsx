@@ -4,7 +4,7 @@ import { SearchDataType, SearchRange } from 'config/config';
 import { observer } from 'mobx-react';
 import { Component } from 'react';
 import styled from 'styled-components';
-import { Store } from '../store';
+import { BudgetStore } from '../store';
 
 const Option = Select.Option;
 
@@ -26,7 +26,7 @@ const searchRange = Object.keys(SearchRange);
 const dataTypes = Object.keys(SearchDataType);
 
 @observer
-export default class AdvancedSearch extends Component<{ store: Store }> {
+export default class AdvancedSearch extends Component<{ store: BudgetStore }> {
     private handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
         e.nativeEvent.stopImmediatePropagation();
     }

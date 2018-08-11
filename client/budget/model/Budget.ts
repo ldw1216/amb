@@ -1,10 +1,9 @@
 import axios from 'axios';
-import { ApprovalState, BudgetSubjectType, BudgetType, SearchDataType, SearchRange } from 'config/config';
+import { ApprovalState } from 'config/config';
 import { action, computed, observable, runInAction, toJS } from 'mobx';
 import rootStore from '../../store';
 import MonthBudget from './MonthBudget';
 import Subject from './Subject';
-import SubjectBudget from './SubjectBudget';
 
 // 预算数据
 export default class Budget implements amb.IBudget {
@@ -42,7 +41,7 @@ export default class Budget implements amb.IBudget {
     }
 
     @computed get expenseTypes(): amb.IExpenseTypeOption[] {
-        const data = rootStore.expenseTypes.find((item) => item.year === this.year);
+        const data = rootStore.expenseTypeStore.list.find((item) => item.year === this.year);
         return data ? data.options : [];
     }
 
@@ -50,21 +49,8 @@ export default class Budget implements amb.IBudget {
         this.subjects = await axios.get(`/subject`, { params: { year: this.year, group: this.group } }).then((res) => res.data.map((item: amb.IBudgetSubject) => new Subject(item)));
     }
 
-    // private createMonthBudgets() {
-    //     const monthBudgets: MonthBudget[] = [];
-    //     for (let i = 0; i < 12; i++) {
-    //         const budgetItem = new MonthBudget(i);
-    //         monthBudgets.push(budgetItem);
-    //     }
-    //     return monthBudgets;
-    // }
     // 保存预算
     @action.bound public async save() {
         return axios.post('/budget', this);
     }
-
-    // 删除预算行 - 同时删除预算类型
-    // @action.bound public removeBudgetRow(id: string) {
-    //     //
-    // }
 }

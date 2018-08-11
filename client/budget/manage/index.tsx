@@ -9,9 +9,10 @@ import styled from 'styled-components';
 import excellentexport from '../../components/excellentexport';
 import rootStore from '../../store';
 import AdvancedSearch from '../components/AdvancedSearch';
-import SubjectEditor from '../components/SubjectEditor';
-import store from '../store';
-store.fetchCurrentUserBudgetList();
+
+// const store = rootStore.budgetStore;
+// store.fetchCurrentUserBudgetList();
+console.log('manage index');
 
 const Title = styled.span`
     font-size: 16px;
@@ -35,7 +36,7 @@ export default class extends Component {
         excellentexport.excel(table, '工作簿1', '阿米巴');
     }
     public render() {
-        // console.log(toJS(store.currentUserBudgetList));
+        return null;
         return (
             <div>
                 <Section>

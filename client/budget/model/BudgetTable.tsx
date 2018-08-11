@@ -2,7 +2,6 @@ import { Icon, InputNumber, Popconfirm, Select } from 'antd';
 import { SelectProps } from 'antd/lib/select';
 import { BudgetSubjectType, BudgetType, SearchRange } from 'config/config';
 import { action, computed, observable, toJS } from 'mobx';
-import { observer } from 'mobx-react';
 import { filter, values } from 'ramda';
 import React from 'react';
 import { render } from 'react-dom';
@@ -61,8 +60,7 @@ export default class BudgetTable {
         this.budget.fetchSubjects();
     }
     @computed get expenseSubjects() {
-        const expense = rootStore.expenseTypes.find(({ year }) => year === this.budget.year);
-        return expense ? expense.options.map((item) => ({ ...item, subjectType: BudgetSubjectType.费用 })) : [];
+        return rootStore.expenseTypeStore.getExpenseSubject(this.budget.year);
     }
 
     // 可提报的月份
@@ -148,7 +146,6 @@ export default class BudgetTable {
             expenseAmount[`实际占收入比_${i}月`] = monthBudget.realitySum.income ? (monthBudget.realitySum.expense / monthBudget.realitySum.income * 100).toFixed(2) + '%' : '--';
             expenseAmount[`预算完成率_${i}月`] = monthBudget.budgetSum.expense ? (monthBudget.realitySum.expense / monthBudget.budgetSum.expense * 100).toFixed(2) + '%' : '--';
         });
-
         // 每个项目一行，添加数据，修改数据 填加完数据以后跟据提报周期确定哪几个季度是可编辑的
         this.budget.subjects.concat(this.expenseSubjects as any).forEach((subject) => {
             const row = {

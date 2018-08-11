@@ -9,12 +9,11 @@ import universal from 'react-imported-component';
 import { Route, Router, Switch } from 'react-router';
 import history from 'store/history';
 import './axios-init';
-import store from './store';
 
 render(
     <div>
         <LocaleProvider locale={zh_CN}>
-            <Provider store={store}>
+            <Provider>
                 <Router history={history}>
                     <Switch>
                         <Route path="/login" component={universal(() => import('./login'))} />

@@ -30,8 +30,7 @@ declare global {
 
         // 预算提报周期
         interface IPeriod {
-            _id: string
-            durationFormat?: string // 时间 格式化后的 duration get
+            _id?: string
             duration: [Date, Date] // 状态 提报中、结束、未开始 
             state?: string // 状态 提报中、结束、未开始 get
             year: number // 年度
@@ -42,7 +41,7 @@ declare global {
 
         // 年度费用项目
         interface IExpenseType {
-            id: number | string
+            id?: string
             _id?: string
             year?: number
             options: IExpenseTypeOption[]

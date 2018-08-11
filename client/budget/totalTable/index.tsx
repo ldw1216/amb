@@ -5,10 +5,12 @@ import { action, observable, toJS } from 'mobx';
 import { observer } from 'mobx-react';
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
+import rootStore from 'store/index';
 import styled from 'styled-components';
 import excellentexport from '../../components/excellentexport';
 import AdvancedSearch from '../components/AdvancedSearch';
-import store from '../store';
+
+const store = rootStore.budgetStore;
 store.fetchCurrentUserBudgetList();
 
 const { TextArea } = Input;
