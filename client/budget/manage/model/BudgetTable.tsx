@@ -171,8 +171,8 @@ export default class BudgetTable {
             });
 
             this.editableMonths.forEach((i) => {
-                row[`预算_${i}月`] = <InputNumber style={{ textAlign: 'right' }} value={this.getBudgetValue(i, subject).budget} onChange={(value) => this.setBudgetValue(i, subject, { budget: parseFloat((value || '0').toString()) })} />;
-                row[`实际收入_${i}月`] = <InputNumber value={this.getBudgetValue(i, subject).reality} onChange={(value) => this.setBudgetValue(i, subject, { reality: parseFloat((value || '0').toString()) })} />;
+                row[`预算_${i}月`] = <InputNumber value={this.getBudgetValue(i, subject).budget} onChange={(value) => this.setBudgetValue(i, subject, { budget: +(value || 0) })} />;
+                row[`实际收入_${i}月`] = <InputNumber value={this.getBudgetValue(i, subject).reality} onChange={(value) => this.setBudgetValue(i, subject, { reality: +(value || 0) })} />;
             });
             if (subject.subjectType === BudgetSubjectType.收入) incomeRows.push(row);
             if (subject.subjectType === BudgetSubjectType.成本) costRows.push(row);

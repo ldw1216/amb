@@ -4,9 +4,10 @@ import zh_CN from 'antd/lib/locale-provider/zh_CN';
 import { Provider } from 'mobx-react';
 // import DevTools from 'mobx-react-devtools';
 import 'moment/locale/zh-cn';
-import { hydrate, render } from 'react-dom';
+import { render } from 'react-dom';
 import universal from 'react-imported-component';
-import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import { Route, Router, Switch } from 'react-router';
+import history from 'store/history';
 import './axios-init';
 import store from './store';
 
@@ -14,7 +15,7 @@ render(
     <div>
         <LocaleProvider locale={zh_CN}>
             <Provider store={store}>
-                <Router>
+                <Router history={history}>
                     <Switch>
                         <Route path="/login" component={universal(() => import('./login'))} />
                         <Route path="/" component={universal(() => import('./Layout'))} />
