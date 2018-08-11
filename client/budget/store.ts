@@ -2,7 +2,7 @@ import axios from 'axios';
 import createValidator from 'components/createValidator';
 import { BudgetSubjectType, SearchDataType, SearchRange } from 'config/config';
 import { action, computed, observable, runInAction, toJS } from 'mobx';
-import rootStore from '../../store';
+import rootStore from '../store';
 import Budget from './model/Budget';
 import BudgetTable from './model/BudgetTable';
 

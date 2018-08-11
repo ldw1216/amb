@@ -6,10 +6,10 @@ import { action, autorun, computed, observable, runInAction, toJS } from 'mobx';
 import { observer } from 'mobx-react';
 import React, { Component } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
-import BudgetRemark from './components/BudgetRemark';
-import Budget from './model/Budget';
-import BudgetTable from './model/BudgetTable';
-import store from './store';
+import BudgetRemark from '../components/BudgetRemark';
+import Budget from '../model/Budget';
+import BudgetTable from '../model/BudgetTable';
+import store from '../store';
 
 @observer
 export default class extends Component<RouteComponentProps<{ groupId: string }>> {

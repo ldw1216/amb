@@ -8,9 +8,9 @@ import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import excellentexport from '../../components/excellentexport';
 import rootStore from '../../store';
-import AdvancedSearch from './components/AdvancedSearch';
-import SubjectEditor from './components/SubjectEditor';
-import store from './store';
+import AdvancedSearch from '../components/AdvancedSearch';
+import SubjectEditor from '../components/SubjectEditor';
+import store from '../store';
 store.fetchCurrentUserBudgetList();
 
 const Title = styled.span`
