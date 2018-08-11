@@ -3,7 +3,6 @@ import { FormComponentProps } from 'antd/lib/form';
 import LinkGroup from 'components/LinkGroup';
 import { observer } from 'mobx-react';
 import { Component } from 'react';
-import rootStore from 'store/index';
 import styled from 'styled-components';
 
 const store = rootStore.expenseTypeStore;

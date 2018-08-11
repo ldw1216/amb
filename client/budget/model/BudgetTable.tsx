@@ -5,7 +5,7 @@ import { action, computed, observable, toJS } from 'mobx';
 import { filter, values } from 'ramda';
 import React from 'react';
 import { render } from 'react-dom';
-import rootStore from 'store/index';
+
 import styled from 'styled-components';
 import SubjectEditor from '../components/SubjectEditor';
 import SubjectTitle from '../components/SubjectTitle';

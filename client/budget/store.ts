@@ -1,6 +1,5 @@
 import axios from 'axios';
 import { action, computed, observable, runInAction, toJS } from 'mobx';
-import rootStore from '../store';
 import Budget from './model/Budget';
 import BudgetTable from './model/BudgetTable';
 import Condition from './model/Condition';
@@ -37,7 +36,6 @@ export class BudgetStore {
 
     // 获取当前用户的预算周期列表
     @action.bound public async fetchCurrentUserBudgetList() {
-        console.log('asdfasf');
 
         // 获取当前用户所属组
         const groups = rootStore.user.groups;

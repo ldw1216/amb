@@ -3,7 +3,6 @@ import SearchBar from 'components/SearchBar';
 import Table from 'components/Table';
 import { observer } from 'mobx-react';
 import { Component } from 'react';
-import rootStore from 'store/index';
 import Tr from './Tr';
 
 const store = rootStore.expenseTypeStore;

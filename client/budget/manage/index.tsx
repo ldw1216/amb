@@ -7,12 +7,10 @@ import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import excellentexport from '../../components/excellentexport';
-import rootStore from '../../store';
 import AdvancedSearch from '../components/AdvancedSearch';
 
-// const store = rootStore.budgetStore;
-// store.fetchCurrentUserBudgetList();
-console.log('manage index');
+const store = rootStore.budgetStore;
+store.fetchCurrentUserBudgetList();
 
 const Title = styled.span`
     font-size: 16px;
@@ -36,7 +34,6 @@ export default class extends Component {
         excellentexport.excel(table, '工作簿1', '阿米巴');
     }
     public render() {
-        return null;
         return (
             <div>
                 <Section>

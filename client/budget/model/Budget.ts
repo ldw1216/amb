@@ -1,7 +1,6 @@
 import axios from 'axios';
 import { ApprovalState } from 'config/config';
 import { action, computed, observable, runInAction, toJS } from 'mobx';
-import rootStore from '../../store';
 import MonthBudget from './MonthBudget';
 import Subject from './Subject';
 

@@ -1,5 +1,5 @@
 import { BudgetSubjectType, BudgetType, ApprovalState } from 'config/config'
-
+import { RootStore as RootStoreClass } from 'store/index'
 
 declare global {
     namespace amb {
@@ -91,6 +91,11 @@ declare global {
             budget?: number
             reality?: number
         }
-
     }
+    interface Window {
+        rootStore: RootStoreClass
+    }
+    const rootStore: RootStoreClass
+    class RootStore extends RootStoreClass { }
+    // export type Root = RootStore
 }
