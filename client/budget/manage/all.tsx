@@ -1,4 +1,5 @@
-import { Affix, Button, Input, Table } from 'antd';
+import { Affix, Button, Input, Select, Table } from 'antd';
+import Checkbox from 'components/Checkbox';
 import excellentexport from 'components/excellentexport';
 import { SearchBar, ToolBar } from 'components/SearchBar';
 import Section, { TableSection } from 'components/Section';
@@ -9,6 +10,8 @@ import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import AdvancedSearch from '../components/AdvancedSearch';
 
+const CheckboxItem = Checkbox.CheckboxItem;
+const Option = Select.Option;
 const store = rootStore.budgetStore;
 store.fetchAllBudgetList();
 
@@ -37,6 +40,16 @@ export default class extends Component {
         return (
             <div>
                 <Section>
+                    <span>预算状态：</span>
+                    <Checkbox value={['待审核']} onChange={console.log}>
+                        {['待审核', '已通过', '未通过', '未提报'].map((item) => <CheckboxItem key={item} value={item}>{item}</CheckboxItem>)}
+                    </Checkbox>
+                    <span style={{ paddingLeft: 50, paddingRight: 30 }}>阿米巴组:</span>
+                    <Select style={{ width: 100 }}>
+                        {['全部'].map((item) => <Option key={item} value={item}>{item}</Option>)}
+                    </Select>
+                </Section>
+                <Section>
                     <SearchBar style={{ marginBottom: 0 }}>
                         <Button onClick={this.showAdvancedSearch} type="primary">自定义指标</Button>
                         <Button type="primary" onClick={this.exportExcel}>全部导出</Button>
@@ -47,23 +60,13 @@ export default class extends Component {
                     <TableSection key={item.budget.year + item.budget.group}>
                         <ToolBar>
                             <Title>待审核</Title>
-                            <Link to={`/budget/edit/${item.budget.group}`}><Button>修改预算</Button></Link>
+                            <Link to={`/budget/edit/${item.budget.group}`}><Button>审核</Button></Link>
+                            <Link to={`/budget/edit/${item.budget.group}`}><Button>填写实际</Button></Link>
+                            <Link to={`/budget/edit/${item.budget.group}`}><Button>修改类型</Button></Link>
                         </ToolBar>
                         <Table pagination={false} scroll={{ x: 'auto' }} bordered size="small" dataSource={item.dataSource} columns={item.columns} />
                     </TableSection>
                 ))}
-                <Section>
-                    <SearchBar>
-                        <Button>取消</Button>
-                        <Button onClick={() => console.log(toJS(store.currentUserBudgetList))} type="primary">暂存草稿</Button>
-                        <Button>预算提报</Button>
-                    </SearchBar>
-                </Section>
-                <Section>
-                    <SearchBar>
-                        <span style={{ marginRight: 28 }}>待审核</span><Button type="primary">修改预算</Button>
-                    </SearchBar>
-                </Section>
             </div>
         );
     }
