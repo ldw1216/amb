@@ -39,11 +39,12 @@ export class BudgetList {
 
         const currentUserBudgetList = groups.map((group) => {
             const year = this.condition.year;
-            const budget = budgets.find((item) => item.group === group._id);
+            const groupId = typeof group === 'string' ? group : group._id;
+            const budget = budgets.find((item) => item.group === groupId);
             return new Budget({
                 _id: budget && budget._id,
                 user: rootStore.user._id,
-                group: group._id!,
+                group: groupId!,
                 period: budget && budget.period,
                 year,
                 approvalState: budget && budget.approvalState,
