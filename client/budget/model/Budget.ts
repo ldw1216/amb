@@ -30,8 +30,8 @@ export default class Budget implements amb.IBudget {
         this.year = data.year; // 预算周期
         this.monthBudgets = monthBudgets;
         this.remark = data.remark;
+        this.approvalState = data.approvalState;
         Object.defineProperties(this, {
-            groupName: { enumerable: false },
             subjects: { enumerable: false },
         });
         this.fetchSubjects();
@@ -53,6 +53,8 @@ export default class Budget implements amb.IBudget {
 
     // 保存预算
     @action.bound public async save() {
-        return axios.post('/budget', this);
+        const group = rootStore.groupStore.list.find((item) => item._id === this.group)!;
+        const period = group.period!._id;
+        return axios.post('/budget', Object.assign({}, this, { period }));
     }
 }

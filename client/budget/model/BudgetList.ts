@@ -62,6 +62,7 @@ export class BudgetList {
                 group: group._id!,
                 period: budget && budget.period,
                 year,
+                approvalState: budget && budget.approvalState,
                 monthBudgets: budget ? budget.monthBudgets : [],
                 remark: budget && budget.remark,
             });

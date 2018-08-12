@@ -9,6 +9,7 @@ import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import AdvancedSearch from '../components/AdvancedSearch';
+import { ListState } from './ListState';
 
 const CheckboxItem = Checkbox.CheckboxItem;
 const Option = Select.Option;
@@ -23,15 +24,7 @@ const Title = styled.span`
 
 @observer
 export default class extends Component {
-    @observable private advancedSearchDisplay = false;
-    @action.bound private showAdvancedSearch() {
-        this.advancedSearchDisplay = true;
-        document.addEventListener('click', this.hideAdvancedSearch);
-    }
-    @action.bound private hideAdvancedSearch() {
-        this.advancedSearchDisplay = false;
-        document.removeEventListener('click', this.hideAdvancedSearch);
-    }
+    private pageState = new ListState();
     public exportExcel = () => {
         const table = document.getElementsByTagName('table')[0];
         excellentexport.excel(table, '工作簿1', '阿米巴');
@@ -51,10 +44,10 @@ export default class extends Component {
                 </Section>
                 <Section>
                     <SearchBar style={{ marginBottom: 0 }}>
-                        <Button onClick={this.showAdvancedSearch} type="primary">自定义指标</Button>
+                        <Button onClick={this.pageState.showAdvancedSearch} type="primary">自定义指标</Button>
                         <Button type="primary" onClick={this.exportExcel}>全部导出</Button>
                     </SearchBar>
-                    {this.advancedSearchDisplay && <AdvancedSearch store={store} />}
+                    {this.pageState.advancedSearchDisplay && <AdvancedSearch store={store} />}
                 </Section>
                 {store.allBudgetTables && store.allBudgetTables.map((item) => (
                     <TableSection key={item.budget.year + item.budget.group}>

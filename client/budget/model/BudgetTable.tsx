@@ -1,12 +1,13 @@
 import { Icon, InputNumber, Popconfirm, Select } from 'antd';
 import { SelectProps } from 'antd/lib/select';
-import { BudgetSubjectType, BudgetType, SearchRange } from 'config/config';
+import { ApprovalState, BudgetSubjectType, BudgetType, SearchRange } from 'config/config';
 import { action, computed, observable, toJS } from 'mobx';
 import { filter, values } from 'ramda';
 import React from 'react';
 import { render } from 'react-dom';
 
 import styled from 'styled-components';
+import ApprovalTtitle from '../components/ApprovalTtitle';
 import SubjectEditor from '../components/SubjectEditor';
 import SubjectTitle from '../components/SubjectTitle';
 import Budget from './Budget';
@@ -46,6 +47,20 @@ export default class BudgetTable {
         this.budget = budget;
         this.period = period;
         this.editable = editable;
+    }
+
+    @computed get approvalState() {
+        const period = rootStore.periodStore.list.filter((item) => item.state === '提报中').find((item) => item.groups.includes(this.budget.group) || item.allGroup);
+
+        // 还没有提报周期
+        if (!period) return ApprovalState.没有提报周期;
+        // if (period._id !== this.budget.period) console.log('asdf', this.budget.period, period._id);
+        // 新的预算周期
+        if (period._id !== this.budget.period) return ApprovalState.未提报;
+
+        // 未提报
+        if (!this.budget.approvalState) return ApprovalState.未提报;
+        return this.budget.approvalState;
     }
     // 添加项目
     @action.bound private addProject(subjectType: BudgetSubjectType) {

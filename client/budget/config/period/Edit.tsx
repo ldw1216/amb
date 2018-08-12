@@ -21,13 +21,12 @@ class Edit extends Component<FormComponentProps> {
         this.reaction = observe(store, 'editModelVisible', () => {
             if (!store.editModelVisible) return;
             const data = store.list[store.selectedIndex] || {};
-            rootStore.groupStore.fetch();
             this.props.form.getFieldDecorator('groups');
             this.props.form.setFieldsValue({
                 duration: data.duration ? data.duration.map((item) => moment(item)) : [],
                 year: data.year || new Date().getFullYear(),
                 quarters: data.quarters || [],
-                groups: data.groups && data.groups.map((item: any) => item._id),
+                groups: data.groups,
                 allGroup: data.allGroup,
             });
         });

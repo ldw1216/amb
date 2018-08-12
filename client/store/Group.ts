@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { action, observable } from 'mobx';
+import { action, computed, observable } from 'mobx';
 
 export class Group implements amb.IGroup {
     public _id?: string;
@@ -16,10 +16,16 @@ export class Group implements amb.IGroup {
         this.admin = data.admin;
         this.available = data.available;
     }
+
+    // 当前排期
+    @computed get period() {
+        if (!this._id) return null;
+        return rootStore.periodStore.list.filter((item) => item.state === '提报中').find((item) => item.groups.includes(this._id!) || item.allGroup);
+    }
 }
 
 export class GroupList {
-    @observable public list = [] as amb.IGroup[];
+    @observable public list: Group[] = [];
     @observable public sectors = [] as Array<{ _id: string, name: string }>;
     @observable public selectedIndex = -1;
     @observable public editModelVisible = false;
