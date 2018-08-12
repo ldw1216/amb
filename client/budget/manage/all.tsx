@@ -13,17 +13,19 @@ import { ListState } from './ListState';
 
 const CheckboxItem = Checkbox.CheckboxItem;
 const Option = Select.Option;
-const store = rootStore.budgetStore;
-store.fetchAllBudgetList();
 
 @observer
 export default class extends Component {
     private pageState = new ListState();
-    public exportExcel = () => {
+    private exportExcel = () => {
         const table = document.getElementsByTagName('table')[0];
         excellentexport.excel(table, '工作簿1', '阿米巴');
     }
+    public componentDidMount() {
+        this.pageState.fetchAllBudgetTables(false);
+    }
     public render() {
+        const { budgetTables } = this.pageState;
         return (
             <div>
                 <Section>
@@ -41,9 +43,9 @@ export default class extends Component {
                         <Button onClick={this.pageState.showAdvancedSearch} type="primary">自定义指标</Button>
                         <Button type="primary" onClick={this.exportExcel}>全部导出</Button>
                     </SearchBar>
-                    {this.pageState.advancedSearchDisplay && <AdvancedSearch store={store} />}
+                    {this.pageState.advancedSearchDisplay && <AdvancedSearch store={rootStore.budgetStore} />}
                 </Section>
-                {store.allBudgetTables && store.allBudgetTables.map((item) => (
+                {budgetTables.map((item) => (
                     <TableSection key={item.budget.year + item.budget.group}>
                         <ToolBar>
                             <ApprovalTtitle>{ApprovalState[item.approvalState]}</ApprovalTtitle>

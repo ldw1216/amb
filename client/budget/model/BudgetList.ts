@@ -26,6 +26,7 @@ export class BudgetList {
         const budgets = await axios.get('/budget/', { params: { year: this.condition.year } }).then((res) => res.data) as amb.IBudget[];
         const budgetList = budgets.map((budget) => new Budget(budget));
         this.allBudgetList = budgetList;
+        return budgetList;
     }
 
     // 获取当前用户的预算列表
