@@ -7,11 +7,11 @@ import React from 'react';
 import { render } from 'react-dom';
 
 import styled from 'styled-components';
-import ApprovalTtitle from '../components/ApprovalTtitle';
 import SubjectEditor from '../components/SubjectEditor';
 import SubjectTitle from '../components/SubjectTitle';
 import Budget from './Budget';
 import MonthBudget from './MonthBudget';
+import Period from './Period';
 import Subject from './Subject';
 import SubjectBudget from './SubjectBudget';
 
@@ -41,11 +41,9 @@ export default class BudgetTable {
     @observable public visibleTitles = this.allTitles;
     @observable public visibleType = true;
     @observable public budget: Budget;
-    @observable public period?: amb.IPeriod;
     @observable public editable: boolean = false;
-    constructor(budget: Budget, period: amb.IPeriod | undefined, editable = false) {
+    constructor(budget: Budget, editable = false) {
         this.budget = budget;
-        this.period = period;
         this.editable = editable;
     }
 
@@ -80,13 +78,16 @@ export default class BudgetTable {
 
     // 可提报的月份
     @computed get editableMonths() {
+        // 跟据当前用户阿米巴组的排期，计算可提报月份
         const months: number[] = [];
-        if (!this.period || !this.editable) return months;
+        const group = this.budget.fullGroup;
+        const period = group && group.period;
+        if (!this.editable || !group || !period) return months;
 
-        if (this.period.quarters.includes('一季度')) months.push(0, 1, 2);
-        if (this.period.quarters.includes('二季度')) months.push(3, 4, 5);
-        if (this.period.quarters.includes('三季度')) months.push(6, 7, 8);
-        if (this.period.quarters.includes('四季度')) months.push(9, 10, 11);
+        if (period.quarters.includes('一季度')) months.push(0, 1, 2);
+        if (period.quarters.includes('二季度')) months.push(3, 4, 5);
+        if (period.quarters.includes('三季度')) months.push(6, 7, 8);
+        if (period.quarters.includes('四季度')) months.push(9, 10, 11);
         return months;
     }
     private getBudgetValue(month: number, subject: amb.IBudgetSubject) {

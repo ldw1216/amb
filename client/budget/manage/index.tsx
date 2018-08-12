@@ -10,18 +10,25 @@ import { Link } from 'react-router-dom';
 
 import AdvancedSearch from '../components/AdvancedSearch';
 import ApprovalTtitle from '../components/ApprovalTtitle';
+import { BudgetList } from '../model/BudgetList';
+import BudgetTable from '../model/BudgetTable';
 import { ListState } from './ListState';
-
-const store = rootStore.budgetStore;
-store.fetchCurrentUserBudgetList();
 
 @observer
 export default class extends Component {
     private pageState = new ListState();
+    @observable private budgetTables: BudgetTable[] = [];
+    @observable private budgetList: BudgetList[] = [];
     private exportExcel = () => {
         const table = document.getElementsByTagName('table')[0];
         excellentexport.excel(table, '工作簿1', '阿米巴');
     }
+    public componentDidMount() {
+        rootStore.budgetStore.fetchCurrentUserBudgetList()
+            .then((list) => list.map((item) => new BudgetTable(item, false)))
+            .then((list) => this.budgetTables = list);
+    }
+
     public render() {
         return (
             <div>
@@ -30,9 +37,9 @@ export default class extends Component {
                         <Button onClick={this.pageState.showAdvancedSearch} type="primary">自定义指标</Button>
                         <Button type="primary" onClick={this.exportExcel}>全部导出</Button>
                     </SearchBar>
-                    {this.pageState.advancedSearchDisplay && <AdvancedSearch store={store} />}
+                    {this.pageState.advancedSearchDisplay && <AdvancedSearch store={rootStore.budgetStore} />}
                 </Section>
-                {store.currentUserBudgetTables && store.currentUserBudgetTables.map((item) => (
+                {this.budgetTables.map((item) => (
                     <TableSection key={item.budget.year + item.budget.group}>
                         <ToolBar>
                             <ApprovalTtitle>{ApprovalState[item.approvalState]}</ApprovalTtitle>

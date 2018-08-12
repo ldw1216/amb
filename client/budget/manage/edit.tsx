@@ -10,20 +10,18 @@ import BudgetRemark from '../components/BudgetRemark';
 import Budget from '../model/Budget';
 import BudgetTable from '../model/BudgetTable';
 
-const store = rootStore.budgetStore;
-
 @observer
 export default class extends Component<RouteComponentProps<{ groupId: string }>> {
     @observable private budget?: Budget;
     @observable private budgetTable?: BudgetTable;
     public componentDidMount() {
         const groupId = this.props.match.params.groupId;
-        store.getBudget(groupId).then((res) => {
+        rootStore.budgetStore.getCurrentUserBudget(groupId).then((res) => {
             if (!res) return;
+            const budgetTable = new BudgetTable(res, true);
+            budgetTable.allTitles = budgetTable.visibleTitles = budgetTable.allTitles
+                .filter(([key]) => !['实际收入', '预算完成率', '实际占收入比'].includes(key));
             runInAction(() => {
-                const budgetTable = new BudgetTable(res, store.periods.find(({ _id }) => _id === res.period), true);
-                budgetTable.allTitles = budgetTable.visibleTitles = budgetTable.allTitles
-                    .filter(([key]) => !['实际收入', '预算完成率', '实际占收入比'].includes(key));
                 this.budget = res;
                 this.budgetTable = budgetTable;
             });
@@ -49,10 +47,11 @@ export default class extends Component<RouteComponentProps<{ groupId: string }>>
     }
 
     private reset = async () => {
-        await store.fetchCurrentUserBudgetList();
+        await rootStore.budgetStore.fetchCurrentUserBudgetList();
         this.componentDidMount();
     }
     public render() {
+        if (!this.budget || !this.budget.fullGroup) return null;
         return (
             <div>
                 <Section>
