@@ -7,7 +7,8 @@ import { observer } from 'mobx-react';
 import moment from 'moment';
 import { Component } from 'react';
 import styled from 'styled-components';
-import store from './store';
+
+const store = rootStore.periodStore;
 
 const CheckboxItem = Checkbox.CheckboxItem;
 const FormItem = Form.Item;
@@ -21,7 +22,7 @@ class Edit extends Component<FormComponentProps> {
         this.reaction = reaction(() => store.editModelVisible, () => {
             if (!store.editModelVisible) return;
             this.props.form.getFieldDecorator('groups');
-            const data = store.data[store.selectedIndex] || {};
+            const data = store.list[store.selectedIndex] || {};
             this.props.form.setFieldsValue({
                 duration: data.duration ? data.duration.map((item) => moment(item)) : [],
                 year: data.year || new Date().getFullYear(),
@@ -81,7 +82,7 @@ class Edit extends Component<FormComponentProps> {
                     {getFieldValue('allGroup') === false && <FormItem label="阿米巴组" {...formItemLayout} >
                         {getFieldDecorator('groups', { rules: [{ required: true, message: '此字段必填' }] })(
                             <Select mode="multiple" filterOption={(input, option) => option.props.children!.toString().includes(input)} placeholder="请选择阿米巴组">
-                                {store.groups.map((item) => <Option key={item._id} value={item._id}>{item.name}</Option>)}
+                                {rootStore.groupStore.list.map((item) => <Option key={item._id} value={item._id}>{item.name}</Option>)}
                             </Select>,
                         )}
                     </FormItem>}

@@ -1,5 +1,5 @@
 import { BudgetSubjectType, BudgetType, ApprovalState } from 'config/config'
-import { RootStore as RootStoreClass } from 'store/index'
+// import { RootStore as RootStoreClass } from 'store/index'
 
 declare global {
     namespace amb {
@@ -20,7 +20,7 @@ declare global {
 
         // 阿米巴组
         interface IGroup {
-            _id: string
+            _id?: string
             sector: string | { name: string } // 大部门
             name: string // 阿米巴组
             rewardRate: number // 奖金比例
@@ -92,10 +92,9 @@ declare global {
             reality?: number
         }
     }
-    interface Window {
-        rootStore: RootStoreClass
-    }
-    const rootStore: RootStoreClass
-    class RootStore extends RootStoreClass { }
-    // export type Root = RootStore
+    // interface Window {
+    //     rootStore: RootStoreClass
+    // }
+    // const rootStore: RootStoreClass
+    // class RootStore extends RootStoreClass { }
 }

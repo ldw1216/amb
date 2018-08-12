@@ -2,7 +2,6 @@
 import { LocaleProvider } from 'antd';
 import zh_CN from 'antd/lib/locale-provider/zh_CN';
 import { Provider } from 'mobx-react';
-// import DevTools from 'mobx-react-devtools';
 import 'moment/locale/zh-cn';
 import { render } from 'react-dom';
 import universal from 'react-imported-component';
@@ -22,7 +21,6 @@ render(
                 </Router>
             </Provider>
         </LocaleProvider>
-        {/* <DevTools /> */}
     </div>
     ,
     document.getElementById('root'),
