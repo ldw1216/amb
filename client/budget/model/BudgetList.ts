@@ -1,10 +1,10 @@
 import axios from 'axios';
 import { action, computed, observable, runInAction, toJS } from 'mobx';
-import Budget from './model/Budget';
-import BudgetTable from './model/BudgetTable';
-import Condition from './model/Condition';
+import Budget from './Budget';
+import BudgetTable from './BudgetTable';
+import Condition from './Condition';
 
-export class BudgetStore {
+export class BudgetList {
     @observable public currentUserBudgetList: Budget[] = []; // 当前用户的预算列表
     @observable public allBudgetList: Budget[] = []; // 所有组的预算列表
     @observable public periods: amb.IPeriod[] = []; // 当前用户的预算周期
@@ -56,7 +56,7 @@ export class BudgetStore {
             return new Budget({
                 _id: budget && budget._id,
                 user: rootStore.user._id,
-                group: group._id,
+                group: group._id!,
                 groupName: group.name,
                 period: period && period._id,
                 year,

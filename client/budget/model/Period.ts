@@ -48,7 +48,6 @@ export class PeriodList {
 
     @action.bound
     public showEditModel(index: number) {
-        console.log('index showEditModel', index);
         this.selectedIndex = index;
         this.editModelVisible = true;
     }
@@ -70,7 +69,6 @@ export class PeriodList {
     @action.bound
     public async fetch() {
         const list = await axios.get('/period').then((res) => res.data).then((list_) => list_.map((item: amb.IPeriod) => new Period(item)));
-        await rootStore.groupStore.fetch();
         this.list = list.map((item: any) => new Period(item));
     }
 }

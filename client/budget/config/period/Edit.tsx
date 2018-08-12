@@ -1,8 +1,7 @@
 import { DatePicker, Form, Icon, Input, Modal, Radio, Select, Switch, Tooltip } from 'antd';
 import { FormComponentProps } from 'antd/lib/form';
-import axios from 'axios';
 import Checkbox from 'components/Checkbox';
-import { observable, reaction } from 'mobx';
+import { observable, observe, reaction } from 'mobx';
 import { observer } from 'mobx-react';
 import moment from 'moment';
 import { Component } from 'react';
@@ -19,10 +18,11 @@ const { RangePicker } = DatePicker;
 class Edit extends Component<FormComponentProps> {
     private reaction: any;
     public componentDidMount() {
-        this.reaction = reaction(() => store.editModelVisible, () => {
+        this.reaction = observe(store, 'editModelVisible', () => {
             if (!store.editModelVisible) return;
-            this.props.form.getFieldDecorator('groups');
             const data = store.list[store.selectedIndex] || {};
+            rootStore.groupStore.fetch();
+            this.props.form.getFieldDecorator('groups');
             this.props.form.setFieldsValue({
                 duration: data.duration ? data.duration.map((item) => moment(item)) : [],
                 year: data.year || new Date().getFullYear(),
