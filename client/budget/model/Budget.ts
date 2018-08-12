@@ -37,6 +37,13 @@ export default class Budget implements amb.IBudget {
         this.fetchSubjects();
     }
 
+    // 本预算的组是否失效
+    @computed get groupIsAvailable() {
+        const group = rootStore.groupStore.list.find((item) => item._id === this.group);
+        if (!group || group.available) return true;
+        return group.available;
+    }
+
     @computed get groupName() {
         const group = rootStore.groupStore.list.find((item) => item._id === this.group);
         return group ? group.name : '';

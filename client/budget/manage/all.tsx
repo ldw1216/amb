@@ -3,24 +3,18 @@ import Checkbox from 'components/Checkbox';
 import excellentexport from 'components/excellentexport';
 import { SearchBar, ToolBar } from 'components/SearchBar';
 import Section, { TableSection } from 'components/Section';
-import { action, observable, toJS } from 'mobx';
+import { ApprovalState } from 'config/config';
 import { observer } from 'mobx-react';
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-import styled from 'styled-components';
 import AdvancedSearch from '../components/AdvancedSearch';
+import ApprovalTtitle from '../components/ApprovalTtitle';
 import { ListState } from './ListState';
 
 const CheckboxItem = Checkbox.CheckboxItem;
 const Option = Select.Option;
 const store = rootStore.budgetStore;
 store.fetchAllBudgetList();
-
-const Title = styled.span`
-    font-size: 16px;
-    line-height: 2;
-    margin-right: 15px;
-`;
 
 @observer
 export default class extends Component {
@@ -52,10 +46,23 @@ export default class extends Component {
                 {store.allBudgetTables && store.allBudgetTables.map((item) => (
                     <TableSection key={item.budget.year + item.budget.group}>
                         <ToolBar>
-                            <Title>待审核</Title>
-                            <Link to={`/budget/edit/${item.budget.group}`}><Button>审核</Button></Link>
-                            <Link to={`/budget/edit/${item.budget.group}`}><Button>填写实际</Button></Link>
-                            <Link to={`/budget/edit/${item.budget.group}`}><Button>修改类型</Button></Link>
+                            <ApprovalTtitle>{ApprovalState[item.approvalState]}</ApprovalTtitle>
+                            {item.budget.groupIsAvailable ? '有效' : '失效'}--（失效灰色样式未写）
+                            {item.approvalState === ApprovalState.已提报未审核 ?
+                                <Link to={`/budget/edit/${item.budget.group}`}>
+                                    <Button>审核预算</Button>
+                                </Link> : ''
+                            }
+                            {item.approvalState === ApprovalState.已通过审核 ?
+                                <React.Fragment>
+                                    <Link to={`/budget/edit/${item.budget.group}`}>
+                                        <Button>填写实际</Button>
+                                    </Link>
+                                    <Link to={`/budget/edit/${item.budget.group}`}>
+                                        <Button>修改类型</Button>
+                                    </Link>
+                                </React.Fragment> : ''
+                            }
                         </ToolBar>
                         <Table pagination={false} scroll={{ x: 'auto' }} bordered size="small" dataSource={item.dataSource} columns={item.columns} />
                     </TableSection>

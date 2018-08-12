@@ -54,7 +54,7 @@ export default class BudgetTable {
 
         // 还没有提报周期
         if (!period) return ApprovalState.没有提报周期;
-        // if (period._id !== this.budget.period) console.log('asdf', this.budget.period, period._id);
+
         // 新的预算周期
         if (period._id !== this.budget.period) return ApprovalState.未提报;
 
