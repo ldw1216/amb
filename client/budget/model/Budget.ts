@@ -11,14 +11,13 @@ export default class Budget implements amb.IBudget {
     @observable public approvalState?: ApprovalState;
     @observable public user: string;
     @observable public group: string;
-    @observable public groupName: string;
     @observable public period?: string;
     @observable public year: number;
     @observable public monthBudgets: MonthBudget[] = [];
     @observable public subjects: Subject[] = [];
     @observable public remark?: string;
 
-    constructor(data: amb.IBudget & { groupName: string }) {
+    constructor(data: amb.IBudget) {
         const monthBudgets = (data.monthBudgets || []).map((monthBudget) => {
             if (monthBudget instanceof MonthBudget) return monthBudget;
             return new MonthBudget(monthBudget);
@@ -27,7 +26,6 @@ export default class Budget implements amb.IBudget {
         this._id = data._id;
         this.user = data.user; // 预算周期
         this.group = data.group; // 预算周期
-        this.groupName = data.groupName;
         this.period = data.period;
         this.year = data.year; // 预算周期
         this.monthBudgets = monthBudgets;
@@ -37,6 +35,11 @@ export default class Budget implements amb.IBudget {
             subjects: { enumerable: false },
         });
         this.fetchSubjects();
+    }
+
+    @computed get groupName() {
+        const group = rootStore.groupStore.list.find((item) => item._id === this.group);
+        return group ? group.name : '';
     }
 
     @computed get expenseTypes(): amb.IExpenseTypeOption[] {

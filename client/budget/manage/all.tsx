@@ -10,7 +10,7 @@ import styled from 'styled-components';
 import AdvancedSearch from '../components/AdvancedSearch';
 
 const store = rootStore.budgetStore;
-store.fetchCurrentUserBudgetList();
+store.fetchAllBudgetList();
 
 const Title = styled.span`
     font-size: 16px;
@@ -43,7 +43,7 @@ export default class extends Component {
                     </SearchBar>
                     {this.advancedSearchDisplay && <AdvancedSearch store={store} />}
                 </Section>
-                {store.currentUserBudgetTables && store.currentUserBudgetTables.map((item) => (
+                {store.allBudgetTables && store.allBudgetTables.map((item) => (
                     <TableSection key={item.budget.year + item.budget.group}>
                         <ToolBar>
                             <Title>待审核</Title>
