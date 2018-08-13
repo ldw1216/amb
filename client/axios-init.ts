@@ -1,5 +1,6 @@
 import { message } from 'antd';
 import axios from 'axios';
+import history from 'store/history';
 
 axios.defaults.timeout = 8000;
 axios.defaults.withCredentials = true;
@@ -14,7 +15,7 @@ axios.interceptors.response.use(
         const { response } = err;
         if (response) { message.error(err.response.data.error || err.response.data.msg); } else { message.error(err.message); }
         if (response && response.status === 401) {
-            location.href = '/login';
+            history.push('/login');
         }
         return Promise.reject(err.response ? err.response : err);
     });

@@ -1,8 +1,8 @@
-import { Tabs } from "antd";
-import Section from "components/Section";
-import { PureComponent } from "react";
-import Group from "./Group";
-import Sector from "./Sector";
+import { Tabs } from 'antd';
+import Section from 'components/Section';
+import { PureComponent } from 'react';
+import Group from './Group';
+import Sector from './Sector';
 
 const TabPane = Tabs.TabPane;
 

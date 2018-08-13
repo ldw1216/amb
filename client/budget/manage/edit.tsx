@@ -6,10 +6,9 @@ import { action, autorun, computed, observable, runInAction, toJS } from 'mobx';
 import { observer } from 'mobx-react';
 import React, { Component } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
-import BudgetRemark from './components/BudgetRemark';
-import Budget from './model/Budget';
-import BudgetTable from './model/BudgetTable';
-import store from './store';
+import BudgetRemark from '../components/BudgetRemark';
+import Budget from '../model/Budget';
+import BudgetTable from '../model/BudgetTable';
 
 @observer
 export default class extends Component<RouteComponentProps<{ groupId: string }>> {
@@ -17,12 +16,12 @@ export default class extends Component<RouteComponentProps<{ groupId: string }>>
     @observable private budgetTable?: BudgetTable;
     public componentDidMount() {
         const groupId = this.props.match.params.groupId;
-        store.getBudget(groupId).then((res) => {
+        rootStore.budgetStore.getCurrentUserBudget(groupId).then((res) => {
             if (!res) return;
+            const budgetTable = new BudgetTable(res, true);
+            budgetTable.allTitles = budgetTable.visibleTitles = budgetTable.allTitles
+                .filter(([key]) => !['实际收入', '预算完成率', '实际占收入比'].includes(key));
             runInAction(() => {
-                const budgetTable = new BudgetTable(res, store.periods.find(({ _id }) => _id === res.period), true);
-                budgetTable.allTitles = budgetTable.visibleTitles = budgetTable.allTitles
-                    .filter(([key]) => !['实际收入', '预算完成率', '实际占收入比'].includes(key));
                 this.budget = res;
                 this.budgetTable = budgetTable;
             });
@@ -48,10 +47,11 @@ export default class extends Component<RouteComponentProps<{ groupId: string }>>
     }
 
     private reset = async () => {
-        await store.fetchCurrentUserBudgetList();
+        await rootStore.budgetStore.fetchCurrentUserBudgetList();
         this.componentDidMount();
     }
     public render() {
+        if (!this.budget || !this.budget.fullGroup) return null;
         return (
             <div>
                 <Section>

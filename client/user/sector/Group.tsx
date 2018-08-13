@@ -1,6 +1,5 @@
 import { Button, Form, Input, InputNumber, Modal, Select, Switch, Table, Tag } from 'antd';
 import { WrappedFormUtils } from 'antd/lib/form/Form';
-import axios from 'axios';
 import SearchBox from 'components/SearchBar';
 import { action, isComputed, observable, reaction } from 'mobx';
 import { observer } from 'mobx-react';
@@ -10,42 +9,7 @@ const { Column } = Table;
 const FormItem = Form.Item;
 const Option = Select.Option;
 
-class Store {
-    @observable public data = [] as amb.IGroup[];
-    @observable public sectors = [] as Array<{ _id: string, name: string }>;
-    @observable public selectedIndex = -1;
-    @observable public editModelVisible = false;
-    @action.bound
-    public async showEditModel(index: number) {
-        this.selectedIndex = index;
-        this.editModelVisible = true;
-        this.sectors = await axios.get('/sector').then((res) => res.data);
-    }
-
-    @action.bound
-    public async save(values: any) {
-        const edit = this.data[this.selectedIndex];
-        if (edit) {
-            await axios.post('/group/' + edit._id, values);
-        } else {
-            await axios.post('/group', values);
-        }
-        this.hideEditModel();
-        await this.fetch();
-    }
-
-    @action.bound
-    public hideEditModel() {
-        this.editModelVisible = false;
-    }
-
-    @action.bound
-    public async fetch() {
-        this.data = await axios.get('/group').then((res) => res.data);
-    }
-}
-
-const store = new Store();
+const store = rootStore.groupStore;
 
 @observer
 export default class extends Component {
@@ -59,7 +23,7 @@ export default class extends Component {
                     <Button onClick={() => store.showEditModel(-1)} type="primary">添加阿米巴组</Button>
                 </SearchBox>
                 <Edit />
-                <Table pagination={false} rowKey="_id" dataSource={store.data}>
+                <Table pagination={false} rowKey="_id" dataSource={store.list}>
                     <Column title="ID" dataIndex="key" render={(_, __, index) => index + 1} />
                     <Column title="大部门" dataIndex="sector.name" />
                     <Column title="阿米巴组" dataIndex="name" />
@@ -79,7 +43,7 @@ const Edit = Form.create()(
         public componentDidMount() {
             this.reaction = reaction(() => store.editModelVisible, () => {
                 if (!store.editModelVisible) return;
-                const data = store.data[store.selectedIndex] || {};
+                const data = store.list[store.selectedIndex] || {};
                 this.props.form.setFieldsValue({
                     name: data.name,
                     sector: data.sector && (data.sector as any)._id,

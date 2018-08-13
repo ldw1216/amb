@@ -3,14 +3,17 @@ import { BudgetModel } from 'model/budget.model';
 const router = new Router({ prefix: '/budget' });
 
 router.get('/', async (ctx) => {
-    ctx.body = await BudgetModel.find({});
+    const year = parseInt(ctx.query.year, 10);
+    const condition = year ? { year } : {};
+    ctx.body = await BudgetModel.find(condition);
 });
 
-router.get('/group/:groupId/year/:year', async (ctx) => {
-    ctx.body = await BudgetModel.find({ group: ctx.params.groupId, year: parseInt(ctx.params.year, 10) })
-        .sort({ _id: -1 })
-        .limit(1)
-        .then((list) => list[0]);
+// 获取当前用的所有预算信息  /budget/currentUser
+router.get('/currentUser', async (ctx) => {
+    const year = parseInt(ctx.query.year, 10);
+    if (!year) ctx.throw(400, '缺少年份');
+    const groups = ctx.session!.user.groups.map((item: any) => item._id);
+    ctx.body = await BudgetModel.find({ group: { $in: groups }, year }).sort({ _id: -1 });
 });
 
 router.post('/', async (ctx) => {

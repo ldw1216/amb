@@ -2,8 +2,9 @@
 
 ## start
 1. 参考原型 ：http://www.pmdaniu.com/cloud/23651/34ea771de53143df5a5a1f14f6556dc2-10237/start.html
-2. 本项目依赖nodejs + mongodb 
+2. 本项目依赖nodejs + react + mobx + mongodb 
 3. 数据库连接配置 可在/server/model/index.ts中配置数据库连接，也可使环境变量 MONGOOSE_URI 配置数据库连接
+4. 为了开发方便，本项目在window对象中增加了rootStore属性，可以在大多数文件中直接使用 window.rootStore 或 rootStore
 
 ## 项目目录结构
 
