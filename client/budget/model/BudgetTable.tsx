@@ -169,24 +169,24 @@ export default class BudgetTable {
             type: undefined,
         } as any;
         // 添加收入、成本、费用汇总
-        this.budget.monthBudgets.forEach((monthBudget, i) => {
-            incomeAmount[`预算_${i}月`] = monthBudget.budgetSum.income;
-            incomeAmount[`预算占收入比_${i}月`] = monthBudget.budgetRate.income;
-            incomeAmount[`实际收入_${i}月`] = monthBudget.realitySum.income;
-            incomeAmount[`实际占收入比_${i}月`] = monthBudget.realityRate.income;
-            incomeAmount[`预算完成率_${i}月`] = monthBudget.rate.income;
+        this.budget.monthBudgets.forEach(({ month, budgetSum, realitySum, realityRate, rate, budgetRate }) => {
+            incomeAmount[`预算_${month}月`] = budgetSum.income;
+            incomeAmount[`预算占收入比_${month}月`] = budgetRate.income;
+            incomeAmount[`实际收入_${month}月`] = realitySum.income;
+            incomeAmount[`实际占收入比_${month}月`] = realityRate.income;
+            incomeAmount[`预算完成率_${month}月`] = rate.income;
 
-            costAmount[`预算_${i}月`] = monthBudget.budgetSum.cost;
-            costAmount[`预算占收入比_${i}月`] = monthBudget.budgetRate.cost;
-            costAmount[`实际收入_${i}月`] = monthBudget.realitySum.cost;
-            costAmount[`实际占收入比_${i}月`] = monthBudget.realityRate.cost;
-            costAmount[`预算完成率_${i}月`] = monthBudget.rate.cost;
+            costAmount[`预算_${month}月`] = budgetSum.cost;
+            costAmount[`预算占收入比_${month}月`] = budgetRate.cost;
+            costAmount[`实际收入_${month}月`] = realitySum.cost;
+            costAmount[`实际占收入比_${month}月`] = realityRate.cost;
+            costAmount[`预算完成率_${month}月`] = rate.cost;
 
-            expenseAmount[`预算_${i}月`] = monthBudget.budgetSum.expense;
-            expenseAmount[`预算占收入比_${i}月`] = monthBudget.budgetRate.expense;
-            expenseAmount[`实际收入_${i}月`] = monthBudget.realitySum.expense;
-            expenseAmount[`实际占收入比_${i}月`] = monthBudget.realityRate.expense;
-            expenseAmount[`预算完成率_${i}月`] = monthBudget.rate.expense;
+            expenseAmount[`预算_${month}月`] = budgetSum.expense;
+            expenseAmount[`预算占收入比_${month}月`] = budgetRate.expense;
+            expenseAmount[`实际收入_${month}月`] = realitySum.expense;
+            expenseAmount[`实际占收入比_${month}月`] = realityRate.expense;
+            expenseAmount[`预算完成率_${month}月`] = rate.expense;
         });
         // 每个项目一行，添加数据，修改数据 填加完数据以后跟据提报周期确定哪几个季度是可编辑的
         this.budget.subjects.concat(this.expenseSubjects as any).forEach((subject) => {
@@ -201,13 +201,13 @@ export default class BudgetTable {
                 type: this.canEdit ? <TypeSelector onChange={(e) => subject.save && subject.save({ budgetType: e as any })} value={subject.budgetType} /> : subject.budgetType,
             } as any;
 
-            this.budget.monthBudgets.forEach((monthBudget, i) => {
+            this.budget.monthBudgets.forEach((monthBudget) => {
                 const data = this.getBudgetValue(monthBudget, subject);
-                row[`预算_${i}月`] = data && data.budget;
-                row[`预算占收入比_${i}月`] = '--';
-                row[`实际收入_${i}月`] = this.getBudgetValue(monthBudget, subject).reality;
-                row[`实际占收入比_${i}月`] = 44;
-                row[`预算完成率_${i}月`] = 'a';
+                row[`预算_${monthBudget.month}月`] = data && data.budget;
+                row[`预算占收入比_${monthBudget.month}月`] = data.budgetRate;
+                row[`实际收入_${monthBudget.month}月`] = data.reality;
+                row[`实际占收入比_${monthBudget.month}月`] = data.realityRate;
+                row[`预算完成率_${monthBudget.month}月`] = data.completeRate;
             });
 
             this.editableMonths.forEach((i) => {

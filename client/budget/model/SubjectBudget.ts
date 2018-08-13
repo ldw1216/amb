@@ -33,4 +33,9 @@ export default class SubjectBudget implements amb.ISubjectBudget {
     @computed get realityRate() {
         return this.monthBudget.realitySum.income && (this.reality !== undefined) ? (this.reality / this.monthBudget.realitySum.income * 100).toFixed(2) + '%' : '--';
     }
+
+    // 预算完成率
+    @computed get completeRate() {
+        return (this.budget !== undefined && this.reality !== undefined) ? (this.reality / this.budget * 100).toFixed(2) + '%' : '--';
+    }
 }
