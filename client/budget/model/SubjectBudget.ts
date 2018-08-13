@@ -1,5 +1,5 @@
 import { BudgetSubjectType } from 'config/config';
-import { observable } from 'mobx';
+import { computed, observable } from 'mobx';
 import MonthBudget from './MonthBudget';
 
 export default class SubjectBudget implements amb.ISubjectBudget {
@@ -10,7 +10,7 @@ export default class SubjectBudget implements amb.ISubjectBudget {
     @observable public subjectName: string;
     @observable public budget?: number;
     @observable public reality?: number;
-    @observable public monthBudget: MonthBudget;
+    @observable private monthBudget: MonthBudget;
     constructor(data: amb.ISubjectBudget, monthBudget: MonthBudget) {
         this._id = data._id;
         this.subjectId = data.subjectId;
@@ -19,5 +19,18 @@ export default class SubjectBudget implements amb.ISubjectBudget {
         this.budget = data.budget;
         this.reality = data.reality;
         this.monthBudget = monthBudget;
+        Object.defineProperties(this, {
+            monthBudget: { enumerable: false },
+        });
+    }
+
+    // 预算占收入比
+    @computed get budgetRate() {
+        return this.monthBudget.budgetSum.income && (this.budget !== undefined) ? (this.budget / this.monthBudget.budgetSum.income * 100).toFixed(2) + '%' : '--';
+    }
+
+    // 实际占收入比
+    @computed get realityRate() {
+        return this.monthBudget.realitySum.income && (this.reality !== undefined) ? (this.reality / this.monthBudget.realitySum.income * 100).toFixed(2) + '%' : '--';
     }
 }

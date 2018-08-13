@@ -57,7 +57,7 @@ declare global {
             id?: string;
             year?: number;
             group?: string; // 阿米巴组
-            subjectType?: BudgetSubjectType;  // 收入主类型
+            subjectType: BudgetSubjectType;  // 收入主类型
             budgetType?: BudgetType;  // 预算类型
             name?: string; // 类型名称
             sort?: number; // 排序

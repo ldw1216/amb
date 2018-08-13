@@ -104,12 +104,16 @@ export default class BudgetTable {
         if (period.quarters.includes('四季度')) months.push(9, 10, 11);
         return months;
     }
-    private getBudgetValue(month: number, subject: amb.IBudgetSubject) {
-        const defalut = { budget: 0, reality: 0 };
-        const monthBuget = this.budget.monthBudgets.find((item) => item.month === month);
-        if (!monthBuget) return defalut;
-        const subjectBudget = monthBuget.getSubjectBudget(subject);
-        return subjectBudget || defalut;
+    private getBudgetValue(monthBudget: MonthBudget, subject: amb.IBudgetSubject) {
+        const subjectBudget = monthBudget.getSubjectBudget(subject);
+        if (subjectBudget) return subjectBudget;
+        return new SubjectBudget({
+            subjectId: subject._id!,
+            subjectType: subject.subjectType,
+            subjectName: subject.name!,
+            budget: undefined,
+            reality: undefined,
+        }, monthBudget);
     }
 
     // 设置预算值
@@ -185,21 +189,22 @@ export default class BudgetTable {
                         <Icon type="close" />
                     </Popconfirm>
                     {subject && subject.name}</SubjectSubTitle >,
-                type: <TypeSelector onChange={(e) => subject.save && subject.save({ budgetType: e as any })} value={subject.budgetType} />,
+                type: <TypeSelector onChange={(e: any) => subject.save && subject.save({ budgetType: e })} value={subject.budgetType} />,
             } as any;
 
             this.budget.monthBudgets.forEach((monthBudget, i) => {
-                const data = this.getBudgetValue(i, subject);
+                const data = this.getBudgetValue(monthBudget, subject);
                 row[`预算_${i}月`] = data && data.budget;
                 row[`预算占收入比_${i}月`] = '--';
-                row[`实际收入_${i}月`] = this.getBudgetValue(i, subject).reality;
+                row[`实际收入_${i}月`] = this.getBudgetValue(monthBudget, subject).reality;
                 row[`实际占收入比_${i}月`] = 44;
                 row[`预算完成率_${i}月`] = 'a';
             });
 
             this.editableMonths.forEach((i) => {
-                row[`预算_${i}月`] = <InputNumber value={this.getBudgetValue(i, subject).budget} onChange={(value) => this.setBudgetValue(i, subject, { budget: +(value || 0) })} />;
-                row[`实际收入_${i}月`] = <InputNumber value={this.getBudgetValue(i, subject).reality} onChange={(value) => this.setBudgetValue(i, subject, { reality: +(value || 0) })} />;
+                const monthBudget = this.budget.monthBudgets.find((item) => item.month === i) || new MonthBudget({ month: i, subjectBudgets: [] });
+                row[`预算_${i}月`] = <InputNumber value={this.getBudgetValue(monthBudget, subject).budget} onChange={(value) => this.setBudgetValue(i, subject, { budget: +(value || 0) })} />;
+                row[`实际收入_${i}月`] = <InputNumber value={this.getBudgetValue(monthBudget, subject).reality} onChange={(value) => this.setBudgetValue(i, subject, { reality: +(value || 0) })} />;
             });
             if (subject.subjectType === BudgetSubjectType.收入) incomeRows.push(row);
             if (subject.subjectType === BudgetSubjectType.成本) costRows.push(row);
