@@ -22,7 +22,7 @@ export default class extends Component {
         excellentexport.excel(table, '工作簿1', '阿米巴');
     }
     public componentDidMount() {
-        this.pageState.fetchAllBudgetTables(false);
+        this.pageState.fetchAllBudgetTables({});
     }
     public render() {
         const { budgetTables, condition } = this.pageState;
@@ -49,7 +49,7 @@ export default class extends Component {
                     <TableSection key={item.budget.year + item.budget.group}>
                         <ToolBar>
                             <ApprovalTtitle>{ApprovalState[item.approvalState]}</ApprovalTtitle>
-                            {item.budget.groupIsAvailable ? '有效' : '失效'}--（失效灰色样式未写）
+                            {item.budget.groupIsAvailable ? '有效' : '失效'}
                             {item.approvalState === ApprovalState.已提报未审核 ?
                                 <Link to={`/budget/edit/${item.budget.group}`}>
                                     <Button>审核预算</Button>
@@ -66,7 +66,7 @@ export default class extends Component {
                                 </React.Fragment> : ''
                             }
                         </ToolBar>
-                        <Table pagination={false} scroll={{ x: 'auto' }} bordered size="small" dataSource={item.dataSource} columns={item.columns} />
+                        <Table className={item.budget.groupIsAvailable ? '' : 'disabled'} pagination={false} scroll={{ x: 'auto' }} bordered size="small" dataSource={item.dataSource} columns={item.columns} />
                     </TableSection>
                 ))}
             </div>

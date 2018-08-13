@@ -20,7 +20,7 @@ export default class extends Component {
         excellentexport.excel(table, '工作簿1', '阿米巴');
     }
     public componentDidMount() {
-        this.pageState.fetchCurrentUserBudgetTables();
+        this.pageState.fetchCurrentUserBudgetTables({});
     }
 
     public render() {
@@ -38,13 +38,13 @@ export default class extends Component {
                     <TableSection key={item.budget.year + item.budget.group}>
                         <ToolBar>
                             <ApprovalTtitle>{ApprovalState[item.approvalState]}</ApprovalTtitle>
-                            {(item.approvalState === ApprovalState.没有提报周期 || item.approvalState === ApprovalState.已通过审核) ? '' :
+                            {(item.approvalState >= ApprovalState.已通过审核) ? '' :
                                 <Link to={`/budget/edit/${item.budget.group}`}>
                                     <Button>修改预算</Button>
                                 </Link>
                             }
                         </ToolBar>
-                        <Table pagination={false} scroll={{ x: 'auto' }} bordered size="small" dataSource={item.dataSource} columns={item.columns} />
+                        <Table className={item.approvalState >= ApprovalState.已通过审核 ? 'disabled' : ''} pagination={false} scroll={{ x: 'auto' }} bordered size="small" dataSource={item.dataSource} columns={item.columns} />
                     </TableSection>
                 ))}
             </div>

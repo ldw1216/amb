@@ -90,5 +90,14 @@ declare global {
             budget?: number
             reality?: number
         }
+
+        // 表格可编辑项
+        interface ITableEditableOptiont {
+            budgetType?: boolean;
+            budget?: boolean;
+            reality?: boolean;
+            addSubject?: boolean;
+            removeSubject?: boolean;
+        }
     }
 }
