@@ -33,8 +33,8 @@ export default class MonthBudget implements amb.IMonthBudget {
     @computed get budgetRate() {
         return {
             income: this.budgetSum.income ? '100%' : '--',
-            cost: this.budgetSum.income ? this.budgetSum.cost / this.budgetSum.income : '--',
-            expense: this.budgetSum.income ? this.budgetSum.expense / this.budgetSum.income : '--',
+            cost: this.budgetSum.income ? (this.budgetSum.cost / this.budgetSum.income * 100).toFixed(2) + '%' : '--',
+            expense: this.budgetSum.income ? (this.budgetSum.expense / this.budgetSum.income * 100).toFixed(2) + '%' : '--',
         };
     }
 
@@ -57,23 +57,23 @@ export default class MonthBudget implements amb.IMonthBudget {
     @computed get realityRate() {
         return {
             income: this.realitySum.income ? '100%' : '--',
-            cost: this.realitySum.income ? this.realitySum.cost / this.realitySum.income : '--',
-            expense: this.realitySum.income ? this.realitySum.expense / this.realitySum.income : '--',
+            cost: this.realitySum.income ? (this.realitySum.cost / this.realitySum.income * 100).toFixed(2) + '%' : '--',
+            expense: this.realitySum.income ? (this.realitySum.expense / this.realitySum.income * 100).toFixed(2) + '%' : '--',
         };
     }
 
     // 预算完成率
     @computed get rate() {
         return {
-            income: this.budgetSum.income ? (this.realitySum.income / this.budgetSum.income) : '--',
-            cost: this.budgetSum.cost ? (this.realitySum.cost / this.budgetSum.cost) : '--',
-            expense: this.budgetSum.expense ? (this.realitySum.expense / this.budgetSum.expense) : '--',
+            income: this.budgetSum.income ? (this.realitySum.income / this.budgetSum.income * 100).toFixed(2) + '%' : '--',
+            cost: this.budgetSum.cost ? (this.realitySum.cost / this.budgetSum.cost * 100).toFixed(2) + '%' : '--',
+            expense: this.budgetSum.expense ? (this.realitySum.expense / this.budgetSum.expense * 100).toFixed(2) + '%' : '--',
         };
     }
 
     constructor(data: amb.IMonthBudget) {
         this._id = data._id;
         this.month = data.month;
-        this.subjectBudgets = (data.subjectBudgets || []).map((item) => new SubjectBudget(item));
+        this.subjectBudgets = (data.subjectBudgets || []).map((item) => new SubjectBudget(item, this));
     }
 }

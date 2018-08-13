@@ -43,7 +43,7 @@ export default class extends Component {
                         <Button onClick={this.pageState.showAdvancedSearch} type="primary">自定义指标</Button>
                         <Button type="primary" onClick={this.exportExcel}>全部导出</Button>
                     </SearchBar>
-                    {this.pageState.advancedSearchDisplay && <AdvancedSearch store={rootStore.budgetStore} />}
+                    {this.pageState.advancedSearchDisplay && <AdvancedSearch />}
                 </Section>
                 {budgetTables.map((item) => (
                     <TableSection key={item.budget.year + item.budget.group}>

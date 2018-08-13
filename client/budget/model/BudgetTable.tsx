@@ -129,7 +129,7 @@ export default class BudgetTable {
                 subjectId: subject._id!,
                 subjectType: subject.subjectType!,
                 subjectName: subject.name!, // 子类型id
-            });
+            }, monthBuget);
             monthBuget.subjectBudgets.push(subjectBudget);
         }
         if (value.budget) subjectBudget!.budget = value.budget;
@@ -171,10 +171,10 @@ export default class BudgetTable {
             costAmount[`预算完成率_${i}月`] = monthBudget.rate.cost;
 
             expenseAmount[`预算_${i}月`] = monthBudget.budgetSum.expense;
-            expenseAmount[`预算占收入比_${i}月`] = (monthBudget.budgetSum.expense / monthBudget.budgetSum.income * 100).toFixed(2) + '%';
+            expenseAmount[`预算占收入比_${i}月`] = monthBudget.budgetRate.expense;
             expenseAmount[`实际收入_${i}月`] = monthBudget.realitySum.expense;
-            expenseAmount[`实际占收入比_${i}月`] = monthBudget.realitySum.income ? (monthBudget.realitySum.expense / monthBudget.realitySum.income * 100).toFixed(2) + '%' : '--';
-            expenseAmount[`预算完成率_${i}月`] = monthBudget.budgetSum.expense ? (monthBudget.realitySum.expense / monthBudget.budgetSum.expense * 100).toFixed(2) + '%' : '--';
+            expenseAmount[`实际占收入比_${i}月`] = monthBudget.realityRate.expense;
+            expenseAmount[`预算完成率_${i}月`] = monthBudget.rate.expense;
         });
         // 每个项目一行，添加数据，修改数据 填加完数据以后跟据提报周期确定哪几个季度是可编辑的
         this.budget.subjects.concat(this.expenseSubjects as any).forEach((subject) => {
