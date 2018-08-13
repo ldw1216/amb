@@ -43,8 +43,8 @@ const allTitleMap = {
 export default class BudgetTable {
     private allTitles = [['预算', '预算'], ['预算占收入比', '占收入比'], ['实际收入', '实际收入'], ['实际占收入比', '占收入比'], ['预算完成率', '预算完成率']];
     @observable public condition: any = {};
-    @observable private visibleRanges: SearchRange[] = [];
-    @observable public visibleTitles = this.allTitles;
+    // @observable private visibleRanges: SearchRange[] = [];
+    // @observable public visibleTitles = this.allTitles;
     @observable public visibleType = true;
     @observable public budget: Budget;
     @observable public period?: amb.IPeriod;
@@ -55,15 +55,15 @@ export default class BudgetTable {
         this.period = period;
         this.editable = editable;
         this.condition = condition;
-        this.visibleRanges = condition.range;
+        // this.visibleRanges = condition.range;
         // this.visibleTitles = this.visibleTitles.filter((item) => {
         //     return false;
         // });
-        observe(this.condition, () => {
-            const { dataTypes, range } = this.condition;
-            this.visibleTitles = [['预算', '预算'], ...dataTypes.map((d: string) => allTitleMap[d])];
-            this.visibleRanges = range;
-        });
+        // observe(this.condition, () => {
+        //     const { dataTypes, range } = this.condition;
+        //     this.visibleTitles = [['预算', '预算'], ...dataTypes.map((d: string) => allTitleMap[d])];
+        //     this.visibleRanges = range;
+        // });
     }
     // 添加项目
     @action.bound private addProject(subjectType: BudgetSubjectType) {
@@ -78,6 +78,12 @@ export default class BudgetTable {
         this.budget.fetchSubjects();
     }
 
+    @computed get visibleRanges() {
+        return this.condition.range;
+    }
+    @computed get visibleTitles() {
+        return [['预算', '预算'], ...this.condition.dataTypes.map((d: string) => allTitleMap[d])];
+    }
     @computed get expenseSubjects() {
         const expense = rootStore.expenseTypes.find(({ year }) => year === this.budget.year);
         return expense ? expense.options.map((item) => ({ ...item, subjectType: BudgetSubjectType.费用 })) : [];
