@@ -124,7 +124,15 @@ export default class extends Component<RouteComponentProps<{ groupId: string }>>
                     </SearchBar>
                 </Section>
                 <TableSection>
-                    {this.budgetTable && <Table pagination={false} scroll={{ x: 'auto' }} bordered size="small" dataSource={this.budgetTable.dataSource} columns={this.budgetTable.columns} />}
+                    {this.budgetTable &&
+                        <Table
+                            rowClassName={(record) => record.key === '毛利' ? 'profitRow' : ''}
+                            pagination={false}
+                            scroll={{ x: 'auto' }}
+                            bordered size="small"
+                            dataSource={this.budgetTable.dataSource}
+                            columns={this.budgetTable.columns} />
+                    }
                 </TableSection>
                 <BudgetRemark budget={this.budget} />
                 <Section>

@@ -14,7 +14,7 @@ export default class MonthBudget implements amb.IMonthBudget {
         if (subjectBudget) return subjectBudget;
     }
 
-    // 本月预算 收入、成本、费用合计
+    // 本月预算 收入、成本、费用 毛利合计
     @computed get budgetSum() {
         const income = this.subjectBudgets.filter(({ subjectType }) => subjectType === BudgetSubjectType.收入)
             .reduce((x, y) => x + (y.budget || 0), 0);
@@ -26,6 +26,7 @@ export default class MonthBudget implements amb.IMonthBudget {
             income,
             cost,
             expense,
+            profit: income - cost,
         };
     }
 
@@ -35,6 +36,7 @@ export default class MonthBudget implements amb.IMonthBudget {
             income: this.budgetSum.income ? '100%' : '--',
             cost: this.budgetSum.income ? (this.budgetSum.cost / this.budgetSum.income * 100).toFixed(2) + '%' : '--',
             expense: this.budgetSum.income ? (this.budgetSum.expense / this.budgetSum.income * 100).toFixed(2) + '%' : '--',
+            profit: this.budgetSum.income ? (this.budgetSum.profit / this.budgetSum.income * 100).toFixed(2) + '%' : '--',
         };
     }
 
@@ -50,6 +52,7 @@ export default class MonthBudget implements amb.IMonthBudget {
             income,
             cost,
             expense,
+            profit: income - cost,
         };
     }
 
@@ -59,6 +62,7 @@ export default class MonthBudget implements amb.IMonthBudget {
             income: this.realitySum.income ? '100%' : '--',
             cost: this.realitySum.income ? (this.realitySum.cost / this.realitySum.income * 100).toFixed(2) + '%' : '--',
             expense: this.realitySum.income ? (this.realitySum.expense / this.realitySum.income * 100).toFixed(2) + '%' : '--',
+            profit: this.realitySum.income ? (this.realitySum.profit / this.realitySum.income * 100).toFixed(2) + '%' : '--',
         };
     }
 
@@ -68,6 +72,7 @@ export default class MonthBudget implements amb.IMonthBudget {
             income: this.budgetSum.income ? (this.realitySum.income / this.budgetSum.income * 100).toFixed(2) + '%' : '--',
             cost: this.budgetSum.cost ? (this.realitySum.cost / this.budgetSum.cost * 100).toFixed(2) + '%' : '--',
             expense: this.budgetSum.expense ? (this.realitySum.expense / this.budgetSum.expense * 100).toFixed(2) + '%' : '--',
+            profit: this.budgetSum.income ? (this.realitySum.profit / this.budgetSum.profit * 100).toFixed(2) + '%' : '--',
         };
     }
 

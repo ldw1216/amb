@@ -24,9 +24,12 @@ export class BudgetList {
     @action.bound public async fetchAllBudgetList() {
         await rootStore.groupStore.fetch();
         await rootStore.periodStore.fetch();
-        // 获取当前用户所属组
+
         const budgets = await axios.get('/budget/', { params: { year: this.condition.year } }).then((res) => res.data) as amb.IBudget[];
-        const budgetList = budgets.map((budget) => new Budget(budget));
+        const budgetList = budgets.map((budget) => {
+            const group = rootStore.groupStore.list.find((item) => item._id === budget.group)!;
+            return new Budget(budget, group);
+        });
         this.allBudgetList = budgetList;
         return budgetList;
     }
@@ -52,7 +55,7 @@ export class BudgetList {
                 approvalState: budget && budget.approvalState,
                 monthBudgets: budget ? budget.monthBudgets : [],
                 remark: budget && budget.remark,
-            });
+            }, rootStore.groupStore.list.find((item) => item._id === groupId)!);
         });
         this.currentUserBudgetList = currentUserBudgetList;
         return currentUserBudgetList;

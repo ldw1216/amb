@@ -81,7 +81,12 @@ export default class extends Component {
                                 </React.Fragment> : ''
                             }
                         </ToolBar>
-                        <Table className={item.budget.groupIsAvailable ? '' : 'disabled'} pagination={false} scroll={{ x: 'auto' }} bordered size="small" dataSource={item.dataSource} columns={item.columns} />
+                        <Table
+                            rowClassName={(record) => record.key === '毛利' ? 'profitRow' : ''}
+                            className={item.budget.groupIsAvailable ? '' : 'disabled'}
+                            pagination={false} scroll={{ x: 'auto' }} bordered size="small"
+                            dataSource={item.dataSource}
+                            columns={item.columns} />
                     </TableSection>
                 ))}
             </div>

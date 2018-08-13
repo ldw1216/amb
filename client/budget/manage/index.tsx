@@ -6,8 +6,6 @@ import { ApprovalState } from 'config/config';
 import { observer } from 'mobx-react';
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-import styled from 'styled-components';
-import rootStore from '../../store';
 import AdvancedSearch from '../components/AdvancedSearch';
 import ApprovalTtitle from '../components/ApprovalTtitle';
 import { ListState } from './ListState';
@@ -44,7 +42,15 @@ export default class extends Component {
                                 </Link>
                             }
                         </ToolBar>
-                        <Table className={item.approvalState > ApprovalState.已通过审核 ? 'disabled' : ''} pagination={false} scroll={{ x: 'auto' }} bordered size="small" dataSource={item.dataSource} columns={item.columns} />
+                        <Table
+                            rowClassName={(record: any) => record.key === '毛利' ? 'profitRow' : ''}
+                            className={item.approvalState > ApprovalState.已通过审核 ? 'disabled' : ''}
+                            pagination={false} scroll={{ x: 'auto' }}
+                            bordered={true}
+                            size="small"
+                            dataSource={item.dataSource}
+                            columns={item.columns}
+                        />
                     </TableSection>
                 ))}
             </div>

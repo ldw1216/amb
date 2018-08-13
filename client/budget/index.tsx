@@ -2,6 +2,13 @@ import { Icon, Menu } from 'antd';
 import { Component } from 'react';
 import importedComponent from 'react-imported-component';
 import { Link, Route, Switch } from 'react-router-dom';
+import styled from 'styled-components';
+
+const Root = styled.div`
+    .profitRow.profitRow{
+        background: #f3b084;
+    }
+`;
 class Index extends Component {
     public render() {
         return (
