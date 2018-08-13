@@ -9,9 +9,7 @@ import axios from 'axios';
 import styled from 'styled-components';
 import excellentexport from '../../components/excellentexport';
 import AdvancedSearch from '../components/AdvancedSearch';
-
-const store = rootStore.budgetStore;
-store.fetchCurrentUserBudgetList();
+import Condition from '../model/Condition';
 
 const { TextArea } = Input;
 
@@ -32,12 +30,14 @@ export default class extends Component {
         this.advancedSearchDisplay = false;
         document.removeEventListener('click', this.hideAdvancedSearch);
     }
+    conditon = new Condition()
     state = {
         columns: [] as any,
         list: [] as any
     }
     async componentDidMount() {
         const list = await axios.get('/budget/totalTable').then(data => data.data)
+        console.log('list', list)
         const columns = [
             {
                 title: 2018,
@@ -54,11 +54,11 @@ export default class extends Component {
             } as any,
         ];
         for (let i = 0; i < 12; i++) {
-            const children = [{ key: 1, value: '预算' }, { key: 3, value: '占收入比例' }, { key: 5, value: '实际' }, { key: 7, value: '占收入比例' }, { key: 9, value: '预算完成率' }].map((key) => ({
+            const children = [{ key: 'ys', value: '预算' }, { key: 'yszb', value: '占收入比例' }, { key: 'sj', value: '实际' }, { key: 'sjzb', value: '占收入比例' }, { key: 'yswcl', value: '预算完成率' }].map((key) => ({
                 id: key.key,
                 title: key.value,
-                dataIndex: `${key.key}_${i}月`,
-                key: `${key.key}_${i}月`,
+                dataIndex: `${key.key}_${i}`,
+                key: `${key.key}_${i}`,
             }));
             columns.push({
                 title: `${i + 1}月`,
@@ -81,7 +81,7 @@ export default class extends Component {
                     <SearchBar style={{ marginBottom: 0 }}>
                         <Button onClick={this.showAdvancedSearch} type="primary">自定义指标</Button>
                         <Button type="primary" onClick={this.exportExcel}>全部导出</Button>
-                        {this.advancedSearchDisplay && <AdvancedSearch store={store} />}
+                        {this.advancedSearchDisplay && <AdvancedSearch condition={this.conditon} />}
                     </SearchBar>
                 </Section>
 

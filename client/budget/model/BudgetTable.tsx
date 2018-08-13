@@ -1,4 +1,4 @@
-import { Icon, InputNumber, Popconfirm, Select } from 'antd';
+import { Divider, Icon, InputNumber, Popconfirm, Popover, Select } from 'antd';
 import { SelectProps } from 'antd/lib/select';
 import { ApprovalState, BudgetSubjectType, BudgetType, SearchRange } from 'config/config';
 import { action, computed, observable, toJS } from 'mobx';
@@ -210,6 +210,11 @@ export default class BudgetTable {
         return dataSource;
     }
     @computed public get columns() {
+        const remark = (
+            <pre style={{ whiteSpace: 'pre-wrap', maxWidth: '400px', maxHeight: '200px' }}>
+                {this.budget.remark}
+            </pre>
+        );
         const columns = [
             {
                 title: this.budget.year,
@@ -218,7 +223,11 @@ export default class BudgetTable {
                 fixed: 'left',
                 children: [
                     {
-                        title: this.budget.groupName,
+                        title: <div style={{ textAlign: 'right' }}>
+                            <span style={{ float: 'left' }}>{this.budget.groupName}</span>
+                            <Popover content={remark}>
+                                <Icon type="exclamation-circle-o" />
+                            </Popover></div>,
                         dataIndex: `subject`,
                         key: `subject`,
                     },
