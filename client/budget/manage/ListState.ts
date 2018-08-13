@@ -1,5 +1,6 @@
 import { action, observable } from 'mobx';
 import BudgetTable from '../model/BudgetTable';
+import Condition from '../model/Condition';
 
 /**
  * 预算列表页状态
@@ -8,6 +9,9 @@ import BudgetTable from '../model/BudgetTable';
 export class ListState {
     @observable public budgetTables: BudgetTable[] = [];
     @observable public advancedSearchDisplay = false; // 是否显示高级搜索
+    constructor(public contidion = new Condition()) {
+        //
+    }
     @action.bound public showAdvancedSearch() {
         this.advancedSearchDisplay = true;
         document.addEventListener('click', this.hideAdvancedSearch);
@@ -18,12 +22,12 @@ export class ListState {
     }
     @action.bound public fetchAllBudgetTables(editable: boolean = false) {
         rootStore.budgetStore.fetchAllBudgetList().then((list) => {
-            this.budgetTables = list.map((item) => new BudgetTable(item, editable));
+            this.budgetTables = list.map((item) => new BudgetTable(item, this.contidion, editable));
         });
     }
     @action.bound public fetchCurrentUserBudgetTables(editable: boolean = false) {
         rootStore.budgetStore.fetchCurrentUserBudgetList()
-            .then((list) => list.map((item) => new BudgetTable(item, editable)))
+            .then((list) => list.map((item) => new BudgetTable(item, this.contidion, editable)))
             .then((list) => this.budgetTables = list);
     }
 }

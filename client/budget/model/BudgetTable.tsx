@@ -10,6 +10,7 @@ import styled from 'styled-components';
 import SubjectEditor from '../components/SubjectEditor';
 import SubjectTitle from '../components/SubjectTitle';
 import Budget from './Budget';
+import Condition from './Condition';
 import MonthBudget from './MonthBudget';
 import Period from './Period';
 import Subject from './Subject';
@@ -35,16 +36,22 @@ const TypeSelector: React.SFC<SelectProps> = (props) => (
     </Select>
 );
 
+const allTitleMap = {
+    预算占比: ['预算占收入比', '占收入比'],
+    实际完成: ['实际收入', '实际收入'],
+    实际占比: ['实际占收入比', '占收入比'],
+    预算完成率: ['预算完成率', '预算完成率'],
+} as any;
 export default class BudgetTable {
-    public allTitles = [['预算', '预算'], ['预算占收入比', '占收入比'], ['实际收入', '实际收入'], ['实际占收入比', '占收入比'], ['预算完成率', '预算完成率']];
-    @observable public visibleRanges: SearchRange[] = filter((val) => [SearchRange.上一年].includes(val), values(SearchRange)); // 显示的时间范围
-    @observable public visibleTitles = this.allTitles;
+    private allTitles = [['预算', '预算'], ['预算占收入比', '占收入比'], ['实际收入', '实际收入'], ['实际占收入比', '占收入比'], ['预算完成率', '预算完成率']];
     @observable public visibleType = true;
     @observable public budget: Budget;
     @observable public editable: boolean = false;
-    constructor(budget: Budget, editable = false) {
+    @observable public condition: Condition;
+    constructor(budget: Budget, condition: Condition, editable = false) {
         this.budget = budget;
         this.editable = editable;
+        this.condition = condition;
     }
 
     @computed get approvalState() {
@@ -71,6 +78,13 @@ export default class BudgetTable {
     private async removeProject(subject: Subject) {
         await subject.remove();
         this.budget.fetchSubjects();
+    }
+
+    @computed get visibleRanges() {
+        return this.condition.range;
+    }
+    @computed get visibleTitles() {
+        return [['预算', '预算'], ...this.condition.dataTypes.map((d: string) => allTitleMap[d])];
     }
     @computed get expenseSubjects() {
         return rootStore.expenseTypeStore.getExpenseSubject(this.budget.year);
@@ -218,21 +232,36 @@ export default class BudgetTable {
                 key: `type`,
             });
         }
-
-        for (let i = 0; i < 12; i++) {
-            const children = this.visibleTitles.map(([key, value]) => ({
-                id: key,
-                title: value,
-                dataIndex: `${key}_${i}月`,
-                key: `${key}_${i}月`,
-            }));
-            columns.push({
-                title: `${i + 1}月`,
-                dataIndex: `month${i}`,
-                key: `month${i}`,
-                children,
-            });
-        }
+        const titleList = [0, 1, 2, '一季度', 3, 4, 5, '二季度', '半年报', 6, 7, 8, '三季度', 9, 10, 11, '四季度', '全年报'];
+        titleList.forEach((k: string | number) => {
+            if (typeof k === 'number') {
+                const children = this.visibleTitles.map(([key, value]) => ({
+                    id: key,
+                    title: value,
+                    dataIndex: `${key}_${k}月`,
+                    key: `${key}_${k}月`,
+                }));
+                columns.push({
+                    title: `${k + 1}月`,
+                    dataIndex: `month${k}`,
+                    key: `month${k}`,
+                    children,
+                });
+            } else if (this.visibleRanges.includes(k as any)) {
+                const children2 = this.visibleTitles.map(([key, value]) => ({
+                    id: key,
+                    title: value,
+                    dataIndex: `${key}_${k}quarter`,
+                    key: `${key}_${k}quarter`,
+                }));
+                columns.push({
+                    title: k,
+                    dataIndex: `quarter${k}`,
+                    key: `quarter${k}`,
+                    children: children2,
+                });
+            }
+        });
         return columns;
     }
 }

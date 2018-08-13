@@ -6,6 +6,8 @@ import { ApprovalState } from 'config/config';
 import { observer } from 'mobx-react';
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
+import styled from 'styled-components';
+import rootStore from '../../store';
 import AdvancedSearch from '../components/AdvancedSearch';
 import ApprovalTtitle from '../components/ApprovalTtitle';
 import { ListState } from './ListState';
@@ -22,7 +24,7 @@ export default class extends Component {
     }
 
     public render() {
-        const { budgetTables } = this.pageState;
+        const { budgetTables, contidion } = this.pageState;
         return (
             <div>
                 <Section>
@@ -30,7 +32,7 @@ export default class extends Component {
                         <Button onClick={this.pageState.showAdvancedSearch} type="primary">自定义指标</Button>
                         <Button type="primary" onClick={this.exportExcel}>全部导出</Button>
                     </SearchBar>
-                    {this.pageState.advancedSearchDisplay && <AdvancedSearch store={rootStore.budgetStore} />}
+                    {this.pageState.advancedSearchDisplay && <AdvancedSearch condition={contidion} />}
                 </Section>
                 {budgetTables.map((item) => (
                     <TableSection key={item.budget.year + item.budget.group}>

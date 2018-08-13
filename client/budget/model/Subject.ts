@@ -44,6 +44,6 @@ export default class Subject implements amb.IBudgetSubject {
     }
     @action.bound public async remove() {
         const url = '/subject/' + this._id;
-        // await axios.delete(url);
+        await axios.delete(url);
     }
 }
