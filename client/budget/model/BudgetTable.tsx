@@ -145,16 +145,16 @@ export default class BudgetTable {
         // 添加收入、成本、费用汇总
         this.budget.monthBudgets.forEach((monthBudget, i) => {
             incomeAmount[`预算_${i}月`] = monthBudget.budgetSum.income;
-            incomeAmount[`预算占收入比_${i}月`] = '100%';
+            incomeAmount[`预算占收入比_${i}月`] = monthBudget.budgetRate.income;
             incomeAmount[`实际收入_${i}月`] = monthBudget.realitySum.income;
-            incomeAmount[`实际占收入比_${i}月`] = '100%';
-            incomeAmount[`预算完成率_${i}月`] = monthBudget.budgetSum.income ? (monthBudget.realitySum.income / monthBudget.budgetSum.income * 100).toFixed(2) + '%' : '--';
+            incomeAmount[`实际占收入比_${i}月`] = monthBudget.realityRate.income;
+            incomeAmount[`预算完成率_${i}月`] = monthBudget.rate.income;
 
             costAmount[`预算_${i}月`] = monthBudget.budgetSum.cost;
-            costAmount[`预算占收入比_${i}月`] = monthBudget.budgetSum.income ? (monthBudget.budgetSum.cost / monthBudget.budgetSum.income * 100).toFixed(2) + '%' : '--';
+            costAmount[`预算占收入比_${i}月`] = monthBudget.budgetRate.cost;
             costAmount[`实际收入_${i}月`] = monthBudget.realitySum.cost;
-            costAmount[`实际占收入比_${i}月`] = monthBudget.realitySum.income ? (monthBudget.realitySum.cost / monthBudget.realitySum.income * 100).toFixed(2) + '%' : '--';
-            costAmount[`预算完成率_${i}月`] = monthBudget.budgetSum.cost ? (monthBudget.realitySum.cost / monthBudget.budgetSum.cost * 100).toFixed(2) + '%' : '--';
+            costAmount[`实际占收入比_${i}月`] = monthBudget.realityRate.cost;
+            costAmount[`预算完成率_${i}月`] = monthBudget.rate.cost;
 
             expenseAmount[`预算_${i}月`] = monthBudget.budgetSum.expense;
             expenseAmount[`预算占收入比_${i}月`] = (monthBudget.budgetSum.expense / monthBudget.budgetSum.income * 100).toFixed(2) + '%';

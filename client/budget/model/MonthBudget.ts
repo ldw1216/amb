@@ -7,6 +7,8 @@ export default class MonthBudget implements amb.IMonthBudget {
     @observable public _id?: string;
     @observable public month: number;
     @observable public subjectBudgets: SubjectBudget[];
+
+    // 获取某个项目的预算
     public getSubjectBudget(subject: amb.IBudgetSubject) {
         const subjectBudget = this.subjectBudgets.find(({ subjectId }) => subject._id === subjectId);
         if (subjectBudget) return subjectBudget;
@@ -27,6 +29,15 @@ export default class MonthBudget implements amb.IMonthBudget {
         };
     }
 
+    // 预算收入占比
+    @computed get budgetRate() {
+        return {
+            income: this.budgetSum.income ? '100%' : '--',
+            cost: this.budgetSum.income ? this.budgetSum.cost / this.budgetSum.income : '--',
+            expense: this.budgetSum.income ? this.budgetSum.expense / this.budgetSum.income : '--',
+        };
+    }
+
     // 本月实际 收入、成本、费用合计
     @computed get realitySum() {
         const income = this.subjectBudgets.filter(({ subjectType }) => subjectType === BudgetSubjectType.收入)
@@ -39,6 +50,24 @@ export default class MonthBudget implements amb.IMonthBudget {
             income,
             cost,
             expense,
+        };
+    }
+
+    // 实际占收入占比
+    @computed get realityRate() {
+        return {
+            income: this.realitySum.income ? '100%' : '--',
+            cost: this.realitySum.income ? this.realitySum.cost / this.realitySum.income : '--',
+            expense: this.realitySum.income ? this.realitySum.expense / this.realitySum.income : '--',
+        };
+    }
+
+    // 预算完成率
+    @computed get rate() {
+        return {
+            income: this.budgetSum.income ? (this.realitySum.income / this.budgetSum.income) : '--',
+            cost: this.budgetSum.cost ? (this.realitySum.cost / this.budgetSum.cost) : '--',
+            expense: this.budgetSum.expense ? (this.realitySum.expense / this.budgetSum.expense) : '--',
         };
     }
 
