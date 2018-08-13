@@ -5,6 +5,7 @@ import { action, observable, toJS } from 'mobx';
 import { observer } from 'mobx-react';
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
+import axios from 'axios';
 import styled from 'styled-components';
 import AdvancedSearch from '../manage/components/AdvancedSearch';
 import excellentexport from '../../components/excellentexport';
@@ -31,13 +32,14 @@ export default class extends Component {
         document.removeEventListener('click', this.hideAdvancedSearch);
     }
     state = {
-        columns: [] as any
+        columns: [] as any,
+        list: [] as any
     }
-    componentDidMount() {
+    async componentDidMount() {
+        const list = await axios.get('/budget/totalTable').then(data => data.data)
         const columns = [
             {
                 title: 2018,
-                width: 100,
                 dataIndex: 'head',
                 key: 'head',
                 fixed: 'left',
@@ -64,7 +66,7 @@ export default class extends Component {
                 children,
             });
         }
-        this.setState({ columns })
+        this.setState({ columns, list })
     }
     exportExcel = () => {
         const table = document.getElementsByTagName('table')[0]
@@ -83,7 +85,7 @@ export default class extends Component {
                 </Section>
 
                 <TableSection>
-                    <Table pagination={false} scroll={{ x: 'auto' }} rowKey="total" bordered size="small" dataSource={[{ total: '收入-阿米巴' }, { total: '成本费用-阿米巴' }, { total: '利润-阿米巴' }, { total: '收入-财务' }, { total: '成本费用-财务' }, { total: '利润-财务' }]} columns={this.state.columns} />
+                    <Table pagination={false} scroll={{ x: 5800 }} rowKey="total" bordered size="small" dataSource={this.state.list} columns={this.state.columns} />
                 </TableSection>
             </div>
         );
