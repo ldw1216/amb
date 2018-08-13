@@ -1,16 +1,18 @@
 import { Icon, InputNumber, Popconfirm, Select } from 'antd';
 import { SelectProps } from 'antd/lib/select';
-import { BudgetSubjectType, BudgetType, SearchRange } from 'config/config';
-import { action, computed, observable, observe, reaction, toJS } from 'mobx';
+import { ApprovalState, BudgetSubjectType, BudgetType, SearchRange } from 'config/config';
+import { action, computed, observable, toJS } from 'mobx';
 import { filter, values } from 'ramda';
 import React from 'react';
 import { render } from 'react-dom';
-import rootStore from 'store/index';
+
 import styled from 'styled-components';
 import SubjectEditor from '../components/SubjectEditor';
 import SubjectTitle from '../components/SubjectTitle';
 import Budget from './Budget';
+import Condition from './Condition';
 import MonthBudget from './MonthBudget';
+import Period from './Period';
 import Subject from './Subject';
 import SubjectBudget from './SubjectBudget';
 
@@ -42,28 +44,28 @@ const allTitleMap = {
 } as any;
 export default class BudgetTable {
     private allTitles = [['预算', '预算'], ['预算占收入比', '占收入比'], ['实际收入', '实际收入'], ['实际占收入比', '占收入比'], ['预算完成率', '预算完成率']];
-    @observable public condition: any = {};
-    // @observable private visibleRanges: SearchRange[] = [];
-    // @observable public visibleTitles = this.allTitles;
     @observable public visibleType = true;
     @observable public budget: Budget;
-    @observable public period?: amb.IPeriod;
     @observable public editable: boolean = false;
-
-    constructor(budget: Budget, period: amb.IPeriod | undefined, condition?: any, editable = false) {
+    @observable public condition: Condition;
+    constructor(budget: Budget, condition: Condition, editable = false) {
         this.budget = budget;
-        this.period = period;
         this.editable = editable;
         this.condition = condition;
-        // this.visibleRanges = condition.range;
-        // this.visibleTitles = this.visibleTitles.filter((item) => {
-        //     return false;
-        // });
-        // observe(this.condition, () => {
-        //     const { dataTypes, range } = this.condition;
-        //     this.visibleTitles = [['预算', '预算'], ...dataTypes.map((d: string) => allTitleMap[d])];
-        //     this.visibleRanges = range;
-        // });
+    }
+
+    @computed get approvalState() {
+        const period = rootStore.periodStore.list.filter((item) => item.state === '提报中').find((item) => item.groups.includes(this.budget.group) || item.allGroup);
+
+        // 还没有提报周期
+        if (!period) return ApprovalState.没有提报周期;
+
+        // 新的预算周期
+        if (period._id !== this.budget.period) return ApprovalState.未提报;
+
+        // 未提报
+        if (!this.budget.approvalState) return ApprovalState.未提报;
+        return this.budget.approvalState;
     }
     // 添加项目
     @action.bound private addProject(subjectType: BudgetSubjectType) {
@@ -85,19 +87,21 @@ export default class BudgetTable {
         return [['预算', '预算'], ...this.condition.dataTypes.map((d: string) => allTitleMap[d])];
     }
     @computed get expenseSubjects() {
-        const expense = rootStore.expenseTypes.find(({ year }) => year === this.budget.year);
-        return expense ? expense.options.map((item) => ({ ...item, subjectType: BudgetSubjectType.费用 })) : [];
+        return rootStore.expenseTypeStore.getExpenseSubject(this.budget.year);
     }
 
     // 可提报的月份
     @computed get editableMonths() {
+        // 跟据当前用户阿米巴组的排期，计算可提报月份
         const months: number[] = [];
-        if (!this.period || !this.editable) return months;
+        const group = this.budget.fullGroup;
+        const period = group && group.period;
+        if (!this.editable || !group || !period) return months;
 
-        if (this.period.quarters.includes('一季度')) months.push(0, 1, 2);
-        if (this.period.quarters.includes('二季度')) months.push(3, 4, 5);
-        if (this.period.quarters.includes('三季度')) months.push(6, 7, 8);
-        if (this.period.quarters.includes('四季度')) months.push(9, 10, 11);
+        if (period.quarters.includes('一季度')) months.push(0, 1, 2);
+        if (period.quarters.includes('二季度')) months.push(3, 4, 5);
+        if (period.quarters.includes('三季度')) months.push(6, 7, 8);
+        if (period.quarters.includes('四季度')) months.push(9, 10, 11);
         return months;
     }
     private getBudgetValue(month: number, subject: amb.IBudgetSubject) {
@@ -132,14 +136,11 @@ export default class BudgetTable {
         if (value.reality) subjectBudget!.reality = value.reality;
     }
 
-    // 收入合计
-    @computed get incomeSum() {
-        return 0;
-    }
     @computed get dataSource() {
         const incomeRows = [] as any[]; // 收入数据
         const costRows = [] as any[]; // 成本数据
         const expenseRows = [] as any[]; // 费用数据
+
         const incomeAmount = {
             key: '收入汇总',
             subject: <SubjectTitle><span>收入</span><Icon onClick={() => this.addProject(BudgetSubjectType.收入)} type="plus" /></SubjectTitle>,
@@ -155,15 +156,26 @@ export default class BudgetTable {
             subject: <SubjectTitle><span>费用</span></SubjectTitle>,
             type: undefined,
         } as any;
-        // 添加收入汇总
-        for (let i = 0; i < 12; i++) {
-            incomeAmount[`预算_${i}月`] = '';
-            incomeAmount[`预算占收入比_${i}月`] = '';
-            incomeAmount[`实际收入_${i}月`] = '';
-            incomeAmount[`实际占收入比_${i}`] = '';
-            incomeAmount[`预算完成率_${i}月`] = '';
-        }
+        // 添加收入、成本、费用汇总
+        this.budget.monthBudgets.forEach((monthBudget, i) => {
+            incomeAmount[`预算_${i}月`] = monthBudget.budgetSum.income;
+            incomeAmount[`预算占收入比_${i}月`] = '100%';
+            incomeAmount[`实际收入_${i}月`] = monthBudget.realitySum.income;
+            incomeAmount[`实际占收入比_${i}月`] = '100%';
+            incomeAmount[`预算完成率_${i}月`] = monthBudget.budgetSum.income ? (monthBudget.realitySum.income / monthBudget.budgetSum.income * 100).toFixed(2) + '%' : '--';
 
+            costAmount[`预算_${i}月`] = monthBudget.budgetSum.cost;
+            costAmount[`预算占收入比_${i}月`] = monthBudget.budgetSum.income ? (monthBudget.budgetSum.cost / monthBudget.budgetSum.income * 100).toFixed(2) + '%' : '--';
+            costAmount[`实际收入_${i}月`] = monthBudget.realitySum.cost;
+            costAmount[`实际占收入比_${i}月`] = monthBudget.realitySum.income ? (monthBudget.realitySum.cost / monthBudget.realitySum.income * 100).toFixed(2) + '%' : '--';
+            costAmount[`预算完成率_${i}月`] = monthBudget.budgetSum.cost ? (monthBudget.realitySum.cost / monthBudget.budgetSum.cost * 100).toFixed(2) + '%' : '--';
+
+            expenseAmount[`预算_${i}月`] = monthBudget.budgetSum.expense;
+            expenseAmount[`预算占收入比_${i}月`] = (monthBudget.budgetSum.expense / monthBudget.budgetSum.income * 100).toFixed(2) + '%';
+            expenseAmount[`实际收入_${i}月`] = monthBudget.realitySum.expense;
+            expenseAmount[`实际占收入比_${i}月`] = monthBudget.realitySum.income ? (monthBudget.realitySum.expense / monthBudget.realitySum.income * 100).toFixed(2) + '%' : '--';
+            expenseAmount[`预算完成率_${i}月`] = monthBudget.budgetSum.expense ? (monthBudget.realitySum.expense / monthBudget.budgetSum.expense * 100).toFixed(2) + '%' : '--';
+        });
         // 每个项目一行，添加数据，修改数据 填加完数据以后跟据提报周期确定哪几个季度是可编辑的
         this.budget.subjects.concat(this.expenseSubjects as any).forEach((subject) => {
             const row = {
@@ -186,8 +198,8 @@ export default class BudgetTable {
             });
 
             this.editableMonths.forEach((i) => {
-                row[`预算_${i}月`] = <InputNumber value={this.getBudgetValue(i, subject).budget} onChange={(value) => this.setBudgetValue(i, subject, { budget: parseFloat((value || '0').toString()) })} />;
-                row[`实际收入_${i}月`] = <InputNumber value={this.getBudgetValue(i, subject).reality} onChange={(value) => this.setBudgetValue(i, subject, { reality: parseFloat((value || '0').toString()) })} />;
+                row[`预算_${i}月`] = <InputNumber value={this.getBudgetValue(i, subject).budget} onChange={(value) => this.setBudgetValue(i, subject, { budget: +(value || 0) })} />;
+                row[`实际收入_${i}月`] = <InputNumber value={this.getBudgetValue(i, subject).reality} onChange={(value) => this.setBudgetValue(i, subject, { reality: +(value || 0) })} />;
             });
             if (subject.subjectType === BudgetSubjectType.收入) incomeRows.push(row);
             if (subject.subjectType === BudgetSubjectType.成本) costRows.push(row);
@@ -249,7 +261,7 @@ export default class BudgetTable {
                     children: children2,
                 });
             }
-        };
+        });
         return columns;
     }
 }

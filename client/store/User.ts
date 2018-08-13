@@ -7,7 +7,7 @@ export default class User implements amb.IUser {
     @observable public name: string = '';
     @observable public account: string = '';
     @observable public role: 'general' | 'admin' = 'general';
-    @observable public groups: amb.IGroup[] = [];
+    @observable public groups: Array<string | { _id: string, name: string }> = [];
     @observable public available: boolean = true;
 
     @action.bound

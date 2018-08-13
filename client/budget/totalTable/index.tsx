@@ -6,9 +6,10 @@ import { observer } from 'mobx-react';
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
-import AdvancedSearch from '../manage/components/AdvancedSearch';
 import excellentexport from '../../components/excellentexport';
-import store from '../manage/store';
+import AdvancedSearch from '../components/AdvancedSearch';
+
+const store = rootStore.budgetStore;
 store.fetchCurrentUserBudgetList();
 
 const { TextArea } = Input;
@@ -30,10 +31,10 @@ export default class extends Component {
         this.advancedSearchDisplay = false;
         document.removeEventListener('click', this.hideAdvancedSearch);
     }
-    state = {
-        columns: [] as any
-    }
-    componentDidMount() {
+    public state = {
+        columns: [] as any,
+    };
+    public componentDidMount() {
         const columns = [
             {
                 title: 2018,
@@ -46,10 +47,10 @@ export default class extends Component {
                         title: '总表',
                         dataIndex: `total`,
                         key: `total`,
-                    }
+                    },
                 ],
             } as any,
-        ]
+        ];
         for (let i = 0; i < 12; i++) {
             const children = [{ key: 1, value: '预算' }, { key: 3, value: '占收入比例' }, { key: 5, value: '实际' }, { key: 7, value: '占收入比例' }, { key: 9, value: '预算完成率' }].map((key) => ({
                 id: key.key,
@@ -64,11 +65,11 @@ export default class extends Component {
                 children,
             });
         }
-        this.setState({ columns })
+        this.setState({ columns });
     }
-    exportExcel = () => {
-        const table = document.getElementsByTagName('table')[0]
-        excellentexport.excel(table, '工作簿1', '阿米巴')
+    public exportExcel = () => {
+        const table = document.getElementsByTagName('table')[0];
+        excellentexport.excel(table, '工作簿1', '阿米巴');
     }
 
     public render() {

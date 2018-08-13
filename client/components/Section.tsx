@@ -18,6 +18,9 @@ const TableSection = Section.extend`
         td{
             text-align: center;
         }
+        && .ant-input-number-input{
+            text-align: right;
+        }
     }
 `;
 

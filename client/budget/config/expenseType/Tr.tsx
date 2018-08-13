@@ -1,12 +1,11 @@
 import { Form, Input, Select } from 'antd';
 import { FormComponentProps } from 'antd/lib/form';
-import axios from 'axios';
 import LinkGroup from 'components/LinkGroup';
-import { observable, toJS } from 'mobx';
 import { observer } from 'mobx-react';
 import { Component } from 'react';
 import styled from 'styled-components';
-import store from './store';
+
+const store = rootStore.expenseTypeStore;
 
 const OptionItem = styled.div`
     display: flex;

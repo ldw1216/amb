@@ -7,7 +7,8 @@ class Index extends Component {
         return (
             <Switch>
                 <Route path="/budget/config" component={importedComponent(() => import('./config'))} />
-                <Route path="/budget/manage" component={importedComponent(() => import('./manage'))} />
+                <Route path="/budget/submit" component={importedComponent(() => import('./manage/index'))} />
+                <Route path="/budget/all" component={importedComponent(() => import('./manage/all'))} />
                 <Route path="/budget/edit/:groupId" component={importedComponent(() => import('./manage/edit'))} />
                 <Route path="/budget/totalTable" component={importedComponent(() => import('./totalTable'))} />
             </Switch>
@@ -30,7 +31,8 @@ export class BudgetMenu extends Component<any, {}> {
             >
                 <Menu.Item key="/budget/totalTable"><Link to="/budget/totalTable"><Icon type="pie-chart" /> <span>预算总表</span></Link></Menu.Item>
                 <Menu.Item key="/budget/config"><Link to="/budget/config"><Icon type="pie-chart" /> <span>预算配置</span></Link></Menu.Item>
-                <Menu.Item key="/budget/manage"><Link to="/budget/manage"><Icon type="pie-chart" /> <span>预算管理</span></Link></Menu.Item>
+                <Menu.Item key="/budget/submit"><Link to="/budget/submit"><Icon type="pie-chart" /> <span>预算提报</span></Link></Menu.Item>
+                <Menu.Item key="/budget/all"><Link to="/budget/all"><Icon type="pie-chart" /> <span>预算审核</span></Link></Menu.Item>
             </Menu>
         );
     }

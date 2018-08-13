@@ -3,7 +3,7 @@ import { getCurrentPeriod, PeriodModel } from 'model/period.model';
 const router = new Router({ prefix: '/period' });
 
 router.get('/', async (ctx) => {
-    ctx.body = await PeriodModel.find({}).populate('groups', ['name', '_id']);
+    ctx.body = await PeriodModel.find({}).sort({ _id: -1 });
 });
 
 // 获取每个组的当前排期

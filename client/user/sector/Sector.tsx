@@ -1,10 +1,10 @@
-import { Button, Form, Input, Modal, Switch, Table, Tag } from "antd";
-import { WrappedFormUtils } from "antd/lib/form/Form";
-import axios from "axios";
-import SearchBox from "components/SearchBar";
-import { action, observable, reaction } from "mobx";
-import { observer } from "mobx-react";
-import { Component } from "react";
+import { Button, Form, Input, Modal, Switch, Table, Tag } from 'antd';
+import { WrappedFormUtils } from 'antd/lib/form/Form';
+import axios from 'axios';
+import SearchBox from 'components/SearchBar';
+import { action, observable, reaction } from 'mobx';
+import { observer } from 'mobx-react';
+import { Component } from 'react';
 
 const { Column } = Table;
 const FormItem = Form.Item;
@@ -23,9 +23,9 @@ class Store {
     public async save(values: any) {
         const edit = this.data[this.selectedIndex];
         if (edit) {
-            await axios.post("/sector/" + edit._id, values);
+            await axios.post('/sector/' + edit._id, values);
         } else {
-            await axios.post("/sector", values);
+            await axios.post('/sector', values);
         }
         this.hideEditModel();
         await this.fetch();
@@ -38,7 +38,7 @@ class Store {
 
     @action.bound
     public async fetch() {
-        this.data = await axios.get("/sector").then((res) => res.data);
+        this.data = await axios.get('/sector').then((res) => res.data);
     }
 }
 
@@ -97,7 +97,7 @@ const Edit = Form.create()(
             const { getFieldDecorator, getFieldValue } = this.props.form;
             return (
                 <Modal
-                    title={store.selectedIndex > -1 ? "编辑部门" : "添加部门"}
+                    title={store.selectedIndex > -1 ? '编辑部门' : '添加部门'}
                     visible={store.editModelVisible}
                     onOk={this.handelSubmit}
                     okText="保存"
@@ -105,18 +105,18 @@ const Edit = Form.create()(
                 >
                     <Form>
                         <FormItem label="大部门" {...formItemLayout} >
-                            {getFieldDecorator("name", { rules: [{ required: true, message: "此字段必填" }] })(
+                            {getFieldDecorator('name', { rules: [{ required: true, message: '此字段必填' }] })(
                                 <Input />,
                             )}
                         </FormItem>
                         <FormItem label="负责人" {...formItemLayout} >
-                            {getFieldDecorator("admin", { rules: [{ required: true, message: "此字段必填" }] })(
+                            {getFieldDecorator('admin', { rules: [{ required: true, message: '此字段必填' }] })(
                                 <Input />,
                             )}
                         </FormItem>
                         <FormItem label="状态" {...formItemLayout} >
-                            {getFieldDecorator("available", { rules: [{ required: true, message: "此字段必填" }], initialValue: true })(
-                                <Switch checked={getFieldValue("available")} checkedChildren="有效" unCheckedChildren="无效" />,
+                            {getFieldDecorator('available', { rules: [{ required: true, message: '此字段必填' }], initialValue: true })(
+                                <Switch checked={getFieldValue('available')} checkedChildren="有效" unCheckedChildren="无效" />,
                             )}
                         </FormItem>
                     </Form>
