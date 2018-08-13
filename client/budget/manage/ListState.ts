@@ -9,7 +9,7 @@ import Condition from '../model/Condition';
 export class ListState {
     @observable public budgetTables: BudgetTable[] = [];
     @observable public advancedSearchDisplay = false; // 是否显示高级搜索
-    constructor(public contidion = new Condition()) {
+    constructor(public condition = new Condition()) {
         //
     }
     @action.bound public showAdvancedSearch() {
@@ -22,12 +22,12 @@ export class ListState {
     }
     @action.bound public fetchAllBudgetTables(editable: boolean = false) {
         rootStore.budgetStore.fetchAllBudgetList().then((list) => {
-            this.budgetTables = list.map((item) => new BudgetTable(item, this.contidion, editable));
+            this.budgetTables = list.map((item) => new BudgetTable(item, this.condition, editable));
         });
     }
     @action.bound public fetchCurrentUserBudgetTables(editable: boolean = false) {
         rootStore.budgetStore.fetchCurrentUserBudgetList()
-            .then((list) => list.map((item) => new BudgetTable(item, this.contidion, editable)))
+            .then((list) => list.map((item) => new BudgetTable(item, this.condition, editable)))
             .then((list) => this.budgetTables = list);
     }
 }
