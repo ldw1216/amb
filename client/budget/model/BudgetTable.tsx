@@ -46,15 +46,20 @@ export default class BudgetTable {
     private allTitles = [['预算', '预算'], ['预算占收入比', '占收入比'], ['实际收入', '实际收入'], ['实际占收入比', '占收入比'], ['预算完成率', '预算完成率']];
     @observable public visibleType = true;
     @observable public budget: Budget;
-    @observable public editable: boolean = false;
+    @observable public editableOption: amb.ITableEditableOptiont;
     @observable public condition: Condition;
-    constructor(budget: Budget, condition: Condition, editable = false) {
+    constructor(budget: Budget, condition: Condition, editableOption: amb.ITableEditableOptiont) {
         this.budget = budget;
-        this.editable = editable;
+        this.editableOption = editableOption || {};
         this.condition = condition;
     }
-
+    @computed get canEdit() {
+        return this.approvalState < ApprovalState.已通过审核 && this.budget.groupIsAvailable;
+    }
     @computed get approvalState() {
+        if (!this.budget.groupIsAvailable) {
+            return ApprovalState.阿米巴组已失效;
+        }
         const period = rootStore.periodStore.list.filter((item) => item.state === '提报中').find((item) => item.groups.includes(this.budget.group) || item.allGroup);
 
         // 还没有提报周期
@@ -96,7 +101,7 @@ export default class BudgetTable {
         const months: number[] = [];
         const group = this.budget.fullGroup;
         const period = group && group.period;
-        if (!this.editable || !group || !period) return months;
+        if (!this.editableOption.budget || !group || !period) return months;
 
         if (period.quarters.includes('一季度')) months.push(0, 1, 2);
         if (period.quarters.includes('二季度')) months.push(3, 4, 5);
@@ -143,12 +148,15 @@ export default class BudgetTable {
 
         const incomeAmount = {
             key: '收入汇总',
-            subject: <SubjectTitle><span>收入</span><Icon onClick={() => this.addProject(BudgetSubjectType.收入)} type="plus" /></SubjectTitle>,
+            subject: <SubjectTitle><span>收入</span>
+                {this.canEdit && this.editableOption.addSubject ? <Icon onClick={() => this.addProject(BudgetSubjectType.收入)} type="plus" /> : ''}
+            </SubjectTitle>,
             type: undefined,
         } as any;
         const costAmount = {
             key: '成本汇总',
-            subject: <SubjectTitle><span>成本</span><Icon onClick={() => this.addProject(BudgetSubjectType.成本)} type="plus" /></SubjectTitle>,
+            subject: <SubjectTitle><span>成本</span>
+                {this.canEdit && this.editableOption.addSubject ? <Icon onClick={() => this.addProject(BudgetSubjectType.成本)} type="plus" /> : ''}</SubjectTitle>,
             type: undefined,
         } as any;
         const expenseAmount = {
@@ -181,11 +189,12 @@ export default class BudgetTable {
             const row = {
                 key: subject._id,
                 subject: <SubjectSubTitle>
-                    <Popconfirm placement="topLeft" title="确认删除？" onConfirm={() => this.removeProject(subject)} okText="确认" cancelText="取消">
-                        <Icon type="close" />
-                    </Popconfirm>
+                    {this.canEdit && this.editableOption.removeSubject ?
+                        <Popconfirm placement="topLeft" title="确认删除？" onConfirm={() => this.removeProject(subject)} okText="确认" cancelText="取消">
+                            <Icon type="close" />
+                        </Popconfirm> : ''}
                     {subject && subject.name}</SubjectSubTitle >,
-                type: <TypeSelector onChange={(e) => subject.save && subject.save({ budgetType: e as any })} value={subject.budgetType} />,
+                type: this.canEdit ? <TypeSelector onChange={(e) => subject.save && subject.save({ budgetType: e as any })} value={subject.budgetType} /> : subject.budgetType,
             } as any;
 
             this.budget.monthBudgets.forEach((monthBudget, i) => {

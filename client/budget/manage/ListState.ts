@@ -20,14 +20,14 @@ export class ListState {
         this.advancedSearchDisplay = false;
         document.removeEventListener('click', this.hideAdvancedSearch);
     }
-    @action.bound public fetchAllBudgetTables(editable: boolean = false) {
+    @action.bound public fetchAllBudgetTables(editableOptiont: amb.ITableEditableOptiont) {
         rootStore.budgetStore.fetchAllBudgetList().then((list) => {
-            this.budgetTables = list.map((item) => new BudgetTable(item, this.condition, editable));
+            this.budgetTables = list.map((item) => new BudgetTable(item, this.condition, editableOptiont));
         });
     }
-    @action.bound public fetchCurrentUserBudgetTables(editable: boolean = false) {
+    @action.bound public fetchCurrentUserBudgetTables(editableOptiont: amb.ITableEditableOptiont) {
         rootStore.budgetStore.fetchCurrentUserBudgetList()
-            .then((list) => list.map((item) => new BudgetTable(item, this.condition, editable)))
+            .then((list) => list.map((item) => new BudgetTable(item, this.condition, editableOptiont)))
             .then((list) => this.budgetTables = list);
     }
 }
