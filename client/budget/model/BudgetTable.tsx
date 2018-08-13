@@ -1,12 +1,7 @@
 import { Divider, Icon, InputNumber, Popconfirm, Popover, Select } from 'antd';
 import { SelectProps } from 'antd/lib/select';
 import { ApprovalState, BudgetSubjectType, BudgetType, SearchRange } from 'config/config';
-<<<<<<< HEAD
 import { action, computed, observable, reaction, toJS } from 'mobx';
-import { filter, values } from 'ramda';
-=======
-import { action, computed, observable, toJS } from 'mobx';
->>>>>>> 72c912e5982b4bf0b8b5f42d257253d0ac519fa7
 import React from 'react';
 import { render } from 'react-dom';
 
