@@ -2,16 +2,26 @@ import { Icon, Menu } from 'antd';
 import { Component } from 'react';
 import importedComponent from 'react-imported-component';
 import { Link, Route, Switch } from 'react-router-dom';
+import styled from 'styled-components';
+
+const Root = styled.div`
+    .profitRow.profitRow{
+        background: #f3b084;
+    }
+`;
 class Index extends Component {
     public render() {
         return (
-            <Switch>
-                <Route path="/budget/config" component={importedComponent(() => import('./config'))} />
-                <Route path="/budget/submit" component={importedComponent(() => import('./manage/index'))} />
-                <Route path="/budget/all" component={importedComponent(() => import('./manage/all'))} />
-                <Route path="/budget/edit/:groupId" component={importedComponent(() => import('./manage/edit'))} />
-                <Route path="/budget/totalTable" component={importedComponent(() => import('./totalTable'))} />
-            </Switch>
+            <Root>
+                <Switch>
+                    <Route path="/budget/config" component={importedComponent(() => import('./config'))} />
+                    <Route path="/budget/submit" component={importedComponent(() => import('./manage/index'))} />
+                    <Route path="/budget/all" component={importedComponent(() => import('./manage/all'))} />
+                    <Route path="/budget/edit/:groupId" component={importedComponent(() => import('./manage/edit'))} />
+                    <Route path="/budget/totalTable" component={importedComponent(() => import('./totalTable'))} />
+                </Switch>
+            </Root>
+
         );
     }
 }

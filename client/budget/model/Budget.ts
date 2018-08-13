@@ -43,7 +43,6 @@ export default class Budget implements amb.IBudget {
     }
     // 本预算的组是否失效
     @computed get groupIsAvailable() {
-        const group = rootStore.groupStore.list.find((item) => item._id === this.group);
         if (!this.fullGroup || this.fullGroup.available) return true;
         return this.fullGroup.available;
     }

@@ -2,7 +2,6 @@ import { Divider, Icon, InputNumber, Popconfirm, Popover, Select } from 'antd';
 import { SelectProps } from 'antd/lib/select';
 import { ApprovalState, BudgetSubjectType, BudgetType, SearchRange } from 'config/config';
 import { action, computed, observable, toJS } from 'mobx';
-import { filter, values } from 'ramda';
 import React from 'react';
 import { render } from 'react-dom';
 
@@ -12,7 +11,6 @@ import SubjectTitle from '../components/SubjectTitle';
 import Budget from './Budget';
 import Condition from './Condition';
 import MonthBudget from './MonthBudget';
-import Period from './Period';
 import Subject from './Subject';
 import SubjectBudget from './SubjectBudget';
 
@@ -109,6 +107,8 @@ export default class BudgetTable {
         if (period.quarters.includes('四季度')) months.push(9, 10, 11);
         return months;
     }
+
+    // 获取具体预算
     private getBudgetValue(monthBudget: MonthBudget, subject: amb.IBudgetSubject) {
         const subjectBudget = monthBudget.getSubjectBudget(subject);
         if (subjectBudget) return subjectBudget;
@@ -149,13 +149,23 @@ export default class BudgetTable {
         const incomeRows = [] as any[]; // 收入数据
         const costRows = [] as any[]; // 成本数据
         const expenseRows = [] as any[]; // 费用数据
-
+        const profitRow = {
+            key: '毛利',
+            subject: <SubjectSubTitle>毛利</SubjectSubTitle>,
+        } as any; // 毛利
+        const bonusRow = {
+            key: '奖金',
+            subject: <SubjectSubTitle>奖金</SubjectSubTitle>,
+        } as any; // 利润
+        const pureProfitRow = {
+            key: '利润',
+            subject: <SubjectSubTitle>利润</SubjectSubTitle>,
+        } as any; // 利润
         const incomeAmount = {
             key: '收入汇总',
             subject: <SubjectTitle><span>收入</span>
                 {this.canEdit && this.editableOption.addSubject ? <Icon onClick={() => this.addProject(BudgetSubjectType.收入)} type="plus" /> : ''}
             </SubjectTitle>,
-            type: undefined,
         } as any;
         const costAmount = {
             key: '成本汇总',
@@ -187,6 +197,12 @@ export default class BudgetTable {
             expenseAmount[`实际收入_${month}月`] = realitySum.expense;
             expenseAmount[`实际占收入比_${month}月`] = realityRate.expense;
             expenseAmount[`预算完成率_${month}月`] = rate.expense;
+
+            profitRow[`预算_${month}月`] = budgetSum.profit;
+            profitRow[`预算占收入比_${month}月`] = budgetRate.profit;
+            profitRow[`实际收入_${month}月`] = realitySum.profit;
+            profitRow[`实际占收入比_${month}月`] = realityRate.profit;
+            profitRow[`预算完成率_${month}月`] = rate.profit;
         });
         // 每个项目一行，添加数据，修改数据 填加完数据以后跟据提报周期确定哪几个季度是可编辑的
         this.budget.subjects.concat(this.expenseSubjects as any).forEach((subject) => {
@@ -197,7 +213,7 @@ export default class BudgetTable {
                         <Popconfirm placement="topLeft" title="确认删除？" onConfirm={() => this.removeProject(subject)} okText="确认" cancelText="取消">
                             <Icon type="close" />
                         </Popconfirm> : ''}
-                    {subject && subject.name}</SubjectSubTitle >,
+                    {subject && subject.name}</SubjectSubTitle>,
                 type: this.canEdit ? <TypeSelector onChange={(e) => subject.save && subject.save({ budgetType: e as any })} value={subject.budgetType} /> : subject.budgetType,
             } as any;
 
@@ -220,7 +236,7 @@ export default class BudgetTable {
             if (subject.subjectType === BudgetSubjectType.费用) expenseRows.push(row);
         });
 
-        const dataSource = [incomeAmount].concat(incomeRows, costAmount, costRows, expenseAmount, expenseRows);
+        const dataSource = [incomeAmount].concat(incomeRows, costAmount, costRows, profitRow, expenseAmount, bonusRow, expenseRows, pureProfitRow);
         return dataSource;
     }
     @computed public get columns() {
