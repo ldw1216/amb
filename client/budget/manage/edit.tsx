@@ -9,18 +9,20 @@ import { RouteComponentProps } from 'react-router-dom';
 import BudgetRemark from '../components/BudgetRemark';
 import Budget from '../model/Budget';
 import BudgetTable from '../model/BudgetTable';
+import Condition from '../model/Condition';
 
 @observer
 export default class extends Component<RouteComponentProps<{ groupId: string }>> {
     @observable private budget?: Budget;
     @observable private budgetTable?: BudgetTable;
+    @observable private condition = new Condition();
     public componentDidMount() {
         const groupId = this.props.match.params.groupId;
         rootStore.budgetStore.getCurrentUserBudget(groupId).then((res) => {
             if (!res) return;
-            const budgetTable = new BudgetTable(res, true);
-            budgetTable.allTitles = budgetTable.visibleTitles = budgetTable.allTitles
-                .filter(([key]) => !['实际收入', '预算完成率', '实际占收入比'].includes(key));
+            const budgetTable = new BudgetTable(res, this.condition, true);
+            // budgetTable.allTitles = budgetTable.visibleTitles = budgetTable.allTitles
+            // .filter(([key]) => !['实际收入', '预算完成率', '实际占收入比'].includes(key));
             runInAction(() => {
                 this.budget = res;
                 this.budgetTable = budgetTable;
@@ -34,9 +36,9 @@ export default class extends Component<RouteComponentProps<{ groupId: string }>>
     @action private 处理收入占比是否显示 = () => {
         if (!this.budgetTable) return;
         if (this.显示收入占比) {
-            this.budgetTable.visibleTitles = this.budgetTable.visibleTitles.filter(([key]) => key !== '预算占收入比');
+            // this.budgetTable.visibleTitles = this.budgetTable.visibleTitles.filter(([key]) => key !== '预算占收入比');
         } else {
-            this.budgetTable.visibleTitles = this.budgetTable.allTitles;
+            // this.budgetTable.visibleTitles = this.budgetTable.allTitles;
         }
     }
     private save = async (approvalState: ApprovalState) => {
