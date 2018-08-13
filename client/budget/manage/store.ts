@@ -21,6 +21,7 @@ export class Store {
         return this.currentUserBudgetList.map((item) => new BudgetTable(
             item,
             this.periods.find(({ _id }) => _id === item.period),
+            this.condition,
             false,
         ));
     }

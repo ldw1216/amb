@@ -1,8 +1,7 @@
 import { Icon, InputNumber, Popconfirm, Select } from 'antd';
 import { SelectProps } from 'antd/lib/select';
 import { BudgetSubjectType, BudgetType, SearchRange } from 'config/config';
-import { action, computed, observable, toJS } from 'mobx';
-import { observer } from 'mobx-react';
+import { action, computed, observable, observe, reaction, toJS } from 'mobx';
 import { filter, values } from 'ramda';
 import React from 'react';
 import { render } from 'react-dom';
@@ -35,18 +34,36 @@ const TypeSelector: React.SFC<SelectProps> = (props) => (
     </Select>
 );
 
+const allTitleMap = {
+    预算占比: ['预算占收入比', '占收入比'],
+    实际完成: ['实际收入', '实际收入'],
+    实际占比: ['实际占收入比', '占收入比'],
+    预算完成率: ['预算完成率', '预算完成率'],
+} as any;
 export default class BudgetTable {
-    public allTitles = [['预算', '预算'], ['预算占收入比', '占收入比'], ['实际收入', '实际收入'], ['实际占收入比', '占收入比'], ['预算完成率', '预算完成率']];
-    @observable public visibleRanges: SearchRange[] = filter((val) => [SearchRange.上一年].includes(val), values(SearchRange)); // 显示的时间范围
+    private allTitles = [['预算', '预算'], ['预算占收入比', '占收入比'], ['实际收入', '实际收入'], ['实际占收入比', '占收入比'], ['预算完成率', '预算完成率']];
+    @observable public condition: any = {};
+    @observable private visibleRanges: SearchRange[] = [];
     @observable public visibleTitles = this.allTitles;
     @observable public visibleType = true;
     @observable public budget: Budget;
     @observable public period?: amb.IPeriod;
     @observable public editable: boolean = false;
-    constructor(budget: Budget, period: amb.IPeriod | undefined, editable = false) {
+
+    constructor(budget: Budget, period: amb.IPeriod | undefined, condition?: any, editable = false) {
         this.budget = budget;
         this.period = period;
         this.editable = editable;
+        this.condition = condition;
+        this.visibleRanges = condition.range;
+        // this.visibleTitles = this.visibleTitles.filter((item) => {
+        //     return false;
+        // });
+        observe(this.condition, () => {
+            const { dataTypes, range } = this.condition;
+            this.visibleTitles = [['预算', '预算'], ...dataTypes.map((d: string) => allTitleMap[d])];
+            this.visibleRanges = range;
+        });
     }
     // 添加项目
     @action.bound private addProject(subjectType: BudgetSubjectType) {
@@ -60,6 +77,7 @@ export default class BudgetTable {
         await subject.remove();
         this.budget.fetchSubjects();
     }
+
     @computed get expenseSubjects() {
         const expense = rootStore.expenseTypes.find(({ year }) => year === this.budget.year);
         return expense ? expense.options.map((item) => ({ ...item, subjectType: BudgetSubjectType.费用 })) : [];
@@ -196,21 +214,36 @@ export default class BudgetTable {
                 key: `type`,
             });
         }
-
-        for (let i = 0; i < 12; i++) {
-            const children = this.visibleTitles.map(([key, value]) => ({
-                id: key,
-                title: value,
-                dataIndex: `${key}_${i}月`,
-                key: `${key}_${i}月`,
-            }));
-            columns.push({
-                title: `${i + 1}月`,
-                dataIndex: `month${i}`,
-                key: `month${i}`,
-                children,
-            });
-        }
+        const titleList = [0, 1, 2, '一季度', 3, 4, 5, '二季度', '半年报', 6, 7, 8, '三季度', 9, 10, 11, '四季度', '全年报'];
+        titleList.forEach((k: string | number) => {
+            if (typeof k === 'number') {
+                const children = this.visibleTitles.map(([key, value]) => ({
+                    id: key,
+                    title: value,
+                    dataIndex: `${key}_${k}月`,
+                    key: `${key}_${k}月`,
+                }));
+                columns.push({
+                    title: `${k + 1}月`,
+                    dataIndex: `month${k}`,
+                    key: `month${k}`,
+                    children,
+                });
+            } else if (this.visibleRanges.includes(k as any)) {
+                const children2 = this.visibleTitles.map(([key, value]) => ({
+                    id: key,
+                    title: value,
+                    dataIndex: `${key}_${k}quarter`,
+                    key: `${key}_${k}quarter`,
+                }));
+                columns.push({
+                    title: k,
+                    dataIndex: `quarter${k}`,
+                    key: `quarter${k}`,
+                    children: children2,
+                });
+            }
+        };
         return columns;
     }
 }

@@ -6,10 +6,10 @@ import { observer } from 'mobx-react';
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
+import excellentexport from '../../components/excellentexport';
 import rootStore from '../../store';
 import AdvancedSearch from './components/AdvancedSearch';
 import SubjectEditor from './components/SubjectEditor';
-import excellentexport from '../../components/excellentexport';
 import store from './store';
 store.fetchCurrentUserBudgetList();
 
@@ -30,9 +30,9 @@ export default class extends Component {
         this.advancedSearchDisplay = false;
         document.removeEventListener('click', this.hideAdvancedSearch);
     }
-    exportExcel = () => {
-        const table = document.getElementsByTagName('table')[0]
-        excellentexport.excel(table, '工作簿1', '阿米巴')
+    public exportExcel = () => {
+        const table = document.getElementsByTagName('table')[0];
+        excellentexport.excel(table, '工作簿1', '阿米巴');
     }
     public render() {
         // console.log(toJS(store.currentUserBudgetList));
