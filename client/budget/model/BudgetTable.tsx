@@ -146,6 +146,7 @@ export default class BudgetTable {
     }
 
     @computed get dataSource() {
+        const rewardRate = this.budget.fullGroup!.rewardRate; // 奖金比例
         const incomeRows = [] as any[]; // 收入数据
         const costRows = [] as any[]; // 成本数据
         const expenseRows = [] as any[]; // 费用数据
@@ -153,7 +154,7 @@ export default class BudgetTable {
             key: '毛利',
             subject: <SubjectSubTitle>毛利</SubjectSubTitle>,
         } as any; // 毛利
-        const bonusRow = {
+        const rewardRow = {
             key: '奖金',
             subject: <SubjectSubTitle>奖金</SubjectSubTitle>,
         } as any; // 利润
@@ -178,7 +179,7 @@ export default class BudgetTable {
             subject: <SubjectTitle><span>费用</span></SubjectTitle>,
             type: undefined,
         } as any;
-        // 添加收入、成本、费用汇总
+
         this.budget.monthBudgets.forEach(({ month, budgetSum, realitySum, realityRate, rate, budgetRate }) => {
             incomeAmount[`预算_${month}月`] = budgetSum.income;
             incomeAmount[`预算占收入比_${month}月`] = budgetRate.income;
@@ -203,6 +204,11 @@ export default class BudgetTable {
             profitRow[`实际收入_${month}月`] = realitySum.profit;
             profitRow[`实际占收入比_${month}月`] = realityRate.profit;
             profitRow[`预算完成率_${month}月`] = rate.profit;
+
+            // 奖金计算
+            rewardRow[`预算_${month}月`] = (budgetSum.profit * rewardRate / 100).toFixed(2);
+            rewardRow[`实际收入_${month}月`] = (realitySum.profit * rewardRate / 100).toFixed(2);
+
         });
         // 每个项目一行，添加数据，修改数据 填加完数据以后跟据提报周期确定哪几个季度是可编辑的
         this.budget.subjects.concat(this.expenseSubjects as any).forEach((subject) => {
@@ -236,7 +242,7 @@ export default class BudgetTable {
             if (subject.subjectType === BudgetSubjectType.费用) expenseRows.push(row);
         });
 
-        const dataSource = [incomeAmount].concat(incomeRows, costAmount, costRows, profitRow, expenseAmount, bonusRow, expenseRows, pureProfitRow);
+        const dataSource = [incomeAmount].concat(incomeRows, costAmount, costRows, profitRow, expenseAmount, rewardRow, expenseRows, pureProfitRow);
         return dataSource;
     }
     @computed public get columns() {

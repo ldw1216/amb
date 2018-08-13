@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { ApprovalState } from 'config/config';
 import { action, computed, observable, runInAction, toJS } from 'mobx';
+import { Group } from 'store/Group';
 import MonthBudget from './MonthBudget';
 import Subject from './Subject';
 
@@ -16,13 +17,14 @@ export default class Budget implements amb.IBudget {
     @observable public monthBudgets: MonthBudget[] = [];
     @observable public subjects: Subject[] = [];
     @observable public remark?: string;
+    @observable public fullGroup?: Group;
 
-    constructor(data: amb.IBudget) {
+    constructor(data: amb.IBudget, group: Group) {
         const monthBudgets = (data.monthBudgets || []).map((monthBudget) => {
             if (monthBudget instanceof MonthBudget) return monthBudget;
             return new MonthBudget(monthBudget);
         });
-
+        this.fullGroup = group;
         this._id = data._id;
         this.user = data.user; // 预算周期
         this.group = data.group; // 预算周期
@@ -33,14 +35,11 @@ export default class Budget implements amb.IBudget {
         this.approvalState = data.approvalState;
         Object.defineProperties(this, {
             subjects: { enumerable: false },
+            fullGroup: { enumerable: false },
         });
         this.fetchSubjects();
     }
 
-    @computed get fullGroup() {
-        const group = rootStore.groupStore.list.find((item) => item._id === this.group);
-        return group;
-    }
     // 本预算的组是否失效
     @computed get groupIsAvailable() {
         if (!this.fullGroup || this.fullGroup.available) return true;
