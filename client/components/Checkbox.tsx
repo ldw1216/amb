@@ -18,7 +18,7 @@ const Item = styled.div`
     }
 `;
 
-class Checkbox extends Component<{ onChange?: (value: string[]) => void, value?: string[] }> {
+class Checkbox extends Component<{ onChange?: (value: any[]) => void, value?: any[] }> {
     public static CheckboxItem = (props: { children?: ReactNode, value: string }) => {
         return props.children as JSX.Element;
     }

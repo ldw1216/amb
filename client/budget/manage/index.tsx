@@ -44,7 +44,7 @@ export default class extends Component {
                                 </Link>
                             }
                         </ToolBar>
-                        <Table className={item.approvalState >= ApprovalState.已通过审核 ? 'disabled' : ''} pagination={false} scroll={{ x: 'auto' }} bordered size="small" dataSource={item.dataSource} columns={item.columns} />
+                        <Table className={item.approvalState > ApprovalState.已通过审核 ? 'disabled' : ''} pagination={false} scroll={{ x: 'auto' }} bordered size="small" dataSource={item.dataSource} columns={item.columns} />
                     </TableSection>
                 ))}
             </div>

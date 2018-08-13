@@ -1,7 +1,7 @@
 import { Divider, Icon, InputNumber, Popconfirm, Popover, Select } from 'antd';
 import { SelectProps } from 'antd/lib/select';
 import { ApprovalState, BudgetSubjectType, BudgetType, SearchRange } from 'config/config';
-import { action, computed, observable, toJS } from 'mobx';
+import { action, computed, observable, reaction, toJS } from 'mobx';
 import { filter, values } from 'ramda';
 import React from 'react';
 import { render } from 'react-dom';
@@ -43,7 +43,7 @@ const allTitleMap = {
     预算完成率: ['预算完成率', '预算完成率'],
 } as any;
 export default class BudgetTable {
-    private allTitles = [['预算', '预算'], ['预算占收入比', '占收入比'], ['实际收入', '实际收入'], ['实际占收入比', '占收入比'], ['预算完成率', '预算完成率']];
+    // private allTitles = [['预算', '预算'], ['预算占收入比', '占收入比'], ['实际收入', '实际收入'], ['实际占收入比', '占收入比'], ['预算完成率', '预算完成率']];
     @observable public visibleType = true;
     @observable public budget: Budget;
     @observable public editableOption: amb.ITableEditableOptiont;
@@ -52,6 +52,9 @@ export default class BudgetTable {
         this.budget = budget;
         this.editableOption = editableOption || {};
         this.condition = condition;
+        reaction(() => this.condition.year, (year) => {
+            console.log(year);
+        });
     }
     @computed get canEdit() {
         return this.approvalState < ApprovalState.已通过审核 && this.budget.groupIsAvailable;
@@ -89,7 +92,11 @@ export default class BudgetTable {
         return this.condition.range;
     }
     @computed get visibleTitles() {
-        return [['预算', '预算'], ...this.condition.dataTypes.map((d: string) => allTitleMap[d])];
+        if (this.condition.budgetRatioVisible) {
+            return [['预算', '预算'], ...this.condition.dataTypes.map((d: string) => allTitleMap[d])];
+        } else {
+            return [['预算', '预算'], ...this.condition.dataTypes.map((d: string) => allTitleMap[d])].filter((i) => i[0] !== '预算占收入比' && i[0] !== '实际占收入比');
+        }
     }
     @computed get expenseSubjects() {
         return rootStore.expenseTypeStore.getExpenseSubject(this.budget.year);
@@ -101,7 +108,7 @@ export default class BudgetTable {
         const months: number[] = [];
         const group = this.budget.fullGroup;
         const period = group && group.period;
-        if (!this.editableOption.budget || !group || !period) return months;
+        if (!this.editableOption.budget && !this.editableOption.reality || !group || !period) return months;
 
         if (period.quarters.includes('一季度')) months.push(0, 1, 2);
         if (period.quarters.includes('二季度')) months.push(3, 4, 5);
@@ -198,7 +205,7 @@ export default class BudgetTable {
                             <Icon type="close" />
                         </Popconfirm> : ''}
                     {subject && subject.name}</SubjectSubTitle >,
-                type: this.canEdit ? <TypeSelector onChange={(e) => subject.save && subject.save({ budgetType: e as any })} value={subject.budgetType} /> : subject.budgetType,
+                type: this.editableOption.budgetType ? <TypeSelector onChange={(e) => subject.save && subject.save({ budgetType: e as any })} value={subject.budgetType} /> : subject.budgetType,
             } as any;
 
             this.budget.monthBudgets.forEach((monthBudget) => {
@@ -209,11 +216,10 @@ export default class BudgetTable {
                 row[`实际占收入比_${monthBudget.month}月`] = data.realityRate;
                 row[`预算完成率_${monthBudget.month}月`] = data.completeRate;
             });
-
             this.editableMonths.forEach((i) => {
                 const monthBudget = this.budget.monthBudgets.find((item) => item.month === i) || new MonthBudget({ month: i, subjectBudgets: [] });
-                row[`预算_${i}月`] = <InputNumber value={this.getBudgetValue(monthBudget, subject).budget} onChange={(value) => this.setBudgetValue(i, subject, { budget: +(value || 0) })} />;
-                row[`实际收入_${i}月`] = <InputNumber value={this.getBudgetValue(monthBudget, subject).reality} onChange={(value) => this.setBudgetValue(i, subject, { reality: +(value || 0) })} />;
+                row[`预算_${i}月`] = this.editableOption.budget ? <InputNumber value={this.getBudgetValue(monthBudget, subject).budget} onChange={(value) => this.setBudgetValue(i, subject, { budget: +(value || 0) })} /> : this.getBudgetValue(monthBudget, subject).budget;
+                row[`实际收入_${i}月`] = this.editableOption.reality ? <InputNumber value={this.getBudgetValue(monthBudget, subject).reality} onChange={(value) => this.setBudgetValue(i, subject, { reality: +(value || 0) })} /> : this.getBudgetValue(monthBudget, subject).reality;
             });
             if (subject.subjectType === BudgetSubjectType.收入) incomeRows.push(row);
             if (subject.subjectType === BudgetSubjectType.成本) costRows.push(row);

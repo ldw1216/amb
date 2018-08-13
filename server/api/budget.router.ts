@@ -4,7 +4,17 @@ const router = new Router({ prefix: '/budget' });
 
 router.get('/', async (ctx) => {
     const year = parseInt(ctx.query.year, 10);
-    const condition = year ? { year } : {};
+    const condition: any = year ? { year } : {};
+    let approvalState = ctx.query.approvalState;
+    const groupId = ctx.query.groupId || '';
+    if (approvalState) {
+        approvalState = Array.isArray(approvalState) ? approvalState : [approvalState];
+        approvalState = approvalState.map((a: string) => +a);
+        condition.approvalState = { $in: approvalState };
+    }
+    if (groupId) {
+        condition.condition = groupId;
+    }
     ctx.body = await BudgetModel.find(condition);
 });
 

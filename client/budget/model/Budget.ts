@@ -68,4 +68,15 @@ export default class Budget implements amb.IBudget {
         const period = group.period!._id;
         return axios.post('/budget', Object.assign({}, this, { period }));
     }
+
+    // 修改
+    @action.bound public async put(approvalState: ApprovalState) {
+        await axios.post('/budget', { _id: this._id, approvalState });
+        this.approvalState = approvalState;
+    }
+
+    // 修改实际
+    @action.bound public async putReal() {
+        return axios.post('/budget', this);
+    }
 }

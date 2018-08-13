@@ -7,13 +7,19 @@ import { ApprovalState } from 'config/config';
 import { observer } from 'mobx-react';
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
+import { computed, observable } from '../../../node_modules/mobx';
 import AdvancedSearch from '../components/AdvancedSearch';
 import ApprovalTtitle from '../components/ApprovalTtitle';
 import { ListState } from './ListState';
 
 const CheckboxItem = Checkbox.CheckboxItem;
 const Option = Select.Option;
-
+const stateMap = {
+    待审核: ApprovalState.已提报未审核,
+    已通过: ApprovalState.已通过审核,
+    未通过: ApprovalState.审核拒绝,
+    未提报: ApprovalState.草稿,
+} as any;
 @observer
 export default class extends Component {
     private pageState = new ListState();
@@ -26,16 +32,26 @@ export default class extends Component {
     }
     public render() {
         const { budgetTables, condition } = this.pageState;
+        const budgetTables2 = budgetTables.filter((b) => {
+            if (condition.approvalState.length && !condition.approvalState.includes(b.approvalState)) {
+                return false;
+            }
+            if (condition.groupId !== '0' && condition.groupId !== b.budget.group) {
+                return false;
+            }
+            return true;
+        });
         return (
             <div>
                 <Section>
                     <span>预算状态：</span>
-                    <Checkbox value={['待审核']} onChange={console.log}>
-                        {['待审核', '已通过', '未通过', '未提报'].map((item) => <CheckboxItem key={item} value={item}>{item}</CheckboxItem>)}
+                    <Checkbox value={condition.approvalState} onChange={(val: any) => condition.approvalState = val}>
+                        {Object.keys(stateMap).map((item) => <CheckboxItem key={item} value={stateMap[item]}>{item}</CheckboxItem>)}
                     </Checkbox>
                     <span style={{ paddingLeft: 50, paddingRight: 30 }}>阿米巴组:</span>
-                    <Select style={{ width: 100 }}>
-                        {['全部'].map((item) => <Option key={item} value={item}>{item}</Option>)}
+                    <Select value={condition.groupId} onChange={(value: any) => condition.groupId = value} style={{ width: 100 }}>
+                        <Option value="0">全部</Option>
+                        {rootStore.groupStore.list.map((item) => <Option key={item._id} value={item._id}>{item.name}</Option>)}
                     </Select>
                 </Section>
                 <Section>
@@ -45,22 +61,21 @@ export default class extends Component {
                     </SearchBar>
                     {this.pageState.advancedSearchDisplay && <AdvancedSearch condition={condition} />}
                 </Section>
-                {budgetTables.map((item) => (
+                {budgetTables2.map((item) => (
                     <TableSection key={item.budget.year + item.budget.group}>
                         <ToolBar>
                             <ApprovalTtitle>{ApprovalState[item.approvalState]}</ApprovalTtitle>
-                            {item.budget.groupIsAvailable ? '有效' : '失效'}
                             {item.approvalState === ApprovalState.已提报未审核 ?
-                                <Link to={`/budget/edit/${item.budget.group}`}>
+                                <Link to={`/budget/edit/${item.budget.group}/approval`}>
                                     <Button>审核预算</Button>
                                 </Link> : ''
                             }
                             {item.approvalState === ApprovalState.已通过审核 ?
                                 <React.Fragment>
-                                    <Link to={`/budget/edit/${item.budget.group}`}>
+                                    <Link style={{ marginLeft: '10px' }} to={`/budget/edit/${item.budget.group}/reality`}>
                                         <Button>填写实际</Button>
                                     </Link>
-                                    <Link to={`/budget/edit/${item.budget.group}`}>
+                                    <Link to={`/budget/edit/${item.budget.group}/type`}>
                                         <Button>修改类型</Button>
                                     </Link>
                                 </React.Fragment> : ''

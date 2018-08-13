@@ -6,11 +6,14 @@ class Index extends Component {
     public render() {
         return (
             <Switch>
-                <Route path="/budget/config" component={importedComponent(() => import('./config'))} />
-                <Route path="/budget/submit" component={importedComponent(() => import('./manage/index'))} />
-                <Route path="/budget/all" component={importedComponent(() => import('./manage/all'))} />
-                <Route path="/budget/edit/:groupId" component={importedComponent(() => import('./manage/edit'))} />
-                <Route path="/budget/totalTable" component={importedComponent(() => import('./totalTable'))} />
+                <Route exact path="/budget/config" component={importedComponent(() => import('./config'))} />
+                <Route exact path="/budget/submit" component={importedComponent(() => import('./manage/index'))} />
+                <Route exact path="/budget/all" component={importedComponent(() => import('./manage/all'))} />
+                <Route exact path="/budget/edit/:groupId/approval" component={importedComponent(() => import('./manage/edit'))} />
+                <Route exact path="/budget/edit/:groupId/reality" component={importedComponent(() => import('./manage/edit'))} />
+                <Route exact path="/budget/edit/:groupId/type" component={importedComponent(() => import('./manage/edit'))} />
+                <Route exact path="/budget/edit/:groupId" component={importedComponent(() => import('./manage/edit'))} />
+                <Route exact path="/budget/totalTable" component={importedComponent(() => import('./totalTable'))} />
             </Switch>
         );
     }

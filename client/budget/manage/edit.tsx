@@ -1,4 +1,4 @@
-import { Affix, Button, Checkbox, Input, Table } from 'antd';
+import { Affix, Button, Checkbox, Input, message, Table } from 'antd';
 import { SearchBar } from 'components/SearchBar';
 import Section, { TableSection } from 'components/Section';
 import { ApprovalState } from 'config/config';
@@ -16,17 +16,43 @@ export default class extends Component<RouteComponentProps<{ groupId: string }>>
     @observable private budget?: Budget;
     @observable private budgetTable?: BudgetTable;
     @observable private condition = new Condition();
+    @observable private isApproval = false;
+    @observable private isReality = false;
+    @observable private isBudgetType = false;
+    @observable private opt: amb.ITableEditableOptiont = {};
     public componentDidMount() {
         const groupId = this.props.match.params.groupId;
-        rootStore.budgetStore.getCurrentUserBudget(groupId).then((res) => {
-            if (!res) return;
-            const budgetTable = new BudgetTable(res, this.condition, {
+        this.isApproval = this.props.match.path.endsWith('approval');
+        this.isReality = this.props.match.path.endsWith('reality');
+        this.isBudgetType = this.props.match.path.endsWith('type');
+        //  = {
+        //     budgetType: this.isApproval,
+        //     budget: this.isApproval,
+        //     addSubject: this.isApproval,
+        //     removeSubject: this.isApproval,
+        //     reality: this.isReality,
+        // };
+        if (this.isReality) {
+            this.opt = {
+                reality: true,
+            };
+        } else if (this.isBudgetType) {
+            this.opt = {
+                budgetType: true,
+            };
+        } else if (this.isApproval) {
+            this.opt = {};
+        } else {
+            this.opt = {
+                budgetType: true,
                 budget: true,
                 addSubject: true,
                 removeSubject: true,
-            });
-            // budgetTable.allTitles = budgetTable.visibleTitles = budgetTable.allTitles
-            // .filter(([key]) => !['实际收入', '预算完成率', '实际占收入比'].includes(key));
+            };
+        }
+        rootStore.budgetStore.getCurrentUserBudget(groupId).then((res) => {
+            if (!res) return;
+            const budgetTable = new BudgetTable(res, this.condition, this.opt);
             runInAction(() => {
                 this.budget = res;
                 this.budgetTable = budgetTable;
@@ -51,18 +77,50 @@ export default class extends Component<RouteComponentProps<{ groupId: string }>>
         await this.budget.save();
         this.reset();
     }
-
+    // 审核
+    private approval = async (approvalState: ApprovalState) => {
+        if (!this.budget) return;
+        await this.budget.put(approvalState);
+        this.reset();
+        message.info(approvalState === ApprovalState.审核拒绝 ? '审核拒绝' : '审核通过');
+    }
+    // 审核
+    private putReal = async () => {
+        if (!this.budget) return;
+        await this.budget.putReal();
+        this.reset();
+    }
     private reset = async () => {
         await rootStore.budgetStore.fetchCurrentUserBudgetList();
-        this.componentDidMount();
+        history.back();
+        // this.componentDidMount();
     }
     public render() {
         if (!this.budget || !this.budget.fullGroup) return null;
+        let buttons = (
+            <React.Fragment>
+                <Button onClick={() => this.save(ApprovalState.草稿)} type="primary">暂存草稿</Button>
+                <Button onClick={() => this.save(ApprovalState.已提报未审核)}>预算提报</Button>
+            </React.Fragment>
+        );
+        if (this.isApproval) {
+            buttons = (
+                <React.Fragment >
+                    <Button onClick={() => this.approval(ApprovalState.审核拒绝)} type="danger" >拒绝</Button>
+                    <Button onClick={() => this.approval(ApprovalState.已通过审核)} type="primary">通过</Button>
+                </React.Fragment >
+            );
+        } else if (this.isBudgetType || this.isReality) {
+            buttons = (
+                <Button onClick={() => this.putReal()} type="primary" >保存</Button>
+            );
+        }
+
         return (
             <div>
                 <Section>
                     <SearchBar style={{ marginBottom: 0 }}>
-                        <Checkbox checked={this.显示收入占比} onChange={this.处理收入占比是否显示} >显示预算占比</Checkbox>
+                        <Checkbox checked={this.condition.budgetRatioVisible} onChange={(e) => this.condition.budgetRatioVisible = e.target.checked} >显示预算占比</Checkbox>
                     </SearchBar>
                 </Section>
                 <TableSection>
@@ -72,8 +130,7 @@ export default class extends Component<RouteComponentProps<{ groupId: string }>>
                 <Section>
                     <SearchBar>
                         <Button onClick={this.reset}>取消</Button>
-                        <Button onClick={() => this.save(ApprovalState.草稿)} type="primary">暂存草稿</Button>
-                        <Button onClick={() => this.save(ApprovalState.已提报未审核)}>预算提报</Button>
+                        {buttons}
                     </SearchBar>
                 </Section>
             </div>
