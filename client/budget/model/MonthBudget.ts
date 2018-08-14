@@ -8,8 +8,11 @@ export default class MonthBudget implements amb.IMonthBudget {
     @observable public _id?: string;
     @observable public month: number;
     @observable public subjectBudgets: SubjectBudget[];
-    @observable private group: Group;
+    @observable public rewardRate: number;
+    public isDirty = false; // 已经被修改改
 
+    private budgetSum_?: amb.IMonthBudgetSum;
+    private realitySum_?: amb.IMonthBudgetSum;
     // 获取某个项目的预算
     public getSubjectBudget(subject: amb.IBudgetSubject) {
         const subjectBudget = this.subjectBudgets.find(({ subjectId }) => subject._id === subjectId);
@@ -23,7 +26,7 @@ export default class MonthBudget implements amb.IMonthBudget {
         const cost = this.subjectBudgets.filter(({ subjectType }) => subjectType === BudgetSubjectType.成本)
             .reduce((x, y) => x + (y.budget || 0), 0);
         const profit = income - cost;
-        const reward = profit < 0 ? 0 : profit / 100;
+        const reward = profit < 0 ? 0 : profit * this.rewardRate / 100;
         const expense = this.subjectBudgets.filter(({ subjectType }) => subjectType === BudgetSubjectType.费用)
             .reduce((x, y) => x + (y.budget || 0), 0) + reward;
         const purProfit = profit - reward - expense;
@@ -58,7 +61,7 @@ export default class MonthBudget implements amb.IMonthBudget {
         const profit = income - cost;
         const expense = this.subjectBudgets.filter(({ subjectType }) => subjectType === BudgetSubjectType.费用)
             .reduce((x, y) => x + (y.reality || 0), 0) + profit;
-        const reward = profit < 0 ? 0 : profit / 100;
+        const reward = profit < 0 ? 0 : profit * this.rewardRate / 100;
         const purProfit = profit - reward - expense;
         return {
             income,
@@ -98,10 +101,17 @@ export default class MonthBudget implements amb.IMonthBudget {
         this._id = data._id;
         this.month = data.month;
         this.subjectBudgets = (data.subjectBudgets || []).map((item) => new SubjectBudget(item, this));
-        this.group = group;
 
-        Object.defineProperties(this, {
-            group: { enumerable: false },
-        });
+        this.budgetSum_ = data.budgetSum;
+        this.realitySum_ = data.realitySum;  // 预算总收入
+
+        this.rewardRate = data.rewardRate || group.rewardRate;
+        ['isDirty', 'budgetSum_', 'realitySum_'].forEach((item) => Object.defineProperties(this, {
+            [item]: { enumerable: false },
+        }));
+    }
+
+    public toJSON() {
+        return Object.assign({}, this, { budgetSum: this.budgetSum, realitySum: this.realitySum });
     }
 }

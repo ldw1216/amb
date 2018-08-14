@@ -154,6 +154,10 @@ export default class BudgetTable {
         }
         if (value.budget) subjectBudget!.budget = value.budget;
         if (value.reality) subjectBudget!.reality = value.reality;
+        if (!monthBuget.isDirty) { // 标记被修改过
+            monthBuget.isDirty = true;
+            monthBuget.rewardRate = this.budget.fullGroup.rewardRate;
+        }
     }
 
     @computed get dataSource() {
