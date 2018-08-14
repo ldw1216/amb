@@ -1,5 +1,6 @@
 import { BudgetSubjectType } from 'config/config';
 import { computed, observable } from 'mobx';
+import { Group } from 'store/Group';
 import SubjectBudget from './SubjectBudget';
 
 // 预算金额 某个项目，某个月份的预算
@@ -7,6 +8,7 @@ export default class MonthBudget implements amb.IMonthBudget {
     @observable public _id?: string;
     @observable public month: number;
     @observable public subjectBudgets: SubjectBudget[];
+    @observable private group: Group;
 
     // 获取某个项目的预算
     public getSubjectBudget(subject: amb.IBudgetSubject) {
@@ -22,11 +24,14 @@ export default class MonthBudget implements amb.IMonthBudget {
             .reduce((x, y) => x + (y.budget || 0), 0);
         const expense = this.subjectBudgets.filter(({ subjectType }) => subjectType === BudgetSubjectType.费用)
             .reduce((x, y) => x + (y.budget || 0), 0);
+        const profit = income - cost;
+        const reward = profit < 0 ? 0 : profit / 100;
         return {
             income,
             cost,
             expense,
-            profit: income - cost,
+            profit,
+            reward,
         };
     }
 
@@ -37,6 +42,7 @@ export default class MonthBudget implements amb.IMonthBudget {
             cost: this.budgetSum.income ? (this.budgetSum.cost / this.budgetSum.income * 100).toFixed(2) + '%' : '--',
             expense: this.budgetSum.income ? (this.budgetSum.expense / this.budgetSum.income * 100).toFixed(2) + '%' : '--',
             profit: this.budgetSum.income ? (this.budgetSum.profit / this.budgetSum.income * 100).toFixed(2) + '%' : '--',
+            reward: this.budgetSum.income ? (this.budgetSum.reward / this.budgetSum.income * 100).toFixed(2) + '%' : '--',
         };
     }
 
@@ -48,11 +54,14 @@ export default class MonthBudget implements amb.IMonthBudget {
             .reduce((x, y) => x + (y.reality || 0), 0);
         const expense = this.subjectBudgets.filter(({ subjectType }) => subjectType === BudgetSubjectType.费用)
             .reduce((x, y) => x + (y.reality || 0), 0);
+        const profit = income - cost;
+        const reward = profit < 0 ? 0 : profit / 100;
         return {
             income,
             cost,
             expense,
-            profit: income - cost,
+            profit,
+            reward,
         };
     }
 
@@ -63,6 +72,7 @@ export default class MonthBudget implements amb.IMonthBudget {
             cost: this.realitySum.income ? (this.realitySum.cost / this.realitySum.income * 100).toFixed(2) + '%' : '--',
             expense: this.realitySum.income ? (this.realitySum.expense / this.realitySum.income * 100).toFixed(2) + '%' : '--',
             profit: this.realitySum.income ? (this.realitySum.profit / this.realitySum.income * 100).toFixed(2) + '%' : '--',
+            reward: this.realitySum.income ? (this.realitySum.reward / this.realitySum.income * 100).toFixed(2) + '%' : '--',
         };
     }
 
@@ -73,12 +83,18 @@ export default class MonthBudget implements amb.IMonthBudget {
             cost: this.budgetSum.cost ? (this.realitySum.cost / this.budgetSum.cost * 100).toFixed(2) + '%' : '--',
             expense: this.budgetSum.expense ? (this.realitySum.expense / this.budgetSum.expense * 100).toFixed(2) + '%' : '--',
             profit: this.budgetSum.income ? (this.realitySum.profit / this.budgetSum.profit * 100).toFixed(2) + '%' : '--',
+            reward: this.budgetSum.reward ? (this.realitySum.reward / this.budgetSum.reward * 100).toFixed(2) + '%' : '--',
         };
     }
 
-    constructor(data: amb.IMonthBudget) {
+    constructor(data: amb.IMonthBudget, group: Group) {
         this._id = data._id;
         this.month = data.month;
         this.subjectBudgets = (data.subjectBudgets || []).map((item) => new SubjectBudget(item, this));
+        this.group = group;
+
+        Object.defineProperties(this, {
+            group: { enumerable: false },
+        });
     }
 }
