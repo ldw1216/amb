@@ -136,7 +136,7 @@ export default class BudgetTable {
             monthBuget = new MonthBudget({
                 month,
                 subjectBudgets: [],
-            });
+            }, this.budget.fullGroup);
             this.budget.monthBudgets.push(monthBuget);
         }
         let subjectBudget = monthBuget.subjectBudgets.find(({ subjectId }) => subject._id === subjectId);
@@ -213,8 +213,11 @@ export default class BudgetTable {
             profitRow[`预算完成率_${month}月`] = rate.profit;
 
             // 奖金计算
-            rewardRow[`预算_${month}月`] = (budgetSum.profit * rewardRate / 100).toFixed(2);
-            rewardRow[`实际收入_${month}月`] = (realitySum.profit * rewardRate / 100).toFixed(2);
+            rewardRow[`预算_${month}月`] = budgetSum.reward;
+            rewardRow[`预算占收入比_${month}月`] = budgetRate.reward;
+            rewardRow[`实际收入_${month}月`] = realitySum.reward;
+            rewardRow[`实际占收入比_${month}月`] = realityRate.reward;
+            rewardRow[`预算完成率_${month}月`] = rate.reward;
 
         });
         // 每个项目一行，添加数据，修改数据 填加完数据以后跟据提报周期确定哪几个季度是可编辑的
@@ -239,7 +242,7 @@ export default class BudgetTable {
                 row[`预算完成率_${monthBudget.month}月`] = data.completeRate;
             });
             this.editableMonths.forEach((i) => {
-                const monthBudget = this.budget.monthBudgets.find((item) => item.month === i) || new MonthBudget({ month: i, subjectBudgets: [] });
+                const monthBudget = this.budget.monthBudgets.find((item) => item.month === i) || new MonthBudget({ month: i, subjectBudgets: [] }, this.budget.fullGroup);
                 row[`预算_${i}月`] = this.editableOption.budget ? <InputNumber value={this.getBudgetValue(monthBudget, subject).budget} onChange={(value) => this.setBudgetValue(i, subject, { budget: +(value || 0) })} /> : this.getBudgetValue(monthBudget, subject).budget;
                 row[`实际收入_${i}月`] = this.editableOption.reality ? <InputNumber value={this.getBudgetValue(monthBudget, subject).reality} onChange={(value) => this.setBudgetValue(i, subject, { reality: +(value || 0) })} /> : this.getBudgetValue(monthBudget, subject).reality;
             });

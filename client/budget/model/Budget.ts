@@ -17,12 +17,12 @@ export default class Budget implements amb.IBudget {
     @observable public monthBudgets: MonthBudget[] = [];
     @observable public subjects: Subject[] = [];
     @observable public remark?: string;
-    @observable public fullGroup?: Group;
+    @observable public fullGroup: Group;
 
     constructor(data: amb.IBudget, group: Group) {
         const monthBudgets = (data.monthBudgets || []).map((monthBudget) => {
             if (monthBudget instanceof MonthBudget) return monthBudget;
-            return new MonthBudget(monthBudget);
+            return new MonthBudget(monthBudget, group);
         });
         this.fullGroup = group;
         this._id = data._id;
