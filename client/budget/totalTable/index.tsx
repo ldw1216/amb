@@ -53,11 +53,7 @@ export default class extends Component {
                 ],
             } as any,
         ];
-        // const data = [{ key: 'ys', value: '预算' }, { key: 'yszb', value: '占收入比例' }, { key: 'sj', value: '实际' }, { key: 'sjzb', value: '占收入比例' }, { key: 'yswcl', value: '预算完成率' }];
-        // const list = ['0', '1', '2', '一季度', '3', '4', '5', '二季度', '半年', '6', '7', '8', '三季度', '9', '10', '11', '四季度', '全年'];
-        const list1 = ['一季度', '二季度', '三季度', '四季度', '半年报', '全年报'];
-
-        console.log(toJS(this.condition));
+        const list = ['一季度', '二季度', '三季度', '四季度', '半年报', '全年报', '上一年'];
 
         // 过滤显示季度
         const visibleList = [];
@@ -69,6 +65,7 @@ export default class extends Component {
         if (range.includes('三季度')) visibleList.push('6', '7', '8', '三季度');
         if (range.includes('四季度')) visibleList.push('9', '10', '11', '四季度');
         if (range.includes('全年报')) visibleList.push('全年报');
+        if (range.includes('上一年')) visibleList.push('上一年');
 
         // 过滤显示表头
         const dataTypes = this.condition.dataTypes as string[];
@@ -80,8 +77,8 @@ export default class extends Component {
 
         for (const i of visibleList) {
             let children;
-            if (list1.includes(i)) {
-                const jdi = list1.findIndex((item) => item === i);
+            if (list.includes(i)) {
+                const jdi = list.findIndex((item) => item === i);
                 children = data.map((key) => ({
                     id: key.key,
                     title: key.value,
@@ -97,7 +94,7 @@ export default class extends Component {
                 }));
             }
             columns.push({
-                title: !list1.includes(i) ? `${+i + 1}月` : i,
+                title: !list.includes(i) ? `${+i + 1}月` : i,
                 dataIndex: `month${i}`,
                 key: `month${i}`,
                 children,
