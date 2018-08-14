@@ -35,101 +35,78 @@ router.get('/totalTable', async (ctx) => {
     ctx.body = ambList;
 });
 
-function structure(obj: any, i: number) {  // 计算返回
-    if (!obj['ys_' + i]) obj['yszb_' + i] = undefined;
+function structure(obj: any, i: number, ys?: any, sj?: any, lr?: boolean) {  // 计算返回
+    if (obj['ys_' + i] === 0) obj['yszb_' + i] = '-';
     else {
-        obj['yszb_' + i] = '100.00%';
-    }
-    if (!obj['sj_' + i]) obj['sjzb_' + i] = 0;
-    else {
-        obj['sjzb_' + i] = '100.00%';
-    }
-    if (obj['ys_' + i] === 0) {
-        obj['yswcl_' + i] = '--';
-    } else {
-        if (obj['ys_' + i] === 0 && obj['sj_' + i] === 0) {
-            obj['yswcl_' + i] = '--';
-        } else if (obj['ys_' + i] === 0 && obj['sj_' + i] > 0) {
-            obj['yswcl_' + i] = '100.00%';
-        } else if (obj['ys_' + i] === 0 && obj['sj_' + i] < 0) {
-            obj['yswcl_' + i] = '-100.00%';
-        } else if (obj['ys_' + i] > 0 && obj['sj_' + i] === 0) {
-            obj['yswcl_' + i] = '0.00%';
-        } else if (obj['ys_' + i] < 0 && obj['sj_' + i] === 0) {
-            obj['yswcl_' + i] = '-100.00%';
+        if (ys) {
+            obj['yszb_' + i] = (obj['ys_' + i] / ys).toFixed(2) + '%';
         } else {
-            obj['yswcl_' + i] = (obj['ys_' + i] / obj['sj_' + i] * 100).toFixed(2) + '%';
+            obj['yszb_' + i] = '100.00%'
         }
     }
-}
+    if (!obj['sj_' + i]) obj['sjzb_' + i] = '-';
+    else {
+        if (sj) {
+            obj['sjzb_' + i] = (obj['sj_' + i] / sj).toFixed(2) + '%';
+        } else {
+            obj['sjzb_' + i] = '100.00%'
+        }
+    }
+    if (obj['ys_' + i] === 0) {
+        if (obj['sj_' + i] >= 0) {
+            obj['yswcl_' + i] = '100.00%'
+        } else {
+            obj['yswcl_' + i] = '-100.00%';
+        }
+    } else {
+        if (lr && obj['ys_' + i] < 0) {
+            obj['yswcl_' + i] = ((2 - obj['sj_' + i] / obj['ys_' + i]) * 100).toFixed(2) + '%';
+        } else {
+            obj['yswcl_' + i] = (obj['sj_' + i] / obj['ys_' + i] * 100).toFixed(2) + '%';
+        }
 
-// if (!obj['ys_' + i] && obj['ys_' + i] !== 0) obj['yszb_' + i] = '--';
-// else {
-//     obj['yszb_' + i] = (obj['ys_' + i] / ys * 100).toFixed(2) + '%';
-// }
-// if (!obj['sj_' + i] && obj['sj_' + i] !== 0) obj['sjzb_' + i] = '--';
-// else {
-//     obj['sjzb_' + i] = (obj['sj_' + i] / sj * 100).toFixed(2) + '%';
-// }
-// if ((!obj['ys_' + i] && obj['ys_' + i] !== 0) || (!obj['sj_' + i] && obj['sj_' + i] !== 0)) {
-//     obj['yswcl_' + i] = '--';
-// } else {
-//     if (obj['ys_' + i] === 0 && obj['sj_' + i] === 0) {
-//         obj['yswcl_' + i] = '100.00%';
-//     } else if (obj['ys_' + i] === 0 && obj['sj_' + i] > 0) {
-//         obj['yswcl_' + i] = '100.00%';
-//     } else if (obj['ys_' + i] === 0 && obj['sj_' + i] < 0) {
-//         obj['yswcl_' + i] = '-100.00%';
-//     } else if (obj['ys_' + i] > 0 && obj['sj_' + i] === 0) {
-//         obj['yswcl_' + i] = '0.00%';
-//     } else if (obj['sj_' + i] < 0) {
-//         obj['yswcl_' + i] = ((2 - obj['sj_' + i] / obj['ys_' + i]) * 100).toFixed(2) + '%';
-//     } else {
-//         obj['yswcl_' + i] = (obj['ys_' + i] / obj['sj_' + i] * 100).toFixed(2) + '%';
-//     }
-// }
-// if (!obj['ys_' + i] && obj['ys_' + i] !== 0) obj['ys_' + i] = '--';
-// if (!obj['sj_' + i] && obj['sj_' + i] !== 0) obj['sj_' + i] = '--';
+    }
+}
 
 function calculate(key: string, data: any, SubjectIds: any) {
     let obj = { total: key } as any;
     for (let i = 0; i < 12; i++) {
         const ambData = data.find((n: any) => n.month === i).subjectBudgets;
         if (key === '收入-阿米巴') {
-            obj['ys_' + i] = ambData.filter((n: any) => n.subjectType === 'income').reduce((a: any, b: any) => a + (b.budget || 0), 0) || undefined;
-            obj['sj_' + i] = ambData.filter((n: any) => n.subjectType === 'income').reduce((a: any, b: any) => a + (b.reality || 0), 0) || undefined;
+            obj['ys_' + i] = ambData.filter((n: any) => n.subjectType === 'income').reduce((a: any, b: any) => a + (b.budget || 0), 0);
+            obj['sj_' + i] = ambData.filter((n: any) => n.subjectType === 'income').reduce((a: any, b: any) => a + (b.reality || 0), 0);
             structure(obj, i)
         } else if (key === '成本费用-阿米巴') {
-            const ys = ambData.filter((n: any) => n.subjectType === 'income').reduce((a: any, b: any) => a + (b.budget || 0), 0) || undefined;
-            const sj = ambData.filter((n: any) => n.subjectType === 'income').reduce((a: any, b: any) => a + (b.reality || 0), 0) || undefined;
-            obj['ys_' + i] = ambData.filter((n: any) => n.subjectType !== 'income').reduce((a: any, b: any) => a + (b.budget || 0), 0) || undefined;
-            obj['sj_' + i] = ambData.filter((n: any) => n.subjectType !== 'income').reduce((a: any, b: any) => a + (b.reality || 0), 0) || undefined;
-            structure(obj, i)
+            const ys = ambData.filter((n: any) => n.subjectType === 'income').reduce((a: any, b: any) => a + (b.budget || 0), 0);
+            const sj = ambData.filter((n: any) => n.subjectType === 'income').reduce((a: any, b: any) => a + (b.reality || 0), 0);
+            obj['ys_' + i] = ambData.filter((n: any) => n.subjectType !== 'income').reduce((a: any, b: any) => a + (b.budget || 0), 0);
+            obj['sj_' + i] = ambData.filter((n: any) => n.subjectType !== 'income').reduce((a: any, b: any) => a + (b.reality || 0), 0);
+            structure(obj, i, ys, sj)
         } else if (key === '利润-阿米巴') {
-            const ys = ambData.filter((m: any) => m.subjectType === 'income').reduce((a: any, b: any) => a + (b.budget || 0), 0) || undefined;
-            const sj = ambData.filter((m: any) => m.subjectType === 'income').reduce((a: any, b: any) => a + (b.reality || 0), 0) || undefined;
+            const ys = ambData.filter((m: any) => m.subjectType === 'income').reduce((a: any, b: any) => a + (b.budget || 0), 0);
+            const sj = ambData.filter((m: any) => m.subjectType === 'income').reduce((a: any, b: any) => a + (b.reality || 0), 0);
             obj['ys_' + i] = ys - ambData.filter((m: any) => m.subjectType !== 'income').reduce((a: any, b: any) => a + (b.budget || 0), 0);
             obj['sj_' + i] = sj - ambData.filter((m: any) => m.subjectType !== 'income').reduce((a: any, b: any) => a + (b.reality || 0), 0);
+            structure(obj, i, 0, 0, true)
         } else if (key === '收入-财务') {
-            obj['ys_' + i] = ambData.filter((n: any) => SubjectIds.includes(n.subjectId)).filter((n: any) => n.subjectType === 'income').reduce((a: any, b: any) => a + (b.budget || 0), 0) || undefined;
-            obj['sj_' + i] = ambData.filter((n: any) => SubjectIds.includes(n.subjectId)).filter((n: any) => n.subjectType === 'income').reduce((a: any, b: any) => a + (b.reality || 0), 0) || undefined;
+            obj['ys_' + i] = ambData.filter((n: any) => SubjectIds.includes(n.subjectId)).filter((n: any) => n.subjectType === 'income').reduce((a: any, b: any) => a + (b.budget || 0), 0);
+            obj['sj_' + i] = ambData.filter((n: any) => SubjectIds.includes(n.subjectId)).filter((n: any) => n.subjectType === 'income').reduce((a: any, b: any) => a + (b.reality || 0), 0);
             structure(obj, i)
         } else if (key === '成本费用-财务') {
-            const ys = ambData.filter((n: any) => SubjectIds.includes(n.subjectId)).filter((n: any) => n.subjectType === 'income').reduce((a: any, b: any) => a + (b.budget || 0), 0) || undefined;
-            const sj = ambData.filter((n: any) => SubjectIds.includes(n.subjectId)).filter((n: any) => n.subjectType === 'income').reduce((a: any, b: any) => a + (b.reality || 0), 0) || undefined;
-            obj['ys_' + i] = ambData.filter((n: any) => SubjectIds.includes(n.subjectId)).filter((n: any) => n.subjectType !== 'income').reduce((a: any, b: any) => a + (b.budget || 0), 0) || undefined;
-            obj['sj_' + i] = ambData.filter((n: any) => SubjectIds.includes(n.subjectId)).filter((n: any) => n.subjectType !== 'income').reduce((a: any, b: any) => a + (b.reality || 0), 0) || undefined;
-            structure(obj, i)
+            const ys = ambData.filter((n: any) => SubjectIds.includes(n.subjectId)).filter((n: any) => n.subjectType === 'income').reduce((a: any, b: any) => a + (b.budget || 0), 0);
+            const sj = ambData.filter((n: any) => SubjectIds.includes(n.subjectId)).filter((n: any) => n.subjectType === 'income').reduce((a: any, b: any) => a + (b.reality || 0), 0);
+            obj['ys_' + i] = ambData.filter((n: any) => SubjectIds.includes(n.subjectId)).filter((n: any) => n.subjectType !== 'income').reduce((a: any, b: any) => a + (b.budget || 0), 0);
+            obj['sj_' + i] = ambData.filter((n: any) => SubjectIds.includes(n.subjectId)).filter((n: any) => n.subjectType !== 'income').reduce((a: any, b: any) => a + (b.reality || 0), 0);
+            structure(obj, i, ys, sj)
         } else if (key === '利润-财务') {
-            const ys = ambData.filter((n: any) => SubjectIds.includes(n.subjectId)).filter((m: any) => m.subjectType === 'income').reduce((a: any, b: any) => a + (b.budget || 0), 0) || undefined;
-            const sj = ambData.filter((n: any) => SubjectIds.includes(n.subjectId)).filter((m: any) => m.subjectType === 'income').reduce((a: any, b: any) => a + (b.reality || 0), 0) || undefined;
+            const ys = ambData.filter((n: any) => SubjectIds.includes(n.subjectId)).filter((m: any) => m.subjectType === 'income').reduce((a: any, b: any) => a + (b.budget || 0), 0);
+            const sj = ambData.filter((n: any) => SubjectIds.includes(n.subjectId)).filter((m: any) => m.subjectType === 'income').reduce((a: any, b: any) => a + (b.reality || 0), 0);
             obj['ys_' + i] = ys - ambData.filter((n: any) => SubjectIds.includes(n.subjectId)).filter((m: any) => m.subjectType !== 'income').reduce((a: any, b: any) => a + (b.budget || 0), 0);
             obj['sj_' + i] = sj - ambData.filter((n: any) => SubjectIds.includes(n.subjectId)).filter((m: any) => m.subjectType !== 'income').reduce((a: any, b: any) => a + (b.reality || 0), 0);
-            structure(obj, i)
+            structure(obj, i, 0, 0, true)
         }
     }
     return obj
-    // return quarterIncome(obj);
 }
 
 function sum(list: any) {
