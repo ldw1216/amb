@@ -16,7 +16,11 @@ import SubjectBudget from './SubjectBudget';
 
 const SubjectSubTitle = styled.div`
     text-align: left;
+    margin-left: 20px;
     i{
+        position: absolute;
+        margin-left: -14px;
+        margin-top: 3px;
         visibility:hidden;
         margin-right:5px;
     }
@@ -153,7 +157,6 @@ export default class BudgetTable {
     }
 
     @computed get dataSource() {
-        const rewardRate = this.budget.fullGroup!.rewardRate; // 奖金比例
         const incomeRows = [] as any[]; // 收入数据
         const costRows = [] as any[]; // 成本数据
         const expenseRows = [] as any[]; // 费用数据
@@ -186,7 +189,6 @@ export default class BudgetTable {
             subject: <SubjectTitle><span>费用</span></SubjectTitle>,
             type: undefined,
         } as any;
-
         this.budget.monthBudgets.forEach(({ month, budgetSum, realitySum, realityRate, rate, budgetRate }) => {
             incomeAmount[`预算_${month}月`] = budgetSum.income;
             incomeAmount[`预算占收入比_${month}月`] = budgetRate.income;
@@ -218,6 +220,13 @@ export default class BudgetTable {
             rewardRow[`实际收入_${month}月`] = realitySum.reward;
             rewardRow[`实际占收入比_${month}月`] = realityRate.reward;
             rewardRow[`预算完成率_${month}月`] = rate.reward;
+
+            // 纯利计算
+            pureProfitRow[`预算_${month}月`] = budgetSum.purProfit.toFixed(2);
+            pureProfitRow[`预算占收入比_${month}月`] = budgetRate.purProfit;
+            pureProfitRow[`实际收入_${month}月`] = realitySum.purProfit.toFixed(2);
+            pureProfitRow[`实际占收入比_${month}月`] = realityRate.purProfit;
+            pureProfitRow[`预算完成率_${month}月`] = rate.purProfit;
 
         });
         // 每个项目一行，添加数据，修改数据 填加完数据以后跟据提报周期确定哪几个季度是可编辑的
