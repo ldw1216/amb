@@ -1,9 +1,10 @@
 import axios from 'axios';
 import { ApprovalState } from 'config/config';
-import { action, computed, observable, runInAction, toJS } from 'mobx';
+import { action, computed, observable, runInAction, toJS, values } from 'mobx';
 import { Group } from 'store/Group';
 import MonthBudget from './MonthBudget';
 import Subject from './Subject';
+import SubjectBudget from './SubjectBudget';
 
 // 预算数据
 export default class Budget implements amb.IBudget {
@@ -78,6 +79,24 @@ export default class Budget implements amb.IBudget {
         return axios.post('/budget', this);
     }
 
+    @computed get quarter_2() {
+        const monthBudget = new MonthBudget({ month: 200, subjectBudgets: [] }, this.fullGroup);
+        const monthBudgets = [0, 1, 2].map((item) => this.monthBudgets.find(({ month }) => month === item)).filter((item) => item);
+        monthBudget.subjectBudgets = monthBudgets.reduce((value, month) => {
+            return month!.subjectBudgets.map((subjectBudget) => {
+                const val = value.find((item) => item.subjectId === subjectBudget.subjectId);
+                return new SubjectBudget({
+                    subjectId: subjectBudget.subjectId,
+                    subjectType: subjectBudget.subjectType,
+                    subjectName: subjectBudget.subjectName,
+                    budget: (subjectBudget.budget || 0) + (val && val.budget || 0),
+                    reality: (subjectBudget.reality || 0) + (val && val.reality || 0),
+                } as any, monthBudget);
+            });
+        }, [] as SubjectBudget[]);
+        return monthBudget;
+    }
+
     @computed get quarter_1() {
         const monthBudgets = [0, 1, 2].map((item) => this.monthBudgets.find(({ month }) => month === item)).filter((item) => item);
         return monthBudgets.reduce((data, month) => {
@@ -92,10 +111,5 @@ export default class Budget implements amb.IBudget {
                 },
             };
         }, {} as any);
-
-        return new MonthBudget({
-            month: 100,
-            subjectBudgets: [],
-        }, this.fullGroup);
     }
 }
