@@ -1,11 +1,11 @@
 import { Affix, Button, Input, Table } from 'antd';
+import axios from 'axios';
 import { SearchBar, ToolBar } from 'components/SearchBar';
 import Section, { TableSection } from 'components/Section';
-import { action, observable, toJS, computed } from 'mobx';
+import { action, computed, IReactionDisposer, observable, reaction, toJS } from 'mobx';
 import { observer } from 'mobx-react';
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-import axios from 'axios';
 import styled from 'styled-components';
 import excellentexport from '../../components/excellentexport';
 import AdvancedSearch from '../components/AdvancedSearch';
@@ -30,12 +30,13 @@ export default class extends Component {
         this.advancedSearchDisplay = false;
         document.removeEventListener('click', this.hideAdvancedSearch);
     }
-    condition = new Condition()
-    state = {
-        list: [] as any
-    }
+    public condition = new Condition();
+    public reaction?: IReactionDisposer;
+    public state = {
+        list: [] as any,
+    };
     @computed get columns() {
-        if (!this.condition) return []
+        if (!this.condition) return [];
         const columns = [
             {
                 title: this.condition.year,
@@ -47,22 +48,42 @@ export default class extends Component {
                         title: '总表',
                         dataIndex: `total`,
                         key: `total`,
+                        width: 150,
                     },
                 ],
             } as any,
         ];
-        let data = [{ key: 'ys', value: '预算' }, { key: 'yszb', value: '占收入比例' }, { key: 'sj', value: '实际' }, { key: 'sjzb', value: '占收入比例' }, { key: 'yswcl', value: '预算完成率' }]
-        let data1 = [{ key: 'ys', value: '预算' }, { key: 'sj', value: '实际' }, { key: 'yswcl', value: '预算完成率' }]
-        let list = ['0', '1', '2', '一季度', '3', '4', '5', '二季度', '半年', '6', '7', '8', '三季度', '9', '10', '11', '四季度', '全年']
-        let list1 = ['一季度', '二季度', '半年', '三季度', '四季度', '全年']
-        for (let i of list) {
-            let children
-            if (list1.includes(i)) {
-                children = data1.map((key) => ({
+        const list = ['一季度', '二季度', '三季度', '四季度', '半年报', '全年报', '上一年'];
+
+        // 过滤显示季度
+        const visibleList = [];
+        const range = this.condition.range as string[];
+
+        if (range.includes('一季度')) visibleList.push('0', '1', '2', '一季度');
+        if (range.includes('二季度')) visibleList.push('3', '4', '5', '二季度');
+        if (range.includes('半年报')) visibleList.push('半年报');
+        if (range.includes('三季度')) visibleList.push('6', '7', '8', '三季度');
+        if (range.includes('四季度')) visibleList.push('9', '10', '11', '四季度');
+        if (range.includes('全年报')) visibleList.push('全年报');
+        if (range.includes('上一年')) visibleList.push('上一年');
+
+        // 过滤显示表头
+        const dataTypes = this.condition.dataTypes as string[];
+        const data = [{ key: 'ys', value: '预算' }];
+        if (dataTypes.includes('预算占比')) data.push({ key: 'yszb', value: '占收入比例' });
+        if (dataTypes.includes('实际完成')) data.push({ key: 'sj', value: '实际' });
+        if (dataTypes.includes('实际占比')) data.push({ key: 'sjzb', value: '占收入比例' });
+        if (dataTypes.includes('预算完成率')) data.push({ key: 'yswcl', value: '预算完成率' });
+
+        for (const i of visibleList) {
+            let children;
+            if (list.includes(i)) {
+                const jdi = list.findIndex((item) => item === i);
+                children = data.map((key) => ({
                     id: key.key,
                     title: key.value,
-                    dataIndex: `${key.key}_${i}`,
-                    key: `${key.key}_${i}`,
+                    dataIndex: `jd_${key.key}_${jdi}`,
+                    key: `jd_${key.key}_${jdi}`,
                 }));
             } else {
                 children = data.map((key) => ({
@@ -73,7 +94,7 @@ export default class extends Component {
                 }));
             }
             columns.push({
-                title: !list1.includes(i) ? `${+i + 1}月` : i ,
+                title: !list.includes(i) ? `${+i + 1}月` : i,
                 dataIndex: `month${i}`,
                 key: `month${i}`,
                 children,
@@ -81,13 +102,19 @@ export default class extends Component {
         }
         return columns;
     }
-    async componentDidMount() {
-        this.fetch()
+    public async componentDidMount() {
+        this.fetch();
+        this.reaction = reaction(() => this.condition.year, (year) => {
+            this.fetch(year);
+        });
     }
-    fetch = async (year?: number) => {
-        year = year || 2018
-        const list = await axios.get('/budget/totalTable?year=' + year).then(data => data.data)
-        this.setState({ list })
+    public componentWillUnmount() {
+        this.reaction && this.reaction();
+    }
+    public fetch = async (year?: number) => {
+        year = year || 2018;
+        const list = await axios.get('/budget/totalTable?year=' + year).then((data) => data.data);
+        this.setState({ list });
     }
     public exportExcel = () => {
         const table = document.getElementsByTagName('table')[0];
@@ -95,7 +122,7 @@ export default class extends Component {
     }
 
     public render() {
-        console.log(toJS(this.condition))
+        const x = this.columns.length * this.columns[1].children.length * 150 + 150;
         return (
             <div>
                 <Section>
@@ -107,7 +134,7 @@ export default class extends Component {
                 </Section>
 
                 <TableSection>
-                    <Table pagination={false} scroll={{ x: 7350 }} rowKey="total" bordered size="small" dataSource={this.state.list} columns={this.columns} />
+                    <Table pagination={false} scroll={{ x }} rowKey="total" bordered size="small" dataSource={this.state.list} columns={this.columns} />
                 </TableSection>
             </div>
         );
