@@ -79,16 +79,16 @@ export default class Budget implements amb.IBudget {
     }
 
     @computed get quarter_1() {
-        const monthBudgets = [0, 1, 2].map((item) => this.monthBudgets[item]);
+        const monthBudgets = [0, 1, 2].map((item) => this.monthBudgets.find(({ month }) => month === item)).filter((item) => item);
         return monthBudgets.reduce((data, month) => {
             return {
-                budgetSum: {
-                    income: month.budgetSum.income + (data.budgetSum && data.budgetSum.income || 0),
-                    cost: month.budgetSum.cost + (data.budgetSum && data.budgetSum.cost || 0),
-                    expense: month.budgetSum.expense + (data.budgetSum && data.budgetSum.expense || 0),
-                    profit: month.budgetSum.profit + (data.budgetSum && data.budgetSum.profit || 0),
-                    reward: month.budgetSum.reward + (data.budgetSum && data.budgetSum.reward || 0),
-                    purProfit: month.budgetSum.purProfit + (data.budgetSum && data.budgetSum.purProfit || 0),
+                budget: {
+                    income: month!.budget.income + (data.budget && data.budget.income || 0),
+                    cost: month!.budget.cost + (data.budget && data.budget.cost || 0),
+                    expense: month!.budget.expense + (data.budget && data.budget.expense || 0),
+                    profit: month!.budget.profit + (data.budget && data.budget.profit || 0),
+                    reward: month!.budget.reward + (data.budget && data.budget.reward || 0),
+                    purProfit: month!.budget.purProfit + (data.budget && data.budget.purProfit || 0),
                 },
             };
         }, {} as any);

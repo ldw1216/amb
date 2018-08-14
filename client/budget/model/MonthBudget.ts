@@ -11,8 +11,8 @@ export default class MonthBudget implements amb.IMonthBudget {
     @observable public rewardRate: number;
     public isDirty = false; // 已经被修改改
 
-    private budgetSum_?: amb.IMonthBudgetSum;
-    private realitySum_?: amb.IMonthBudgetSum;
+    private budget_?: amb.IMonthBudgetColumn;
+    private reality_?: amb.IMonthBudgetColumn;
     // 获取某个项目的预算
     public getSubjectBudget(subject: amb.IBudgetSubject) {
         const subjectBudget = this.subjectBudgets.find(({ subjectId }) => subject._id === subjectId);
@@ -20,7 +20,7 @@ export default class MonthBudget implements amb.IMonthBudget {
     }
 
     // 本月预算 收入、成本、费用 毛利合计
-    @computed get budgetSum() {
+    @computed get budget() {
         const income = this.subjectBudgets.filter(({ subjectType }) => subjectType === BudgetSubjectType.收入)
             .reduce((x, y) => x + (y.budget || 0), 0);
         const cost = this.subjectBudgets.filter(({ subjectType }) => subjectType === BudgetSubjectType.成本)
@@ -43,17 +43,17 @@ export default class MonthBudget implements amb.IMonthBudget {
     // 预算收入占比
     @computed get budgetRate() {
         return {
-            income: this.budgetSum.income ? 1 : undefined,
-            cost: this.budgetSum.income ? this.budgetSum.cost / this.budgetSum.income : undefined,
-            expense: this.budgetSum.income ? this.budgetSum.expense / this.budgetSum.income : undefined,
-            profit: this.budgetSum.income ? this.budgetSum.profit / this.budgetSum.income : undefined,
-            reward: this.budgetSum.income ? this.budgetSum.reward / this.budgetSum.income : undefined,
-            purProfit: this.budgetSum.income ? this.budgetSum.purProfit / this.budgetSum.income : undefined,
+            income: this.budget.income ? 1 : undefined,
+            cost: this.budget.income ? this.budget.cost / this.budget.income : undefined,
+            expense: this.budget.income ? this.budget.expense / this.budget.income : undefined,
+            profit: this.budget.income ? this.budget.profit / this.budget.income : undefined,
+            reward: this.budget.income ? this.budget.reward / this.budget.income : undefined,
+            purProfit: this.budget.income ? this.budget.purProfit / this.budget.income : undefined,
         };
     }
 
     // 本月实际 收入、成本、费用合计
-    @computed get realitySum() {
+    @computed get reality() {
         const income = this.subjectBudgets.filter(({ subjectType }) => subjectType === BudgetSubjectType.收入)
             .reduce((x, y) => x + (y.reality || 0), 0);
         const cost = this.subjectBudgets.filter(({ subjectType }) => subjectType === BudgetSubjectType.成本)
@@ -76,35 +76,35 @@ export default class MonthBudget implements amb.IMonthBudget {
     // 实际占收入占比
     @computed get realityRate() {
         return {
-            income: this.realitySum.income ? 1 : undefined,
-            cost: this.realitySum.income ? this.realitySum.cost / this.realitySum.income : undefined,
-            expense: this.realitySum.income ? this.realitySum.expense / this.realitySum.income : undefined,
-            profit: this.realitySum.income ? this.realitySum.profit / this.realitySum.income : undefined,
-            reward: this.realitySum.income ? this.realitySum.reward / this.realitySum.income : undefined,
-            purProfit: this.realitySum.income ? this.realitySum.purProfit / this.realitySum.income : undefined,
+            income: this.reality.income ? 1 : undefined,
+            cost: this.reality.income ? this.reality.cost / this.reality.income : undefined,
+            expense: this.reality.income ? this.reality.expense / this.reality.income : undefined,
+            profit: this.reality.income ? this.reality.profit / this.reality.income : undefined,
+            reward: this.reality.income ? this.reality.reward / this.reality.income : undefined,
+            purProfit: this.reality.income ? this.reality.purProfit / this.reality.income : undefined,
         };
     }
 
     // 预算完成率
-    @computed get rate() {
+    @computed get completeRate() {
         const profit = (() => {
-            if (this.budgetSum.profit > 0) return this.realitySum.profit / this.budgetSum.profit;
-            if (this.budgetSum.profit < 0) return 2 - this.realitySum.profit / this.budgetSum.profit;
-            if (this.budgetSum.profit === 0 && this.realitySum.profit >= 0) return 1;
+            if (this.budget.profit > 0) return this.reality.profit / this.budget.profit;
+            if (this.budget.profit < 0) return 2 - this.reality.profit / this.budget.profit;
+            if (this.budget.profit === 0 && this.reality.profit >= 0) return 1;
             return -1;
         })();
         const purProfit = (() => {
-            if (this.budgetSum.purProfit > 0) return this.realitySum.purProfit / this.budgetSum.purProfit;
-            if (this.budgetSum.purProfit < 0) return 2 - this.realitySum.purProfit / this.budgetSum.purProfit;
-            if (this.budgetSum.purProfit === 0 && this.realitySum.purProfit >= 0) return 1;
+            if (this.budget.purProfit > 0) return this.reality.purProfit / this.budget.purProfit;
+            if (this.budget.purProfit < 0) return 2 - this.reality.purProfit / this.budget.purProfit;
+            if (this.budget.purProfit === 0 && this.reality.purProfit >= 0) return 1;
             return -1;
         })();
         return {
-            income: this.budgetSum.income ? this.realitySum.income / this.budgetSum.income : undefined,
-            cost: this.budgetSum.cost ? this.realitySum.cost / this.budgetSum.cost : undefined,
-            expense: this.budgetSum.expense ? this.realitySum.expense / this.budgetSum.expense : undefined,
+            income: this.budget.income ? this.reality.income / this.budget.income : undefined,
+            cost: this.budget.cost ? this.reality.cost / this.budget.cost : undefined,
+            expense: this.budget.expense ? this.reality.expense / this.budget.expense : undefined,
             profit,
-            reward: this.budgetSum.reward ? this.realitySum.reward / this.budgetSum.reward : undefined,
+            reward: this.budget.reward ? this.reality.reward / this.budget.reward : undefined,
             purProfit,
         };
     }
@@ -114,16 +114,16 @@ export default class MonthBudget implements amb.IMonthBudget {
         this.month = data.month;
         this.subjectBudgets = (data.subjectBudgets || []).map((item) => new SubjectBudget(item, this));
 
-        this.budgetSum_ = data.budgetSum;
-        this.realitySum_ = data.realitySum;  // 预算总收入
+        this.budget_ = data.budget;
+        this.reality_ = data.reality;  // 预算总收入
 
         this.rewardRate = data.rewardRate || group.rewardRate;
-        ['isDirty', 'budgetSum_', 'realitySum_'].forEach((item) => Object.defineProperties(this, {
+        ['isDirty', 'budget_', 'reality_'].forEach((item) => Object.defineProperties(this, {
             [item]: { enumerable: false },
         }));
     }
 
     public toJSON() {
-        return Object.assign({}, this, { budgetSum: this.budgetSum, realitySum: this.realitySum });
+        return Object.assign({}, this, { budget: this.budget, reality: this.reality });
     }
 }

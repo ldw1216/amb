@@ -192,44 +192,44 @@ export default class BudgetTable {
             subject: <SubjectTitle><span>费用</span></SubjectTitle>,
             type: undefined,
         } as any;
-        this.budget.monthBudgets.forEach(({ month, budgetSum, realitySum, realityRate, rate, budgetRate }) => {
-            incomeAmount[`预算_${month}月`] = budgetSum.income;
+        this.budget.monthBudgets.forEach(({ month, budget, reality, realityRate, completeRate, budgetRate }) => {
+            incomeAmount[`预算_${month}月`] = budget.income;
             incomeAmount[`预算占收入比_${month}月`] = formatRate(budgetRate.income);
-            incomeAmount[`实际收入_${month}月`] = realitySum.income;
+            incomeAmount[`实际收入_${month}月`] = reality.income;
             incomeAmount[`实际占收入比_${month}月`] = formatRate(realityRate.income);
-            incomeAmount[`预算完成率_${month}月`] = formatRate(rate.income);
+            incomeAmount[`预算完成率_${month}月`] = formatRate(completeRate.income);
 
-            costAmount[`预算_${month}月`] = budgetSum.cost;
+            costAmount[`预算_${month}月`] = budget.cost;
             costAmount[`预算占收入比_${month}月`] = formatRate(budgetRate.cost);
-            costAmount[`实际收入_${month}月`] = realitySum.cost;
+            costAmount[`实际收入_${month}月`] = reality.cost;
             costAmount[`实际占收入比_${month}月`] = formatRate(realityRate.cost);
-            costAmount[`预算完成率_${month}月`] = formatRate(rate.cost);
+            costAmount[`预算完成率_${month}月`] = formatRate(completeRate.cost);
 
-            expenseAmount[`预算_${month}月`] = budgetSum.expense;
+            expenseAmount[`预算_${month}月`] = budget.expense;
             expenseAmount[`预算占收入比_${month}月`] = formatRate(budgetRate.expense);
-            expenseAmount[`实际收入_${month}月`] = realitySum.expense;
+            expenseAmount[`实际收入_${month}月`] = reality.expense;
             expenseAmount[`实际占收入比_${month}月`] = formatRate(realityRate.expense);
-            expenseAmount[`预算完成率_${month}月`] = formatRate(rate.expense);
+            expenseAmount[`预算完成率_${month}月`] = formatRate(completeRate.expense);
 
-            profitRow[`预算_${month}月`] = budgetSum.profit;
+            profitRow[`预算_${month}月`] = budget.profit;
             profitRow[`预算占收入比_${month}月`] = formatRate(budgetRate.profit);
-            profitRow[`实际收入_${month}月`] = realitySum.profit;
+            profitRow[`实际收入_${month}月`] = reality.profit;
             profitRow[`实际占收入比_${month}月`] = formatRate(realityRate.profit);
-            profitRow[`预算完成率_${month}月`] = formatRate(rate.profit);
+            profitRow[`预算完成率_${month}月`] = formatRate(completeRate.profit);
 
             // 奖金计算
-            rewardRow[`预算_${month}月`] = budgetSum.reward;
+            rewardRow[`预算_${month}月`] = budget.reward;
             rewardRow[`预算占收入比_${month}月`] = formatRate(budgetRate.reward);
-            rewardRow[`实际收入_${month}月`] = realitySum.reward;
+            rewardRow[`实际收入_${month}月`] = reality.reward;
             rewardRow[`实际占收入比_${month}月`] = formatRate(realityRate.reward);
-            rewardRow[`预算完成率_${month}月`] = formatRate(rate.reward);
+            rewardRow[`预算完成率_${month}月`] = formatRate(completeRate.reward);
 
             // 纯利计算
-            pureProfitRow[`预算_${month}月`] = budgetSum.purProfit.toFixed(2);
+            pureProfitRow[`预算_${month}月`] = budget.purProfit.toFixed(2);
             pureProfitRow[`预算占收入比_${month}月`] = formatRate(budgetRate.purProfit);
-            pureProfitRow[`实际收入_${month}月`] = realitySum.purProfit.toFixed(2);
+            pureProfitRow[`实际收入_${month}月`] = reality.purProfit.toFixed(2);
             pureProfitRow[`实际占收入比_${month}月`] = formatRate(realityRate.purProfit);
-            pureProfitRow[`预算完成率_${month}月`] = formatRate(rate.purProfit);
+            pureProfitRow[`预算完成率_${month}月`] = formatRate(completeRate.purProfit);
         });
 
         // 每个项目一行，添加数据，修改数据 填加完数据以后跟据提报周期确定哪几个季度是可编辑的
@@ -263,6 +263,9 @@ export default class BudgetTable {
             if (subject.subjectType === BudgetSubjectType.费用) expenseRows.push(row);
         });
 
+        console.log(this.budget.quarter_1);
+
+        // 汇总数据
         const dataSource = [incomeAmount].concat(incomeRows, costAmount, costRows, profitRow, expenseAmount, rewardRow, expenseRows, pureProfitRow);
         return dataSource;
     }

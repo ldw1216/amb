@@ -76,7 +76,7 @@ declare global {
         }
 
         // 预算汇总
-        interface IMonthBudgetSum {
+        interface IMonthBudgetColumn {
             income?: number, // 预算总收入
             cost?: number, // 预算总成本
             expense?: number, // 预算总费用
@@ -89,8 +89,8 @@ declare global {
             _id?: string
             month: number; // 月份
             rewardRate?: number; // 奖金比例
-            budgetSum?: IMonthBudgetSum
-            realitySum?: IMonthBudgetSum
+            budget?: IMonthBudgetColumn
+            reality?: IMonthBudgetColumn
             subjectBudgets: ISubjectBudget[]
         }
 
