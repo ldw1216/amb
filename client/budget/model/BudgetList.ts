@@ -1,31 +1,23 @@
 import axios from 'axios';
-import { reaction } from 'mobx';
-import { observe } from 'mobx';
 import { action, computed, observable, runInAction, toJS } from 'mobx';
 import Budget from './Budget';
-import Condition from './Condition';
 
 export class BudgetList {
     @observable public currentUserBudgetList: Budget[] = []; // 当前用户的预算列表
     @observable public allBudgetList: Budget[] = []; // 所有组的预算列表
-    @observable public condition: Condition; // 搜索条件
-
-    constructor(condition?: Condition) {
-        this.condition = condition || new Condition();
-    }
 
     // 获取当前用的某个阿米巴组的预算
-    @action.bound public async getCurrentUserBudget(groupId: string) {
-        if (this.currentUserBudgetList.length === 0) await this.fetchCurrentUserBudgetList();
+    @action.bound public async getCurrentUserBudget(groupId: string, year: number) {
+        if (this.currentUserBudgetList.length === 0) await this.fetchCurrentUserBudgetList(year);
         return this.currentUserBudgetList.find((item) => item.group === groupId);
     }
 
     // 获取所有组的预算列表
-    @action.bound public async fetchAllBudgetList() {
+    @action.bound public async fetchAllBudgetList(year: number) {
         await rootStore.groupStore.fetch();
         await rootStore.periodStore.fetch();
 
-        const budgets = await axios.get('/budget/', { params: { year: this.condition.year } }).then((res) => res.data) as amb.IBudget[];
+        const budgets = await axios.get('/budget/', { params: { year } }).then((res) => res.data) as amb.IBudget[];
         const budgetList = budgets.map((budget) => {
             const group = rootStore.groupStore.list.find((item) => item._id === budget.group)!;
             return new Budget(budget, group);
@@ -35,15 +27,14 @@ export class BudgetList {
     }
 
     // 获取当前用户的预算列表
-    @action.bound public async fetchCurrentUserBudgetList() {
+    @action.bound public async fetchCurrentUserBudgetList(year: number) {
         await rootStore.groupStore.fetch();
         await rootStore.periodStore.fetch();
         // 获取当前用户所属组
         const groups = rootStore.user.groups;
-        const budgets = await axios.get('/budget/currentUser', { params: { year: this.condition.year } }).then((res) => res.data) as amb.IBudget[];
+        const budgets = await axios.get('/budget/currentUser', { params: { year } }).then((res) => res.data) as amb.IBudget[];
 
         const currentUserBudgetList = groups.map((group) => {
-            const year = this.condition.year;
             const groupId = typeof group === 'string' ? group : group._id;
             const budget = budgets.find((item) => item.group === groupId);
             return new Budget({

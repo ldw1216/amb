@@ -25,13 +25,6 @@ export default class extends Component<RouteComponentProps<{ groupId: string }>>
         this.isApproval = this.props.match.path.endsWith('approval');
         this.isReality = this.props.match.path.endsWith('reality');
         this.isBudgetType = this.props.match.path.endsWith('type');
-        //  = {
-        //     budgetType: this.isApproval,
-        //     budget: this.isApproval,
-        //     addSubject: this.isApproval,
-        //     removeSubject: this.isApproval,
-        //     reality: this.isReality,
-        // };
         if (this.isReality) {
             this.opt = {
                 reality: true,
@@ -50,7 +43,7 @@ export default class extends Component<RouteComponentProps<{ groupId: string }>>
                 removeSubject: true,
             };
         }
-        rootStore.budgetStore.getCurrentUserBudget(groupId).then((res) => {
+        rootStore.budgetStore.getCurrentUserBudget(groupId, this.condition.year).then((res) => {
             if (!res) return;
             const budgetTable = new BudgetTable(res, this.condition, this.opt);
             runInAction(() => {
@@ -58,18 +51,6 @@ export default class extends Component<RouteComponentProps<{ groupId: string }>>
                 this.budgetTable = budgetTable;
             });
         });
-    }
-    @computed get 显示收入占比() {
-        if (!this.budgetTable) return false;
-        return !!this.budgetTable.visibleTitles.find(([key]) => key === '预算占收入比');
-    }
-    @action private 处理收入占比是否显示 = () => {
-        if (!this.budgetTable) return;
-        if (this.显示收入占比) {
-            // this.budgetTable.visibleTitles = this.budgetTable.visibleTitles.filter(([key]) => key !== '预算占收入比');
-        } else {
-            // this.budgetTable.visibleTitles = this.budgetTable.allTitles;
-        }
     }
     private save = async (approvalState: ApprovalState) => {
         if (!this.budget) return;
@@ -91,7 +72,7 @@ export default class extends Component<RouteComponentProps<{ groupId: string }>>
         this.reset();
     }
     private reset = async () => {
-        await rootStore.budgetStore.fetchCurrentUserBudgetList();
+        await rootStore.budgetStore.fetchCurrentUserBudgetList(this.condition.year);
         history.back();
         // this.componentDidMount();
     }

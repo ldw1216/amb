@@ -1,6 +1,6 @@
-import { Divider, Icon, InputNumber, Popconfirm, Popover, Select } from 'antd';
+import { Icon, InputNumber, Popconfirm, Popover, Select } from 'antd';
 import { SelectProps } from 'antd/lib/select';
-import { ApprovalState, BudgetSubjectType, BudgetType, SearchRange } from 'config/config';
+import { ApprovalState, BudgetSubjectType, BudgetType } from 'config/config';
 import { action, computed, observable, reaction, toJS } from 'mobx';
 import React from 'react';
 import { render } from 'react-dom';
@@ -227,7 +227,6 @@ export default class BudgetTable {
             pureProfitRow[`实际收入_${month}月`] = realitySum.purProfit.toFixed(2);
             pureProfitRow[`实际占收入比_${month}月`] = realityRate.purProfit;
             pureProfitRow[`预算完成率_${month}月`] = rate.purProfit;
-
         });
         // 每个项目一行，添加数据，修改数据 填加完数据以后跟据提报周期确定哪几个季度是可编辑的
         this.budget.subjects.concat(this.expenseSubjects as any).forEach((subject) => {
