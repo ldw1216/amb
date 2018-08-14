@@ -23,6 +23,7 @@ export default class extends Component {
 
     public render() {
         const { budgetTables, condition } = this.pageState;
+
         return (
             <div>
                 <Section>
@@ -45,10 +46,10 @@ export default class extends Component {
                         <Table
                             rowClassName={(record: any) => record.key === '毛利' ? 'profitRow' : ''}
                             className={item.approvalState > ApprovalState.已通过审核 ? 'disabled' : ''}
-                            pagination={false} scroll={{ x: 'auto' }}
+                            pagination={false} scroll={{ x: item.columns.length > 1 ? item.columns.length * item.columns[1].children.length * 150 + 200 : 200 }}
                             bordered={true}
                             size="small"
-                            dataSource={item.dataSource}
+                            dataSource={item.columns.length > 1 ? item.dataSource : []}
                             columns={item.columns}
                         />
                     </TableSection>

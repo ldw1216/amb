@@ -111,7 +111,6 @@ export default class BudgetTable {
         const group = this.budget.fullGroup;
         const period = group && group.period;
         if (!this.editableOption.budget && !this.editableOption.reality || !group || !period) return months;
-
         if (period.quarters.includes('一季度')) months.push(0, 1, 2);
         if (period.quarters.includes('二季度')) months.push(3, 4, 5);
         if (period.quarters.includes('三季度')) months.push(6, 7, 8);
@@ -288,6 +287,7 @@ export default class BudgetTable {
                             </Popover></div>,
                         dataIndex: `subject`,
                         key: `subject`,
+                        width: 120,
                     },
                 ],
             } as any,
@@ -297,10 +297,21 @@ export default class BudgetTable {
                 title: `类型`,
                 dataIndex: `type`,
                 key: `type`,
+                width: 80,
             });
         }
-        const titleList = [0, 1, 2, '一季度', 3, 4, 5, '二季度', '半年报', 6, 7, 8, '三季度', 9, 10, 11, '四季度', '全年报'];
-        titleList.forEach((k: string | number) => {
+        // const titleList = [0, 1, 2, '一季度', 3, 4, 5, '二季度', '半年报', 6, 7, 8, '三季度', 9, 10, 11, '四季度', '全年报'];
+        const visibleList = [];
+        const range = this.condition.range as string[];
+        if (range.includes('一季度')) visibleList.push(0, 1, 2, '一季度');
+        if (range.includes('二季度')) visibleList.push(3, 4, 5, '二季度');
+        if (range.includes('半年报')) visibleList.push('半年报');
+        if (range.includes('三季度')) visibleList.push(6, 7, 8, '三季度');
+        if (range.includes('四季度')) visibleList.push(9, 10, 11, '四季度');
+        if (range.includes('全年报')) visibleList.push('全年报');
+        if (range.includes('上一年')) visibleList.push('上一年');
+
+        visibleList.forEach((k: string | number) => {
             if (typeof k === 'number') {
                 const children = this.visibleTitles.map(([key, value]) => ({
                     id: key,

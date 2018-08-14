@@ -33,6 +33,7 @@ export default Index;
 // 菜单
 export class BudgetMenu extends Component<any, {}> {
     public render() {
+        const showTotalTable = rootStore.user.role === 'admin';
         const pathname = this.props.location.pathname;
         return (
             <Menu
@@ -41,7 +42,7 @@ export class BudgetMenu extends Component<any, {}> {
                 defaultSelectedKeys={[pathname]}
                 defaultOpenKeys={[pathname.replace(/\/[^/]+$/, '')]}
             >
-                <Menu.Item key="/budget/totalTable"><Link to="/budget/totalTable"><Icon type="pie-chart" /> <span>预算总表</span></Link></Menu.Item>
+                {showTotalTable ? <Menu.Item key="/budget/totalTable"><Link to="/budget/totalTable"><Icon type="pie-chart" /> <span>预算总表</span></Link></Menu.Item> : ''}
                 <Menu.Item key="/budget/config"><Link to="/budget/config"><Icon type="pie-chart" /> <span>预算配置</span></Link></Menu.Item>
                 <Menu.Item key="/budget/submit"><Link to="/budget/submit"><Icon type="pie-chart" /> <span>预算提报</span></Link></Menu.Item>
                 <Menu.Item key="/budget/all"><Link to="/budget/all"><Icon type="pie-chart" /> <span>预算审核</span></Link></Menu.Item>
