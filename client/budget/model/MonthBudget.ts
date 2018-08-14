@@ -43,12 +43,12 @@ export default class MonthBudget implements amb.IMonthBudget {
     // 预算收入占比
     @computed get budgetRate() {
         return {
-            income: this.budgetSum.income ? '100%' : '--',
-            cost: this.budgetSum.income ? (this.budgetSum.cost / this.budgetSum.income * 100).toFixed(2) + '%' : '--',
-            expense: this.budgetSum.income ? (this.budgetSum.expense / this.budgetSum.income * 100).toFixed(2) + '%' : '--',
-            profit: this.budgetSum.income ? (this.budgetSum.profit / this.budgetSum.income * 100).toFixed(2) + '%' : '--',
-            reward: this.budgetSum.income ? (this.budgetSum.reward / this.budgetSum.income * 100).toFixed(2) + '%' : '--',
-            purProfit: this.budgetSum.income ? (this.budgetSum.purProfit / this.budgetSum.income * 100).toFixed(2) + '%' : '--',
+            income: this.budgetSum.income ? 1 : undefined,
+            cost: this.budgetSum.income ? this.budgetSum.cost / this.budgetSum.income : undefined,
+            expense: this.budgetSum.income ? this.budgetSum.expense / this.budgetSum.income : undefined,
+            profit: this.budgetSum.income ? this.budgetSum.profit / this.budgetSum.income : undefined,
+            reward: this.budgetSum.income ? this.budgetSum.reward / this.budgetSum.income : undefined,
+            purProfit: this.budgetSum.income ? this.budgetSum.purProfit / this.budgetSum.income : undefined,
         };
     }
 
@@ -76,24 +76,36 @@ export default class MonthBudget implements amb.IMonthBudget {
     // 实际占收入占比
     @computed get realityRate() {
         return {
-            income: this.realitySum.income ? '100%' : '--',
-            cost: this.realitySum.income ? (this.realitySum.cost / this.realitySum.income * 100).toFixed(2) + '%' : '--',
-            expense: this.realitySum.income ? (this.realitySum.expense / this.realitySum.income * 100).toFixed(2) + '%' : '--',
-            profit: this.realitySum.income ? (this.realitySum.profit / this.realitySum.income * 100).toFixed(2) + '%' : '--',
-            reward: this.realitySum.income ? (this.realitySum.reward / this.realitySum.income * 100).toFixed(2) + '%' : '--',
-            purProfit: this.realitySum.income ? (this.realitySum.purProfit / this.realitySum.income * 100).toFixed(2) + '%' : '--',
+            income: this.realitySum.income ? 1 : undefined,
+            cost: this.realitySum.income ? this.realitySum.cost / this.realitySum.income : undefined,
+            expense: this.realitySum.income ? this.realitySum.expense / this.realitySum.income : undefined,
+            profit: this.realitySum.income ? this.realitySum.profit / this.realitySum.income : undefined,
+            reward: this.realitySum.income ? this.realitySum.reward / this.realitySum.income : undefined,
+            purProfit: this.realitySum.income ? this.realitySum.purProfit / this.realitySum.income : undefined,
         };
     }
 
     // 预算完成率
     @computed get rate() {
+        const profit = (() => {
+            if (this.budgetSum.profit > 0) return this.realitySum.profit / this.budgetSum.profit;
+            if (this.budgetSum.profit < 0) return 2 - this.realitySum.profit / this.budgetSum.profit;
+            if (this.budgetSum.profit === 0 && this.realitySum.profit >= 0) return 1;
+            return -1;
+        })();
+        const purProfit = (() => {
+            if (this.budgetSum.purProfit > 0) return this.realitySum.purProfit / this.budgetSum.purProfit;
+            if (this.budgetSum.purProfit < 0) return 2 - this.realitySum.purProfit / this.budgetSum.purProfit;
+            if (this.budgetSum.purProfit === 0 && this.realitySum.purProfit >= 0) return 1;
+            return -1;
+        })();
         return {
-            income: this.budgetSum.income ? (this.realitySum.income / this.budgetSum.income * 100).toFixed(2) + '%' : '--',
-            cost: this.budgetSum.cost ? (this.realitySum.cost / this.budgetSum.cost * 100).toFixed(2) + '%' : '--',
-            expense: this.budgetSum.expense ? (this.realitySum.expense / this.budgetSum.expense * 100).toFixed(2) + '%' : '--',
-            profit: this.budgetSum.income ? (this.realitySum.profit / this.budgetSum.profit * 100).toFixed(2) + '%' : '--',
-            reward: this.budgetSum.reward ? (this.realitySum.reward / this.budgetSum.reward * 100).toFixed(2) + '%' : '--',
-            purProfit: this.budgetSum.purProfit ? (this.realitySum.purProfit / this.budgetSum.purProfit * 100).toFixed(2) + '%' : '--',
+            income: this.budgetSum.income ? this.realitySum.income / this.budgetSum.income : undefined,
+            cost: this.budgetSum.cost ? this.realitySum.cost / this.budgetSum.cost : undefined,
+            expense: this.budgetSum.expense ? this.realitySum.expense / this.budgetSum.expense : undefined,
+            profit,
+            reward: this.budgetSum.reward ? this.realitySum.reward / this.budgetSum.reward : undefined,
+            purProfit,
         };
     }
 

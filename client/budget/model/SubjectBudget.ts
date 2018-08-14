@@ -26,16 +26,16 @@ export default class SubjectBudget implements amb.ISubjectBudget {
 
     // 预算占收入比
     @computed get budgetRate() {
-        return this.monthBudget.budgetSum.income && (this.budget !== undefined) ? (this.budget / this.monthBudget.budgetSum.income * 100).toFixed(2) + '%' : '--';
+        return this.monthBudget.budgetSum.income && (this.budget !== undefined) ? this.budget / this.monthBudget.budgetSum.income : undefined;
     }
 
     // 实际占收入比
     @computed get realityRate() {
-        return this.monthBudget.realitySum.income && (this.reality !== undefined) ? (this.reality / this.monthBudget.realitySum.income * 100).toFixed(2) + '%' : '--';
+        return this.monthBudget.realitySum.income && (this.reality !== undefined) ? this.reality / this.monthBudget.realitySum.income : undefined;
     }
 
     // 预算完成率
     @computed get completeRate() {
-        return (this.budget !== undefined && this.reality !== undefined) ? (this.reality / this.budget * 100).toFixed(2) + '%' : '--';
+        return (this.budget !== undefined && this.reality !== undefined) ? this.reality / this.budget : undefined;
     }
 }
