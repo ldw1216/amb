@@ -1,7 +1,7 @@
 import { Affix, Button, Input, Table } from 'antd';
 import { SearchBar, ToolBar } from 'components/SearchBar';
 import Section, { TableSection } from 'components/Section';
-import { action, observable, toJS } from 'mobx';
+import { action, observable, toJS, computed } from 'mobx';
 import { observer } from 'mobx-react';
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
@@ -30,17 +30,15 @@ export default class extends Component {
         this.advancedSearchDisplay = false;
         document.removeEventListener('click', this.hideAdvancedSearch);
     }
-    conditon = new Condition()
+    condition = new Condition()
     state = {
-        columns: [] as any,
         list: [] as any
     }
-    async componentDidMount() {
-        const list = await axios.get('/budget/totalTable').then(data => data.data)
-        console.log('list', list)
+    @computed get columns() {
+        if (!this.condition) return []
         const columns = [
             {
-                title: 2018,
+                title: this.condition.year,
                 dataIndex: 'head',
                 key: 'head',
                 fixed: 'left',
@@ -53,40 +51,63 @@ export default class extends Component {
                 ],
             } as any,
         ];
-        for (let i = 0; i < 12; i++) {
-            const children = [{ key: 'ys', value: '预算' }, { key: 'yszb', value: '占收入比例' }, { key: 'sj', value: '实际' }, { key: 'sjzb', value: '占收入比例' }, { key: 'yswcl', value: '预算完成率' }].map((key) => ({
-                id: key.key,
-                title: key.value,
-                dataIndex: `${key.key}_${i}`,
-                key: `${key.key}_${i}`,
-            }));
+        let data = [{ key: 'ys', value: '预算' }, { key: 'yszb', value: '占收入比例' }, { key: 'sj', value: '实际' }, { key: 'sjzb', value: '占收入比例' }, { key: 'yswcl', value: '预算完成率' }]
+        let data1 = [{ key: 'ys', value: '预算' }, { key: 'sj', value: '实际' }, { key: 'yswcl', value: '预算完成率' }]
+        let list = ['0', '1', '2', '一季度', '3', '4', '5', '二季度', '半年', '6', '7', '8', '三季度', '9', '10', '11', '四季度', '全年']
+        let list1 = ['一季度', '二季度', '半年', '三季度', '四季度', '全年']
+        for (let i of list) {
+            let children
+            if (list1.includes(i)) {
+                children = data1.map((key) => ({
+                    id: key.key,
+                    title: key.value,
+                    dataIndex: `${key.key}_${i}`,
+                    key: `${key.key}_${i}`,
+                }));
+            } else {
+                children = data.map((key) => ({
+                    id: key.key,
+                    title: key.value,
+                    dataIndex: `${key.key}_${i}`,
+                    key: `${key.key}_${i}`,
+                }));
+            }
             columns.push({
-                title: `${i + 1}月`,
+                title: !list1.includes(i) ? `${+i + 1}月` : i ,
                 dataIndex: `month${i}`,
                 key: `month${i}`,
                 children,
             });
         }
-        this.setState({ columns, list })
+        return columns;
+    }
+    async componentDidMount() {
+        this.fetch()
+    }
+    fetch = async (year?: number) => {
+        year = year || 2018
+        const list = await axios.get('/budget/totalTable?year=' + year).then(data => data.data)
+        this.setState({ list })
     }
     public exportExcel = () => {
         const table = document.getElementsByTagName('table')[0];
-        excellentexport.excel(table, '工作簿1', '阿米巴');
+        excellentexport.excel(table, '工作簿1', '阿米巴总表');
     }
 
     public render() {
+        console.log(toJS(this.condition))
         return (
             <div>
                 <Section>
                     <SearchBar style={{ marginBottom: 0 }}>
                         <Button onClick={this.showAdvancedSearch} type="primary">自定义指标</Button>
                         <Button type="primary" onClick={this.exportExcel}>全部导出</Button>
-                        {this.advancedSearchDisplay && <AdvancedSearch condition={this.conditon} />}
+                        {this.advancedSearchDisplay && <AdvancedSearch condition={this.condition} />}
                     </SearchBar>
                 </Section>
 
                 <TableSection>
-                    <Table pagination={false} scroll={{ x: 5800 }} rowKey="total" bordered size="small" dataSource={this.state.list} columns={this.state.columns} />
+                    <Table pagination={false} scroll={{ x: 7350 }} rowKey="total" bordered size="small" dataSource={this.state.list} columns={this.columns} />
                 </TableSection>
             </div>
         );
