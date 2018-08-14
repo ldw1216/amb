@@ -87,7 +87,8 @@ declare global {
         // 每个月的预算
         interface IMonthBudget {
             _id?: string
-            month: number; // 月份
+            index: number; // 月份
+            name: string;
             rewardRate?: number; // 奖金比例
             budget?: IMonthBudgetColumn
             reality?: IMonthBudgetColumn

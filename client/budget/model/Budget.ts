@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { ApprovalState } from 'config/config';
 import { action, computed, observable, runInAction, toJS, values } from 'mobx';
+import * as R from 'ramda';
 import { Group } from 'store/Group';
 import MonthBudget from './MonthBudget';
 import Subject from './Subject';
@@ -79,37 +80,32 @@ export default class Budget implements amb.IBudget {
         return axios.post('/budget', this);
     }
 
-    @computed get quarter_2() {
-        const monthBudget = new MonthBudget({ month: 200, subjectBudgets: [] }, this.fullGroup);
-        const monthBudgets = [0, 1, 2].map((item) => this.monthBudgets.find(({ month }) => month === item)).filter((item) => item);
-        monthBudget.subjectBudgets = monthBudgets.reduce((value, month) => {
-            return month!.subjectBudgets.map((subjectBudget) => {
-                const val = value.find((item) => item.subjectId === subjectBudget.subjectId);
-                return new SubjectBudget({
-                    subjectId: subjectBudget.subjectId,
-                    subjectType: subjectBudget.subjectType,
-                    subjectName: subjectBudget.subjectName,
-                    budget: (subjectBudget.budget || 0) + (val && val.budget || 0),
-                    reality: (subjectBudget.reality || 0) + (val && val.reality || 0),
-                } as any, monthBudget);
-            });
-        }, [] as SubjectBudget[]);
-        return monthBudget;
-    }
-
-    @computed get quarter_1() {
-        const monthBudgets = [0, 1, 2].map((item) => this.monthBudgets.find(({ month }) => month === item)).filter((item) => item);
-        return monthBudgets.reduce((data, month) => {
-            return {
-                budget: {
-                    income: month!.budget.income + (data.budget && data.budget.income || 0),
-                    cost: month!.budget.cost + (data.budget && data.budget.cost || 0),
-                    expense: month!.budget.expense + (data.budget && data.budget.expense || 0),
-                    profit: month!.budget.profit + (data.budget && data.budget.profit || 0),
-                    reward: month!.budget.reward + (data.budget && data.budget.reward || 0),
-                    purProfit: month!.budget.purProfit + (data.budget && data.budget.purProfit || 0),
-                },
-            };
-        }, {} as any);
+    @computed get quarters() {
+        const titles = [
+            { name: '第一季度', index: 100, months: [0, 1, 2] },
+            { name: '第二季度', index: 200, months: [3, 4, 5] },
+            { name: '第三季度', index: 300, months: [6, 7, 8] },
+            { name: '第四季度', index: 400, months: [9, 10, 11] },
+            { name: '半年报', index: 500, months: [0, 1, 2, 3, 4, 5] },
+            { name: '全年报', index: 600, months: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11] },
+        ];
+        return titles.map((title) => {
+            const monthBudget = new MonthBudget({ index: title.index, name: title.name, subjectBudgets: [] }, this.fullGroup);
+            const monthBudgets = title.months.map((item) => this.monthBudgets.find(({ index }) => index === item)).filter((item) => item);
+            monthBudget.subjectBudgets = monthBudgets.reduce((value, month) => {
+                const subjectBudgets = month!.subjectBudgets.map((subjectBudget) => {
+                    const val = value.find((item) => item.subjectId === subjectBudget.subjectId);
+                    return new SubjectBudget({
+                        subjectId: subjectBudget.subjectId,
+                        subjectType: subjectBudget.subjectType,
+                        subjectName: subjectBudget.subjectName,
+                        budget: (subjectBudget.budget || 0) + (val && val.budget || 0),
+                        reality: (subjectBudget.reality || 0) + (val && val.reality || 0),
+                    } as any, monthBudget);
+                });
+                return R.unionWith(R.eqBy(R.prop('subjectId')), subjectBudgets, value);
+            }, [] as SubjectBudget[]);
+            return monthBudget;
+        }).filter(({ subjectBudgets }) => subjectBudgets.length);
     }
 }

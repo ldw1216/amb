@@ -9,8 +9,6 @@ router.get('/totalTable', async (ctx) => {
         { $match: { year } },
         { $project: { monthBudgets: 1 } },
         { $unwind: '$monthBudgets' },
-        // { $unwind: '$monthBudgets.subjectBudgets' },
-        // { $project: { subjectBudgets: '$monthBudgets.subjectBudgets', month: '$monthBudgets.month', subjectId: '$monthBudgets.subjectBudgets.subjectId' } },
     ]);
     console.log(list);
     const data = [];
@@ -19,8 +17,8 @@ router.get('/totalTable', async (ctx) => {
 
     for (let i = 0; i < 12; i++) {
         const obj = { subjectBudgets: [] } as any;
-        obj.month = i;
-        const monthBudgets = list.filter((item: any) => item.monthBudgets.month === i);
+        obj.index = i;
+        const monthBudgets = list.filter((item: any) => item.monthBudgets.index === i);
         for (const j of monthBudgets) {
             j.monthBudgets.subjectBudgets.map((n: any) => obj.subjectBudgets.push(n));
         }
@@ -72,7 +70,7 @@ function structure(obj: any, i: number, ys?: any, sj?: any, lr?: boolean) {  // 
 function calculate(key: string, data: any, SubjectIds: any) {
     const obj = { total: key } as any;
     for (let i = 0; i < 12; i++) {
-        const ambData = data.find((n: any) => n.month === i).subjectBudgets;
+        const ambData = data.find((n: any) => n.index === i).subjectBudgets;
         if (key === '收入-阿米巴') {
             obj['ys_' + i] = ambData.filter((n: any) => n.subjectType === 'income').reduce((a: any, b: any) => a + (b.budget || 0), 0);
             obj['sj_' + i] = ambData.filter((n: any) => n.subjectType === 'income').reduce((a: any, b: any) => a + (b.reality || 0), 0);

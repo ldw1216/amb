@@ -7,6 +7,15 @@ import styled from 'styled-components';
 const Root = styled.div`
     .profitRow.profitRow{
         background: #f3b084;
+        &:hover, &tr:hover, &.ant-table-row-hover{
+            background: #f3b084;
+        }
+        &:hover, &:hover td, &tr:hover, &.ant-table-row-hover,&.ant-table-row-hover td{
+            background: #f48074;
+        }
+    }
+    tr.ant-table-row-hover.profitRow.profitRow:hover td{
+        background: #f48074;
     }
 `;
 class Index extends Component {

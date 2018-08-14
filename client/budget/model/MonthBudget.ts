@@ -6,9 +6,10 @@ import SubjectBudget from './SubjectBudget';
 // 预算金额 某个项目，某个月份的预算
 export default class MonthBudget implements amb.IMonthBudget {
     @observable public _id?: string;
-    @observable public month: number;
+    @observable public index: number;
     @observable public subjectBudgets: SubjectBudget[];
     @observable public rewardRate: number;
+    @observable public name: string;
     public isDirty = false; // 已经被修改改
 
     private budget_?: amb.IMonthBudgetColumn;
@@ -59,9 +60,9 @@ export default class MonthBudget implements amb.IMonthBudget {
         const cost = this.subjectBudgets.filter(({ subjectType }) => subjectType === BudgetSubjectType.成本)
             .reduce((x, y) => x + (y.reality || 0), 0);
         const profit = income - cost;
-        const expense = this.subjectBudgets.filter(({ subjectType }) => subjectType === BudgetSubjectType.费用)
-            .reduce((x, y) => x + (y.reality || 0), 0) + profit;
         const reward = profit < 0 ? 0 : profit * this.rewardRate / 100;
+        const expense = this.subjectBudgets.filter(({ subjectType }) => subjectType === BudgetSubjectType.费用)
+            .reduce((x, y) => x + (y.reality || 0), 0) + reward;
         const purProfit = profit - reward - expense;
         return {
             income,
@@ -111,7 +112,8 @@ export default class MonthBudget implements amb.IMonthBudget {
 
     constructor(data: amb.IMonthBudget, group: Group) {
         this._id = data._id;
-        this.month = data.month;
+        this.index = data.index;
+        this.name = data.name;
         this.subjectBudgets = (data.subjectBudgets || []).map((item) => new SubjectBudget(item, this));
 
         this.budget_ = data.budget;

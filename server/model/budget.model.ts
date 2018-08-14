@@ -22,7 +22,8 @@ const SubjectBudget = new Schema({
 }, { timestamps: true, toJSON: { virtuals: true } });
 
 const MonthBudget = new Schema({
-    month: { type: Number, required: true, cn: '月份-从0开始' },
+    index: { type: Number, required: true, cn: '月份-从0开始' },
+    name: String,
     rewardRate: Number,
     budget: { type: MothBudgetSum, cn: '预算合计' },
     reality: { type: MothBudgetSum, cn: '实际合计' },
