@@ -2,7 +2,7 @@ import { Affix, Button, Input, Table } from 'antd';
 import axios from 'axios';
 import { SearchBar, ToolBar } from 'components/SearchBar';
 import Section, { TableSection } from 'components/Section';
-import { action, computed, observable, toJS } from 'mobx';
+import { action, computed, IReactionDisposer, observable, reaction, toJS } from 'mobx';
 import { observer } from 'mobx-react';
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
@@ -31,6 +31,7 @@ export default class extends Component {
         document.removeEventListener('click', this.hideAdvancedSearch);
     }
     public condition = new Condition();
+    public reaction?: IReactionDisposer;
     public state = {
         list: [] as any,
     };
@@ -105,6 +106,12 @@ export default class extends Component {
     }
     public async componentDidMount() {
         this.fetch();
+        this.reaction = reaction(() => this.condition.year, (year) => {
+            this.fetch(year);
+        });
+    }
+    public componentWillUnmount() {
+        this.reaction && this.reaction();
     }
     public fetch = async (year?: number) => {
         year = year || 2018;
