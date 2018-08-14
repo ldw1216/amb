@@ -84,8 +84,10 @@ export default class extends Component {
                         <Table
                             rowClassName={(record) => record.key === '毛利' ? 'profitRow' : ''}
                             className={item.budget.groupIsAvailable ? '' : 'disabled'}
-                            pagination={false} scroll={{ x: 'auto' }} bordered size="small"
-                            dataSource={item.dataSource}
+                            pagination={false}
+                            scroll={{ x: item.columns.length > 1 ? item.columns.length * item.columns[1].children.length * 150 + 200 : 200 }}
+                            bordered size="small"
+                            dataSource={item.columns.length > 1 ? item.dataSource : []}
                             columns={item.columns} />
                     </TableSection>
                 ))}

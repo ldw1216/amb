@@ -122,7 +122,7 @@ export default class extends Component {
     }
 
     public render() {
-        const x = this.columns.length * this.columns[1].children.length * 150 + 150;
+        const x = this.columns.length > 1 ? this.columns.length * this.columns[1].children.length * 150 + 150 : 300;
         return (
             <div>
                 <Section>
@@ -132,9 +132,8 @@ export default class extends Component {
                         {this.advancedSearchDisplay && <AdvancedSearch condition={this.condition} />}
                     </SearchBar>
                 </Section>
-
                 <TableSection>
-                    <Table pagination={false} scroll={{ x }} rowKey="total" bordered size="small" dataSource={this.state.list} columns={this.columns} />
+                    <Table pagination={false} scroll={{ x }} rowKey="total" bordered size="small" dataSource={this.columns.length > 1 ? this.state.list : []} columns={this.columns} />
                 </TableSection>
             </div>
         );
