@@ -31,6 +31,7 @@ router.get('/totalTable', async (ctx) => {
     for (const k of amb) {
         ambList.push(calculate(k, data, SubjectIds));
     }
+    quarterIncome(ambList);
     // console.log(ambList)
     ctx.body = ambList;
 });
@@ -69,7 +70,6 @@ function calculate(key: string, data: any, SubjectIds: any) {
             }
             if (!obj['ys_' + i] && obj['ys_' + i] !== 0) obj['ys_' + i] = '--';
             if (!obj['sj_' + i] && obj['sj_' + i] !== 0) obj['sj_' + i] = '--';
-            quarterIncome(quarter, obj, i);
         } else if (key === '成本费用-阿米巴') {
             const ys = ambData.filter((n: any) => n.subjectType === 'income').reduce((a: any, b: any) => a + b.budget, 0) || undefined;
             const sj = ambData.filter((n: any) => n.subjectType === 'income').reduce((a: any, b: any) => a + b.reality, 0) || undefined;
@@ -230,7 +230,7 @@ function calculate(key: string, data: any, SubjectIds: any) {
             if (!obj['sj_' + i] && obj['sj_' + i] !== 0) obj['sj_' + i] = '--';
         }
     }
-    return quarterIncome(obj);
+    return obj;
 }
 
 function sum(list: any) {
@@ -238,57 +238,89 @@ function sum(list: any) {
         return { budget: undefined, reality: undefined };
     }
 }
-function quarterIncome(obj: any) {
-    Object.assign(obj, {
-        jd_ys_0: 0,
-        jd_sj_0: 0,
-        jd_yszb_0: '0.00%',
-        jd_sjzb_0: '300.00%',
-        jd_yswcl_0: '-100.00%',
+/**
+ * 计算季度、半年、全年数据
+ * @param list
+ */
+function quarterIncome(list: any) {
+    list.forEach((obj: any, i: number) => {
+        Object.assign(obj, {
+            jd_ys_0: 0,
+            jd_sj_0: 0,
+            jd_yszb_0: '0.00%',
+            jd_sjzb_0: '0.00%',
+            jd_yswcl_0: '0.00%',
 
-        jd_ys_1: 0,
-        jd_sj_1: 0,
-        jd_yszb_1: '0.00%',
-        jd_sjzb_1: '300.00%',
-        jd_yswcl_1: '-100.00%',
+            jd_ys_1: 0,
+            jd_sj_1: 0,
+            jd_yszb_1: '0.00%',
+            jd_sjzb_1: '0.00%',
+            jd_yswcl_1: '0.00%',
 
-        jd_ys_2: 0,
-        jd_sj_2: 0,
-        jd_yszb_2: '0.00%',
-        jd_sjzb_2: '300.00%',
-        jd_yswcl_2: '-100.00%',
+            jd_ys_2: 0,
+            jd_sj_2: 0,
+            jd_yszb_2: '0.00%',
+            jd_sjzb_2: '0.00%',
+            jd_yswcl_2: '0.00%',
 
-        jd_ys_3: 0,
-        jd_sj_3: 0,
-        jd_yszb_3: '0.00%',
-        jd_sjzb_3: '300.00%',
-        jd_yswcl_3: '-100.00%',
+            jd_ys_3: 0,
+            jd_sj_3: 0,
+            jd_yszb_3: '0.00%',
+            jd_sjzb_3: '0.00%',
+            jd_yswcl_3: '0.00%',
 
-        jd_ys_4: 0,
-        jd_sj_4: 0,
-        jd_yszb_4: '0.00%',
-        jd_sjzb_4: '300.00%',
-        jd_yswcl_4: '-100.00%',
+            jd_ys_4: 0,
+            jd_sj_4: 0,
+            jd_yszb_4: '0.00%',
+            jd_sjzb_4: '0.00%',
+            jd_yswcl_4: '0.00%',
 
-        jd_ys_5: 0,
-        jd_sj_5: 0,
-        jd_yszb_5: '0.00%',
-        jd_sjzb_5: '300.00%',
-        jd_yswcl_5: '-100.00%',
+            jd_ys_5: 0,
+            jd_sj_5: 0,
+            jd_yszb_5: '0.00%',
+            jd_sjzb_5: '0.00%',
+            jd_yswcl_5: '0.00%',
+        });
+        for (const k of Object.keys(obj)) {
+            const ks = k.split('_');
+            if (['ys', 'sj'].includes(ks[0])) {
+                const m = +ks[1];
+                const n = Math.floor(m / 3); // 季度， 0、1、2、3
+                const jdk = ['jd', ks[0], n].join('_');
+                obj[jdk] = obj[jdk] || 0;
+                obj[jdk] += obj[k];
+            }
+        }
+        // 半年
+        obj.jd_ys_4 = (obj.jd_ys_0 || 0) + (obj.jd_ys_1 || 0);
+        obj.jd_sj_4 = (obj.jd_sj_0 || 0) + (obj.jd_sj_1 || 0);
+        // 全年
+        obj.jd_ys_5 = obj.jd_ys_4 + (obj.jd_ys_2 || 0) + (obj.jd_ys_3 || 0);
+        obj.jd_sj_5 = obj.jd_sj_4 + (obj.jd_sj_2 || 0) + (obj.jd_sj_3 || 0);
+
+        for (const k of Object.keys(obj)) {
+            const ks = k.split('_');
+            const n = +ks[2]; // 季度， 0、1、2、3
+            const byzb = i < 3 ? list[0] : list[3]; //  收入阿米巴 /收入财务
+            if ('yszb' === ks[1]) { // 预算占比
+                obj[k] = getRatio(obj[`jd_ys_${n}`], byzb[`ys_${n}`]);
+            } else if ('sjzb' === ks[1]) { // 实际占比
+                obj[k] = getRatio(obj[`jd_sj_${n}`], byzb[`sj_${n}`]);
+            } else if ('yswcl' === ks[1]) { // 预算完成率
+                obj[k] = getRatio(obj[`jd_sj_${n}`], obj[`jd_ys_${n}`]);
+            }
+        }
     });
+    return list;
+}
 
-    // const n = Math.floor(m / 3); // 季度， 0、1、2、3
-    // let
-    //     quarterp[n] = quarterp[n] || {
-    //         jd_ys_: '--',
-    //         jd_sj_: '--',
-    //         jd_yszb_: '--',
-    //         jd_sjzb_: '--',
-    //         jd_yswcl_: '--',
-    //     };
-    // for (const k in obj) {
-    //     const qk = k.split('_')[0];
-    // }
-    // quarterp[n];
+function getRatio(n1: any, n2: any) {
+    if (!n1) {
+        return '0.00%';
+    } else if (!n2) {
+        return '100.00%';
+    } else {
+        return (n1 / n2 * 100).toFixed(2);
+    }
 }
 export default router;
