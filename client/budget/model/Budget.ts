@@ -30,9 +30,9 @@ export default class Budget implements amb.IBudget {
         this.group = data.group; // 预算周期
         this.period = data.period;
         this.year = data.year; // 预算周期
-        this.monthBudgets = monthBudgets;
         this.remark = data.remark;
         this.approvalState = data.approvalState;
+        this.monthBudgets = monthBudgets;
         Object.defineProperties(this, {
             subjects: { enumerable: false },
             fullGroup: { enumerable: false },

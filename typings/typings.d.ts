@@ -75,10 +75,22 @@ declare global {
             remark?: string // 备注
         }
 
+        // 预算汇总
+        interface IMonthBudgetSum {
+            income?: number, // 预算总收入
+            cost?: number, // 预算总成本
+            expense?: number, // 预算总费用
+            profit?: number, // 毛利
+            reward?: number, // 奖金
+            purProfit?: number, // 利润
+        }
         // 每个月的预算
         interface IMonthBudget {
             _id?: string
-            month: number;
+            month: number; // 月份
+            rewardRate?: number; // 奖金比例
+            budgetSum?: IMonthBudgetSum
+            realitySum?: IMonthBudgetSum
             subjectBudgets: ISubjectBudget[]
         }
 
