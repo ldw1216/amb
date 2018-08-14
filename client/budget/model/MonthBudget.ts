@@ -22,16 +22,18 @@ export default class MonthBudget implements amb.IMonthBudget {
             .reduce((x, y) => x + (y.budget || 0), 0);
         const cost = this.subjectBudgets.filter(({ subjectType }) => subjectType === BudgetSubjectType.成本)
             .reduce((x, y) => x + (y.budget || 0), 0);
-        const expense = this.subjectBudgets.filter(({ subjectType }) => subjectType === BudgetSubjectType.费用)
-            .reduce((x, y) => x + (y.budget || 0), 0);
         const profit = income - cost;
         const reward = profit < 0 ? 0 : profit / 100;
+        const expense = this.subjectBudgets.filter(({ subjectType }) => subjectType === BudgetSubjectType.费用)
+            .reduce((x, y) => x + (y.budget || 0), 0) + reward;
+        const purProfit = profit - reward - expense;
         return {
             income,
             cost,
             expense,
             profit,
             reward,
+            purProfit,
         };
     }
 
@@ -43,6 +45,7 @@ export default class MonthBudget implements amb.IMonthBudget {
             expense: this.budgetSum.income ? (this.budgetSum.expense / this.budgetSum.income * 100).toFixed(2) + '%' : '--',
             profit: this.budgetSum.income ? (this.budgetSum.profit / this.budgetSum.income * 100).toFixed(2) + '%' : '--',
             reward: this.budgetSum.income ? (this.budgetSum.reward / this.budgetSum.income * 100).toFixed(2) + '%' : '--',
+            purProfit: this.budgetSum.income ? (this.budgetSum.purProfit / this.budgetSum.income * 100).toFixed(2) + '%' : '--',
         };
     }
 
@@ -52,16 +55,18 @@ export default class MonthBudget implements amb.IMonthBudget {
             .reduce((x, y) => x + (y.reality || 0), 0);
         const cost = this.subjectBudgets.filter(({ subjectType }) => subjectType === BudgetSubjectType.成本)
             .reduce((x, y) => x + (y.reality || 0), 0);
-        const expense = this.subjectBudgets.filter(({ subjectType }) => subjectType === BudgetSubjectType.费用)
-            .reduce((x, y) => x + (y.reality || 0), 0);
         const profit = income - cost;
+        const expense = this.subjectBudgets.filter(({ subjectType }) => subjectType === BudgetSubjectType.费用)
+            .reduce((x, y) => x + (y.reality || 0), 0) + profit;
         const reward = profit < 0 ? 0 : profit / 100;
+        const purProfit = profit - reward - expense;
         return {
             income,
             cost,
             expense,
             profit,
             reward,
+            purProfit,
         };
     }
 
@@ -73,6 +78,7 @@ export default class MonthBudget implements amb.IMonthBudget {
             expense: this.realitySum.income ? (this.realitySum.expense / this.realitySum.income * 100).toFixed(2) + '%' : '--',
             profit: this.realitySum.income ? (this.realitySum.profit / this.realitySum.income * 100).toFixed(2) + '%' : '--',
             reward: this.realitySum.income ? (this.realitySum.reward / this.realitySum.income * 100).toFixed(2) + '%' : '--',
+            purProfit: this.realitySum.income ? (this.realitySum.purProfit / this.realitySum.income * 100).toFixed(2) + '%' : '--',
         };
     }
 
@@ -84,6 +90,7 @@ export default class MonthBudget implements amb.IMonthBudget {
             expense: this.budgetSum.expense ? (this.realitySum.expense / this.budgetSum.expense * 100).toFixed(2) + '%' : '--',
             profit: this.budgetSum.income ? (this.realitySum.profit / this.budgetSum.profit * 100).toFixed(2) + '%' : '--',
             reward: this.budgetSum.reward ? (this.realitySum.reward / this.budgetSum.reward * 100).toFixed(2) + '%' : '--',
+            purProfit: this.budgetSum.purProfit ? (this.realitySum.purProfit / this.budgetSum.purProfit * 100).toFixed(2) + '%' : '--',
         };
     }
 
