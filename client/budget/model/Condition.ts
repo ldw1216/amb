@@ -8,7 +8,7 @@ import { BudgetList } from './BudgetList';
  */
 export default class Condition {
     @observable public year = new Date().getFullYear();
-    @observable public range = [SearchRange.二季度, SearchRange.三季度];
+    @observable public range = [SearchRange.一季度, SearchRange.二季度, SearchRange.三季度, SearchRange.四季度, SearchRange.半年报, SearchRange.全年报];
     @observable public dataTypes = Object.keys(SearchDataType);
     @observable public groupId: string = '0';
     @observable public approvalState: ApprovalState[] = Object.values(ApprovalState).filter((i) => +i && +i < 100);
