@@ -161,76 +161,56 @@ export default class BudgetTable {
     }
 
     @computed get dataSource() {
+
+        // const subjects = [
+
+        //     // [incomeAmount].concat(incomeRows, costAmount, costRows, profitRow, expenseAmount, rewardRow, expenseRows, pureProfitRow);
+        // ]
+
+        const sumRowMap = {
+            profit: {
+                key: '毛利',
+                subject: <SubjectSubTitle>毛利</SubjectSubTitle>,
+            } as any,
+            reward: {
+                key: '奖金',
+                subject: <SubjectSubTitle>奖金</SubjectSubTitle>,
+            } as any,
+            pureProfit: {
+                key: '利润',
+                subject: <SubjectSubTitle>利润</SubjectSubTitle>,
+            } as any,
+            income: {
+                key: '收入汇总',
+                subject: <SubjectTitle><span>收入</span>
+                    {this.canEdit && this.editableOption.addSubject ? <Icon onClick={() => this.addProject(BudgetSubjectType.收入)} type="plus" /> : ''}
+                </SubjectTitle>,
+            } as any,
+            cost: {
+                key: '成本汇总',
+                subject: <SubjectTitle><span>成本</span>
+                    {this.canEdit && this.editableOption.addSubject ? <Icon onClick={() => this.addProject(BudgetSubjectType.成本)} type="plus" /> : ''}</SubjectTitle>,
+                type: undefined,
+            } as any,
+            expense: {
+                key: '费用汇总',
+                subject: <SubjectTitle><span>费用</span></SubjectTitle>,
+                type: undefined,
+            } as any,
+        } as any;
+
         const incomeRows = [] as any[]; // 收入数据
         const costRows = [] as any[]; // 成本数据
         const expenseRows = [] as any[]; // 费用数据
-        const profitRow = {
-            key: '毛利',
-            subject: <SubjectSubTitle>毛利</SubjectSubTitle>,
-        } as any; // 毛利
-        const rewardRow = {
-            key: '奖金',
-            subject: <SubjectSubTitle>奖金</SubjectSubTitle>,
-        } as any; // 利润
-        const pureProfitRow = {
-            key: '利润',
-            subject: <SubjectSubTitle>利润</SubjectSubTitle>,
-        } as any; // 利润
-        const incomeAmount = {
-            key: '收入汇总',
-            subject: <SubjectTitle><span>收入</span>
-                {this.canEdit && this.editableOption.addSubject ? <Icon onClick={() => this.addProject(BudgetSubjectType.收入)} type="plus" /> : ''}
-            </SubjectTitle>,
-        } as any;
-        const costAmount = {
-            key: '成本汇总',
-            subject: <SubjectTitle><span>成本</span>
-                {this.canEdit && this.editableOption.addSubject ? <Icon onClick={() => this.addProject(BudgetSubjectType.成本)} type="plus" /> : ''}</SubjectTitle>,
-            type: undefined,
-        } as any;
-        const expenseAmount = {
-            key: '费用汇总',
-            subject: <SubjectTitle><span>费用</span></SubjectTitle>,
-            type: undefined,
-        } as any;
-        this.budget.monthBudgets.forEach(({ index, budget, reality, realityRate, completeRate, budgetRate }) => {
-            incomeAmount[`预算_${index}月`] = budget.income;
-            incomeAmount[`预算占收入比_${index}月`] = formatRate(budgetRate.income);
-            incomeAmount[`实际收入_${index}月`] = reality.income;
-            incomeAmount[`实际占收入比_${index}月`] = formatRate(realityRate.income);
-            incomeAmount[`预算完成率_${index}月`] = formatRate(completeRate.income);
 
-            costAmount[`预算_${index}月`] = budget.cost;
-            costAmount[`预算占收入比_${index}月`] = formatRate(budgetRate.cost);
-            costAmount[`实际收入_${index}月`] = reality.cost;
-            costAmount[`实际占收入比_${index}月`] = formatRate(realityRate.cost);
-            costAmount[`预算完成率_${index}月`] = formatRate(completeRate.cost);
-
-            expenseAmount[`预算_${index}月`] = budget.expense;
-            expenseAmount[`预算占收入比_${index}月`] = formatRate(budgetRate.expense);
-            expenseAmount[`实际收入_${index}月`] = reality.expense;
-            expenseAmount[`实际占收入比_${index}月`] = formatRate(realityRate.expense);
-            expenseAmount[`预算完成率_${index}月`] = formatRate(completeRate.expense);
-
-            profitRow[`预算_${index}月`] = budget.profit;
-            profitRow[`预算占收入比_${index}月`] = formatRate(budgetRate.profit);
-            profitRow[`实际收入_${index}月`] = reality.profit;
-            profitRow[`实际占收入比_${index}月`] = formatRate(realityRate.profit);
-            profitRow[`预算完成率_${index}月`] = formatRate(completeRate.profit);
-
-            // 奖金计算
-            rewardRow[`预算_${index}月`] = budget.reward;
-            rewardRow[`预算占收入比_${index}月`] = formatRate(budgetRate.reward);
-            rewardRow[`实际收入_${index}月`] = reality.reward;
-            rewardRow[`实际占收入比_${index}月`] = formatRate(realityRate.reward);
-            rewardRow[`预算完成率_${index}月`] = formatRate(completeRate.reward);
-
-            // 纯利计算
-            pureProfitRow[`预算_${index}月`] = budget.purProfit.toFixed(2);
-            pureProfitRow[`预算占收入比_${index}月`] = formatRate(budgetRate.purProfit);
-            pureProfitRow[`实际收入_${index}月`] = reality.purProfit.toFixed(2);
-            pureProfitRow[`实际占收入比_${index}月`] = formatRate(realityRate.purProfit);
-            pureProfitRow[`预算完成率_${index}月`] = formatRate(completeRate.purProfit);
+        [['incomeAmount', 'income'], ['costAmount', 'cost'], ['expenseAmount', 'expense'], ['profitRow', 'profit'], ['rewardRow', 'reward'], ['pureProfitRow', 'pureProfit']].forEach(([row, col]) => {
+            this.budget.monthBudgets.forEach(({ index, budget, reality, realityRate, completeRate, budgetRate }) => {
+                sumRowMap[col][`预算_${index}月`] = (budget as any)[col];
+                sumRowMap[col][`预算占收入比_${index}月`] = formatRate((budgetRate as any)[col]);
+                sumRowMap[col][`实际收入_${index}月`] = (reality as any)[col];
+                sumRowMap[col][`实际占收入比_${index}月`] = formatRate((realityRate as any)[col]);
+                sumRowMap[col][`预算完成率_${index}月`] = formatRate((completeRate as any)[col]);
+            });
         });
 
         // 每个项目一行，添加数据，修改数据 填加完数据以后跟据提报周期确定哪几个季度是可编辑的
@@ -267,7 +247,7 @@ export default class BudgetTable {
         console.log(toJS(this.budget.quarters[2]));
 
         // 汇总数据
-        const dataSource = [incomeAmount].concat(incomeRows, costAmount, costRows, profitRow, expenseAmount, rewardRow, expenseRows, pureProfitRow);
+        const dataSource = [sumRowMap.income].concat(incomeRows, sumRowMap.cost, costRows, sumRowMap.profit, sumRowMap.expense, sumRowMap.reward, expenseRows, sumRowMap.pureProfit);
         return dataSource;
     }
     @computed public get columns() {
