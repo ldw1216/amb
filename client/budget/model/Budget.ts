@@ -69,12 +69,33 @@ export default class Budget implements amb.IBudget {
 
     // 修改
     @action.bound public async put(approvalState: ApprovalState) {
-        await axios.post('/budget', { _id: this._id, approvalState });
+        await axios.post('/budget', { _id: this._id, approvalState, remark: this.remark });
         this.approvalState = approvalState;
     }
 
     // 修改实际
     @action.bound public async putReal() {
         return axios.post('/budget', this);
+    }
+
+    @computed get quarter_1() {
+        const monthBudgets = [0, 1, 2].map((item) => this.monthBudgets[item]);
+        return monthBudgets.reduce((data, month) => {
+            return {
+                budgetSum: {
+                    income: month.budgetSum.income + (data.budgetSum && data.budgetSum.income || 0),
+                    cost: month.budgetSum.cost + (data.budgetSum && data.budgetSum.cost || 0),
+                    expense: month.budgetSum.expense + (data.budgetSum && data.budgetSum.expense || 0),
+                    profit: month.budgetSum.profit + (data.budgetSum && data.budgetSum.profit || 0),
+                    reward: month.budgetSum.reward + (data.budgetSum && data.budgetSum.reward || 0),
+                    purProfit: month.budgetSum.purProfit + (data.budgetSum && data.budgetSum.purProfit || 0),
+                },
+            };
+        }, {} as any);
+
+        return new MonthBudget({
+            month: 100,
+            subjectBudgets: [],
+        }, this.fullGroup);
     }
 }

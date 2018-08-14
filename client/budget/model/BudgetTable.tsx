@@ -232,6 +232,7 @@ export default class BudgetTable {
             pureProfitRow[`实际占收入比_${month}月`] = formatRate(realityRate.purProfit);
             pureProfitRow[`预算完成率_${month}月`] = formatRate(rate.purProfit);
         });
+
         // 每个项目一行，添加数据，修改数据 填加完数据以后跟据提报周期确定哪几个季度是可编辑的
         this.budget.subjects.concat(this.expenseSubjects as any).forEach((subject) => {
             const row = {
