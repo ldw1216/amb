@@ -97,35 +97,6 @@ function calculate(key: string, data: any, SubjectIds: any) {
     for (let i = 0; i < 12; i++) {
         const ambData = data.find((n: any) => n.month === i).subjectBudgets;
         if (key === '收入-阿米巴') {
-            obj['ys_' + i] = ambData.filter((n: any) => n.subjectType === 'income').reduce((a: any, b: any) => a + b.budget, 0) || undefined;
-            obj['sj_' + i] = ambData.filter((n: any) => n.subjectType === 'income').reduce((a: any, b: any) => a + b.reality, 0) || undefined;
-            if (!obj['ys_' + i] && obj['ys_' + i] !== 0) obj['yszb_' + i] = '--';
-            else {
-                obj['yszb_' + i] = '100.00%';
-            }
-            if (!obj['sj_' + i] && obj['sj_' + i] !== 0) obj['sjzb_' + i] = '--';
-            else {
-                obj['sjzb_' + i] = '100.00%';
-            }
-            if ((!obj['ys_' + i] && obj['ys_' + i] !== 0) || (!obj['sj_' + i] && obj['sj_' + i] !== 0)) {
-                obj['yswcl_' + i] = '--';
-            } else {
-                if (obj['ys_' + i] === 0 && obj['sj_' + i] === 0) {
-                    obj['yswcl_' + i] = '100.00%';
-                } else if (obj['ys_' + i] === 0 && obj['sj_' + i] > 0) {
-                    obj['yswcl_' + i] = '100.00%';
-                } else if (obj['ys_' + i] === 0 && obj['sj_' + i] < 0) {
-                    obj['yswcl_' + i] = '-100.00%';
-                } else if (obj['ys_' + i] > 0 && obj['sj_' + i] === 0) {
-                    obj['yswcl_' + i] = '0.00%';
-                } else if (obj['ys_' + i] < 0 && obj['sj_' + i] === 0) {
-                    obj['yswcl_' + i] = '-100.00%';
-                } else {
-                    obj['yswcl_' + i] = (obj['ys_' + i] / obj['sj_' + i] * 100).toFixed(2) + '%';
-                }
-            }
-            if (!obj['ys_' + i] && obj['ys_' + i] !== 0) obj['ys_' + i] = '--';
-            if (!obj['sj_' + i] && obj['sj_' + i] !== 0) obj['sj_' + i] = '--';
             obj['ys_' + i] = ambData.filter((n: any) => n.subjectType === 'income').reduce((a: any, b: any) => a + (b.budget || 0), 0) || undefined;
             obj['sj_' + i] = ambData.filter((n: any) => n.subjectType === 'income').reduce((a: any, b: any) => a + (b.reality || 0), 0) || undefined;
             structure(obj, i);
@@ -231,24 +202,24 @@ function quarterIncome(list: any) {
             const n = +ks[2]; // 季度， 0、1、2、3
             const byzb = i < 3 ? list[0] : list[3]; //  收入阿米巴 /收入财务
             if ('yszb' === ks[1]) { // 预算占比
-                obj[k] = getRatio(obj[`jd_ys_${n}`], byzb[`ys_${n}`]);
+                obj[k] = getRatio(obj[`jd_ys_${n}`], byzb[`ys_${n}`], i);
             } else if ('sjzb' === ks[1]) { // 实际占比
-                obj[k] = getRatio(obj[`jd_sj_${n}`], byzb[`sj_${n}`]);
+                obj[k] = getRatio(obj[`jd_sj_${n}`], byzb[`sj_${n}`], i);
             } else if ('yswcl' === ks[1]) { // 预算完成率
-                obj[k] = getRatio(obj[`jd_sj_${n}`], obj[`jd_ys_${n}`]);
+                obj[k] = getRatio(obj[`jd_sj_${n}`], obj[`jd_ys_${n}`], i);
             }
         }
     });
     return list;
 }
 
-function getRatio(n1: any, n2: any) {
+function getRatio(n1: any, n2: any, i: number) {
     if (!n1) {
         return '0.00%';
     } else if (!n2) {
         return '100.00%';
     } else {
-        return (n1 / n2 * 100).toFixed(2);
+        return (n1 / n2 * 100).toFixed(2) + '%';
     }
 }
 export default router;

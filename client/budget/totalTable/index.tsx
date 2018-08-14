@@ -1,11 +1,11 @@
 import { Affix, Button, Input, Table } from 'antd';
+import axios from 'axios';
 import { SearchBar, ToolBar } from 'components/SearchBar';
 import Section, { TableSection } from 'components/Section';
-import { action, observable, toJS, computed } from 'mobx';
+import { action, computed, observable, toJS } from 'mobx';
 import { observer } from 'mobx-react';
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-import axios from 'axios';
 import styled from 'styled-components';
 import excellentexport from '../../components/excellentexport';
 import AdvancedSearch from '../components/AdvancedSearch';
@@ -30,12 +30,12 @@ export default class extends Component {
         this.advancedSearchDisplay = false;
         document.removeEventListener('click', this.hideAdvancedSearch);
     }
-    condition = new Condition()
-    state = {
-        list: [] as any
-    }
+    public condition = new Condition();
+    public state = {
+        list: [] as any,
+    };
     @computed get columns() {
-        if (!this.condition) return []
+        if (!this.condition) return [];
         const columns = [
             {
                 title: this.condition.year,
@@ -51,18 +51,19 @@ export default class extends Component {
                 ],
             } as any,
         ];
-        let data = [{ key: 'ys', value: '预算' }, { key: 'yszb', value: '占收入比例' }, { key: 'sj', value: '实际' }, { key: 'sjzb', value: '占收入比例' }, { key: 'yswcl', value: '预算完成率' }]
-        let data1 = [{ key: 'ys', value: '预算' }, { key: 'sj', value: '实际' }, { key: 'yswcl', value: '预算完成率' }]
-        let list = ['0', '1', '2', '一季度', '3', '4', '5', '二季度', '半年', '6', '7', '8', '三季度', '9', '10', '11', '四季度', '全年']
-        let list1 = ['一季度', '二季度', '半年', '三季度', '四季度', '全年']
-        for (let i of list) {
-            let children
+        const data = [{ key: 'ys', value: '预算' }, { key: 'yszb', value: '占收入比例' }, { key: 'sj', value: '实际' }, { key: 'sjzb', value: '占收入比例' }, { key: 'yswcl', value: '预算完成率' }];
+        const data1 = [{ key: 'jd_ys', value: '预算' }, { key: 'jd_yszb', value: '预算占比' }, { key: 'jd_sj', value: '实际' }, { key: 'jd_srzb', value: '收入占比' }, { key: 'jd_yswcl', value: '预算完成率' }];
+        const list = ['0', '1', '2', '一季度', '3', '4', '5', '二季度', '半年', '6', '7', '8', '三季度', '9', '10', '11', '四季度', '全年'];
+        const list1 = ['一季度', '二季度', '三季度', '四季度', '半年', '全年'];
+        for (const i of list) {
+            let children;
             if (list1.includes(i)) {
+                const jdi = list1.findIndex((item) => item === i);
                 children = data1.map((key) => ({
                     id: key.key,
                     title: key.value,
-                    dataIndex: `${key.key}_${i}`,
-                    key: `${key.key}_${i}`,
+                    dataIndex: `${key.key}_${jdi}`,
+                    key: `${key.key}_${jdi}`,
                 }));
             } else {
                 children = data.map((key) => ({
@@ -73,7 +74,7 @@ export default class extends Component {
                 }));
             }
             columns.push({
-                title: !list1.includes(i) ? `${+i + 1}月` : i ,
+                title: !list1.includes(i) ? `${+i + 1}月` : i,
                 dataIndex: `month${i}`,
                 key: `month${i}`,
                 children,
@@ -81,13 +82,13 @@ export default class extends Component {
         }
         return columns;
     }
-    async componentDidMount() {
-        this.fetch()
+    public async componentDidMount() {
+        this.fetch();
     }
-    fetch = async (year?: number) => {
-        year = year || 2018
-        const list = await axios.get('/budget/totalTable?year=' + year).then(data => data.data)
-        this.setState({ list })
+    public fetch = async (year?: number) => {
+        year = year || 2018;
+        const list = await axios.get('/budget/totalTable?year=' + year).then((data) => data.data);
+        this.setState({ list });
     }
     public exportExcel = () => {
         const table = document.getElementsByTagName('table')[0];
@@ -95,7 +96,7 @@ export default class extends Component {
     }
 
     public render() {
-        console.log(toJS(this.condition))
+        console.log(toJS(this.condition));
         return (
             <div>
                 <Section>
