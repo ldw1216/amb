@@ -52,7 +52,7 @@ export default class extends Component {
             } as any,
         ];
         const data = [{ key: 'ys', value: '预算' }, { key: 'yszb', value: '占收入比例' }, { key: 'sj', value: '实际' }, { key: 'sjzb', value: '占收入比例' }, { key: 'yswcl', value: '预算完成率' }];
-        const data1 = [{ key: 'jd_ys', value: '预算' }, { key: 'jd_yszb', value: '预算占比' }, { key: 'jd_sj', value: '实际' }, { key: 'jd_srzb', value: '收入占比' }, { key: 'jd_yswcl', value: '预算完成率' }];
+        const data1 = [{ key: 'jd_ys', value: '预算' }, { key: 'jd_yszb', value: '预算占比' }, { key: 'jd_sj', value: '实际' }, { key: 'jd_sjzb', value: '占收入比例' }, { key: 'jd_yswcl', value: '预算完成率' }];
         const list = ['0', '1', '2', '一季度', '3', '4', '5', '二季度', '半年', '6', '7', '8', '三季度', '9', '10', '11', '四季度', '全年'];
         const list1 = ['一季度', '二季度', '三季度', '四季度', '半年', '全年'];
         for (const i of list) {
@@ -108,7 +108,7 @@ export default class extends Component {
                 </Section>
 
                 <TableSection>
-                    <Table pagination={false} scroll={{ x: 7350 }} rowKey="total" bordered size="small" dataSource={this.state.list} columns={this.columns} />
+                    <Table pagination={false} scroll={{ x: 8500 }} rowKey="total" bordered size="small" dataSource={this.state.list} columns={this.columns} />
                 </TableSection>
             </div>
         );
