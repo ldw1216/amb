@@ -51,19 +51,40 @@ export default class extends Component {
                 ],
             } as any,
         ];
-        const data = [{ key: 'ys', value: '预算' }, { key: 'yszb', value: '占收入比例' }, { key: 'sj', value: '实际' }, { key: 'sjzb', value: '占收入比例' }, { key: 'yswcl', value: '预算完成率' }];
-        const data1 = [{ key: 'jd_ys', value: '预算' }, { key: 'jd_yszb', value: '预算占比' }, { key: 'jd_sj', value: '实际' }, { key: 'jd_sjzb', value: '占收入比例' }, { key: 'jd_yswcl', value: '预算完成率' }];
-        const list = ['0', '1', '2', '一季度', '3', '4', '5', '二季度', '半年', '6', '7', '8', '三季度', '9', '10', '11', '四季度', '全年'];
-        const list1 = ['一季度', '二季度', '三季度', '四季度', '半年', '全年'];
-        for (const i of list) {
+        // const data = [{ key: 'ys', value: '预算' }, { key: 'yszb', value: '占收入比例' }, { key: 'sj', value: '实际' }, { key: 'sjzb', value: '占收入比例' }, { key: 'yswcl', value: '预算完成率' }];
+        // const list = ['0', '1', '2', '一季度', '3', '4', '5', '二季度', '半年', '6', '7', '8', '三季度', '9', '10', '11', '四季度', '全年'];
+        const list1 = ['一季度', '二季度', '三季度', '四季度', '半年报', '全年报'];
+
+        console.log(toJS(this.condition));
+
+        // 过滤显示季度
+        const visibleList = [];
+        const range = this.condition.range as string[];
+
+        if (range.includes('一季度')) visibleList.push('0', '1', '2', '一季度');
+        if (range.includes('二季度')) visibleList.push('3', '4', '5', '二季度');
+        if (range.includes('半年报')) visibleList.push('半年报');
+        if (range.includes('三季度')) visibleList.push('6', '7', '8', '三季度');
+        if (range.includes('四季度')) visibleList.push('9', '10', '11', '四季度');
+        if (range.includes('全年报')) visibleList.push('全年报');
+
+        // 过滤显示表头
+        const dataTypes = this.condition.dataTypes as string[];
+        const data = [{ key: 'ys', value: '预算' }];
+        if (dataTypes.includes('预算占比')) data.push({ key: 'yszb', value: '占收入比例' });
+        if (dataTypes.includes('实际完成')) data.push({ key: 'sj', value: '实际' });
+        if (dataTypes.includes('实际占比')) data.push({ key: 'sjzb', value: '占收入比例' });
+        if (dataTypes.includes('预算完成率')) data.push({ key: 'yswcl', value: '预算完成率' });
+
+        for (const i of visibleList) {
             let children;
             if (list1.includes(i)) {
                 const jdi = list1.findIndex((item) => item === i);
-                children = data1.map((key) => ({
+                children = data.map((key) => ({
                     id: key.key,
                     title: key.value,
-                    dataIndex: `${key.key}_${jdi}`,
-                    key: `${key.key}_${jdi}`,
+                    dataIndex: `jd_${key.key}_${jdi}`,
+                    key: `jd_${key.key}_${jdi}`,
                 }));
             } else {
                 children = data.map((key) => ({
@@ -96,7 +117,6 @@ export default class extends Component {
     }
 
     public render() {
-        console.log(toJS(this.condition));
         return (
             <div>
                 <Section>
@@ -108,7 +128,7 @@ export default class extends Component {
                 </Section>
 
                 <TableSection>
-                    <Table pagination={false} scroll={{ x: 8500 }} rowKey="total" bordered size="small" dataSource={this.state.list} columns={this.columns} />
+                    <Table pagination={false} scroll={{ x: 1960 }} rowKey="total" bordered size="small" dataSource={this.state.list} columns={this.columns} />
                 </TableSection>
             </div>
         );
