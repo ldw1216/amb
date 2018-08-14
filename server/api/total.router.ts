@@ -36,19 +36,19 @@ router.get('/totalTable', async (ctx) => {
 });
 
 function structure(obj: any, i: number) {  // 计算返回
-    if (!obj['ys_' + i] && obj['ys_' + i] !== 0) obj['yszb_' + i] = '--';
+    if (!obj['ys_' + i]) obj['yszb_' + i] = undefined;
     else {
         obj['yszb_' + i] = '100.00%';
     }
-    if (!obj['sj_' + i] && obj['sj_' + i] !== 0) obj['sjzb_' + i] = '--';
+    if (!obj['sj_' + i]) obj['sjzb_' + i] = 0;
     else {
         obj['sjzb_' + i] = '100.00%';
     }
-    if ((!obj['ys_' + i] && obj['ys_' + i] !== 0) || (!obj['sj_' + i] && obj['sj_' + i] !== 0)) {
+    if (obj['ys_' + i] === 0) {
         obj['yswcl_' + i] = '--';
     } else {
         if (obj['ys_' + i] === 0 && obj['sj_' + i] === 0) {
-            obj['yswcl_' + i] = '100.00%';
+            obj['yswcl_' + i] = '--';
         } else if (obj['ys_' + i] === 0 && obj['sj_' + i] > 0) {
             obj['yswcl_' + i] = '100.00%';
         } else if (obj['ys_' + i] === 0 && obj['sj_' + i] < 0) {
@@ -61,8 +61,6 @@ function structure(obj: any, i: number) {  // 计算返回
             obj['yswcl_' + i] = (obj['ys_' + i] / obj['sj_' + i] * 100).toFixed(2) + '%';
         }
     }
-    if (!obj['ys_' + i] && obj['ys_' + i] !== 0) obj['ys_' + i] = '--';
-    if (!obj['sj_' + i] && obj['sj_' + i] !== 0) obj['sj_' + i] = '--';
 }
 
 // if (!obj['ys_' + i] && obj['ys_' + i] !== 0) obj['yszb_' + i] = '--';
