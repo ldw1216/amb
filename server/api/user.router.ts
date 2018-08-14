@@ -5,7 +5,7 @@ import { UserModel } from 'model/user.model';
 const router = new Router({ prefix: '/user' });
 
 router.get('/', async (ctx) => {
-    const condition = JSON.parse(ctx.query.condition) || {};
+    const condition = ctx.query.condition !== undefined ? JSON.parse(ctx.query.condition) || {} : {};
     if (condition.admin) {
         const groups = await GroupModel.find({ admin: condition.admin }, { _id: 1 });
         delete condition.admin;
