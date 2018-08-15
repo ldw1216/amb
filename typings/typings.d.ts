@@ -48,7 +48,10 @@ declare global {
 
         // 费用详细
         interface IExpenseTypeOption {
-            _id?: string, id?: string, name?: string, budgetType?: BudgetType
+            _id?: string,
+            id?: string,
+            name?: string,
+            budgetType?: BudgetType
         }
 
         // 预算子项目， 比如大数据收入，推荐收入，金立商务收入，服务器成本等
@@ -69,6 +72,7 @@ declare global {
             budgetType: BudgetType,
             subjectType: BudgetSubjectType,
             name: string
+            allowedDelete: boolean
         }
 
         // 预算
@@ -81,6 +85,7 @@ declare global {
             year: number; // 年份
             monthBudgets: IMonthBudget[] // 各月的预算
             remark?: string // 备注
+            sort?: number
         }
 
         // 预算汇总

@@ -16,13 +16,13 @@ import SubjectBudget from './SubjectBudget';
 
 const SubjectSubTitle = styled.div`
     text-align: left;
-    margin-left: 20px;
+    padding-left: 30px;
     i{
         position: absolute;
-        margin-left: -14px;
-        margin-top: 3px;
+        margin-left: -16px;
+        margin-top: 4px;
         visibility:hidden;
-        margin-right:5px;
+        margin-right: 5px;
     }
     &:hover {
        i{
@@ -39,9 +39,9 @@ const TypeSelector: React.SFC<SelectProps> = (props) => (
 );
 
 const allTitleMap = {
-    预算占比: ['预算占收入比', '占收入比'],
+    预算占比: ['预算占收入比', '预算占比'],
     实际完成: ['实际收入', '实际'],
-    实际占比: ['实际占收入比', '占收入比'],
+    实际占比: ['实际占收入比', '实际占比'],
     预算完成率: ['预算完成率', '预算完成率'],
 } as any;
 export default class BudgetTable {
@@ -158,9 +158,9 @@ export default class BudgetTable {
         const expenseRows = [] as any[]; // 费用数据
         const sumRowMap = {
             profit: { key: '毛利', subject: <SubjectSubTitle>毛利</SubjectSubTitle> } as any,
-            reward: { key: '奖金', subject: <SubjectSubTitle>奖金</SubjectSubTitle> } as any,
+            reward: { key: '奖金', subject: <SubjectSubTitle>奖金</SubjectSubTitle>, type: BudgetType.财务 } as any,
             pureProfit: { key: '利润', subject: <SubjectSubTitle>利润</SubjectSubTitle> } as any,
-            expense: { key: '费用汇总', subject: <SubjectTitle><span>费用</span></SubjectTitle>, type: undefined } as any,
+            expense: { key: '费用汇总', subject: <SubjectTitle><span>费用</span></SubjectTitle> } as any,
             income: {
                 key: '收入汇总',
                 subject: <SubjectTitle><span>收入</span>
@@ -171,7 +171,6 @@ export default class BudgetTable {
                 key: '成本汇总',
                 subject: <SubjectTitle><span>成本</span>
                     {this.canEdit && this.editableOption.addSubject ? <Icon onClick={() => this.addProject(BudgetSubjectType.成本)} type="plus" /> : ''}</SubjectTitle>,
-                type: undefined,
             } as any,
         } as any;
         ['income', 'cost', 'expense', 'profit', 'reward', 'pureProfit'].forEach((col) => {
@@ -189,18 +188,20 @@ export default class BudgetTable {
             budgetType: item.budgetType,
             subjectType: item.subjectType,
             name: item.name!,
+            allowedDelete: true,
         })).concat(this.expenseSubjects.map((item) => ({
             subjectId: item._id!,
             budgetType: item.budgetType!,
             subjectType: item.subjectType,
             name: item.name!,
+            allowedDelete: false,
         })));
         rowSubjects.forEach((rowSubject) => {
             const subject = this.budget.subjects.find((item) => item._id === rowSubject.subjectId)!;
             const row = {
                 key: rowSubject.subjectId,
                 subject: <SubjectSubTitle>
-                    {this.canEdit && this.editableOption.removeSubject ?
+                    {this.canEdit && rowSubject.allowedDelete && this.editableOption.removeSubject ?
                         <Popconfirm placement="topLeft" title="确认删除？" onConfirm={() => this.removeProject(subject)} okText="确认" cancelText="取消">
                             <Icon type="close" />
                         </Popconfirm> : ''}

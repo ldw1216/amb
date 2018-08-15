@@ -44,11 +44,6 @@ class EditModal extends Component<FormComponentProps & { subject: Subject, budge
                             </Select>,
                         )}
                     </FormItem>
-                    <FormItem label="排序" {...formItemLayout} >
-                        {getFieldDecorator('sort', { rules: [{ required: true, message: '此字段必填' }] })(
-                            <InputNumber />,
-                        )}
-                    </FormItem>
                 </Form>
             </Modal>
         );

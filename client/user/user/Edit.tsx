@@ -64,7 +64,7 @@ class Edit extends Component<FormComponentProps> {
                         )}
                     </FormItem>
                     <FormItem label="阿米巴组" {...formItemLayout} >
-                        {getFieldDecorator('groups', { rules: [{ required: true, message: '此字段必填' }] })(
+                        {getFieldDecorator('groups', { rules: [] })(
                             <Select mode="multiple" filterOption={(input, option) => option.props.children!.toString().includes(input)} placeholder="请选择阿米巴组">
                                 {store.groups.map((item) => <Option key={item._id} value={item._id}>{item.name}</Option>)}
                             </Select>,
