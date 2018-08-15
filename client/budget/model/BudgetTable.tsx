@@ -182,9 +182,9 @@ export default class BudgetTable {
                 type: undefined,
             } as any,
         } as any;
-
+        console.log(toJS(this.budget.quarterBudgets));
         ['income', 'cost', 'expense', 'profit', 'reward', 'pureProfit'].forEach((col) => {
-            this.budget.monthBudgets.forEach(({ index, budget, reality, realityRate, completeRate, budgetRate }) => {
+            this.budget.monthBudgets.concat(this.budget.quarterBudgets).forEach(({ index, budget, reality, realityRate, completeRate, budgetRate }) => {
                 sumRowMap[col][`预算_${index}月`] = (budget as any)[col] && (budget as any)[col].toFixed(2);
                 sumRowMap[col][`预算占收入比_${index}月`] = formatRate((budgetRate as any)[col]);
                 sumRowMap[col][`实际收入_${index}月`] = (reality as any)[col];
@@ -264,7 +264,7 @@ export default class BudgetTable {
                             </Popover></div>,
                         dataIndex: `subject`,
                         key: `subject`,
-                        width: 120,
+                        width: 180,
                     },
                 ],
             } as any,
@@ -274,48 +274,31 @@ export default class BudgetTable {
                 title: `类型`,
                 dataIndex: `type`,
                 key: `type`,
-                width: 80,
+                width: 100,
             });
         }
-        // const titleList = [0, 1, 2, '一季度', 3, 4, 5, '二季度', '半年报', 6, 7, 8, '三季度', 9, 10, 11, '四季度', '全年报'];
-        const visibleList = [];
+        const visibleList: Array<{ index: number, title: string }> = [];
         const range = this.condition.range as string[];
-        if (range.includes('一季度')) visibleList.push(0, 1, 2, '一季度');
-        if (range.includes('二季度')) visibleList.push(3, 4, 5, '二季度');
-        if (range.includes('半年报')) visibleList.push('半年报');
-        if (range.includes('三季度')) visibleList.push(6, 7, 8, '三季度');
-        if (range.includes('四季度')) visibleList.push(9, 10, 11, '四季度');
-        if (range.includes('全年报')) visibleList.push('全年报');
-        if (range.includes('上一年')) visibleList.push('上一年');
+        if (range.includes('一季度')) visibleList.push({ index: 0, title: '1月' }, { index: 1, title: '2月' }, { index: 2, title: '3月' }, { index: 100, title: '一季度' });
+        if (range.includes('二季度')) visibleList.push({ index: 3, title: '4月' }, { index: 4, title: '5月' }, { index: 5, title: '6月' }, { index: 200, title: '二季度' });
+        if (range.includes('半年报')) visibleList.push({ index: 500, title: '半年报' });
+        if (range.includes('三季度')) visibleList.push({ index: 6, title: '7月' }, { index: 7, title: '8月' }, { index: 8, title: '9月' }, { index: 300, title: '三季度' });
+        if (range.includes('四季度')) visibleList.push({ index: 9, title: '10月' }, { index: 10, title: '11月' }, { index: 11, title: '12月' }, { index: 400, title: '半年报' });
+        if (range.includes('全年报')) visibleList.push({ index: 600, title: '全年报' });
 
-        visibleList.forEach((k: string | number) => {
-            if (typeof k === 'number') {
-                const children = this.visibleTitles.map(([key, value]) => ({
-                    id: key,
-                    title: value,
-                    dataIndex: `${key}_${k}月`,
-                    key: `${key}_${k}月`,
-                }));
-                columns.push({
-                    title: `${k + 1}月`,
-                    dataIndex: `month${k}`,
-                    key: `month${k}`,
-                    children,
-                });
-            } else if (this.visibleRanges.includes(k as any)) {
-                const children2 = this.visibleTitles.map(([key, value]) => ({
-                    id: key,
-                    title: value,
-                    dataIndex: `${key}_${k}quarter`,
-                    key: `${key}_${k}quarter`,
-                }));
-                columns.push({
-                    title: k,
-                    dataIndex: `quarter${k}`,
-                    key: `quarter${k}`,
-                    children: children2,
-                });
-            }
+        visibleList.forEach(({ index, title }) => {
+            const children = this.visibleTitles.map(([key, value]) => ({
+                id: key,
+                title: value,
+                dataIndex: `${key}_${index}月`,
+                key: `${key}_${index}`,
+            }));
+            columns.push({
+                title,
+                dataIndex: `month${index}`,
+                key: `month${index}`,
+                children,
+            });
         });
         return columns;
     }
