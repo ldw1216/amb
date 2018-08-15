@@ -7,7 +7,7 @@
     "dev": "nodemon server/index.ts & node client/dev.js",
     "server": "nodemon server/index.ts",
     "client": "node client/dev.js",
-    "start": "node dist/server/index.js",
+    "start": "NODE_ENV=production node dist/server/index.js",
     "build-server": "tsc -p tsconfig.server.json --pretty",
     "build": "del dist && tsc -p tsconfig.server.json --pretty && parcel build client/index.html -d dist/client",
     "debug": "nodemon --inspect-brk server/index.ts"
