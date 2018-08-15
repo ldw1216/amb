@@ -10,7 +10,7 @@ router.get('/totalTable', async (ctx) => {
         { $project: { monthBudgets: 1 } },
         { $unwind: '$monthBudgets' },
     ]);
-    console.log(list);
+
     const data = [];
     let SubjectIds = await SubjectModel.find({ budgetType: '财务' }, { _id: 1 }); // 财务ID
     SubjectIds = SubjectIds.map((item) => item._id.toJSON());

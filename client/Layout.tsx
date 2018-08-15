@@ -60,7 +60,7 @@ class MyLayout extends Component<RouteComponentProps<{}>, {}> {
                             style={{ lineHeight: '64px' }}
                         >
                             <Menu.Item key="/budget/totalTable"><Link to="/budget/totalTable">预算</Link></Menu.Item>
-                            <Menu.Item key="/user/sector"><Link to="/user/sector">系统配置</Link></Menu.Item>
+                            {rootStore.user.role === 'admin' ? <Menu.Item key="/user/sector"><Link to="/user/sector">系统配置</Link></Menu.Item> : ''}
                         </Menu>
                     </div>
 
