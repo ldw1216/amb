@@ -21,7 +21,7 @@ export default class extends Component<RouteComponentProps<{}>> {
         const data = await userStore.login(this.data.account, this.data.password);
         if (data.msg === '登录成功！') {
             await userStore.getMe();
-            return this.props.history.push('/budget/totalTable');
+            return this.props.history.push('/budget/submit');
         }
         message.error(<span style={{ color: 'red' }}>{data.msg || '账号密码错误！'}</span>);
     }

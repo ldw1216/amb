@@ -10,7 +10,16 @@ router.get('/totalTable', async (ctx) => {
         { $project: { monthBudgets: 1 } },
         { $unwind: '$monthBudgets' },
     ]);
-    console.log(list);
+    // 上一年
+    // const prevlist = await BudgetModel.aggregate([
+    //     { $match: { year: year - 1 } },
+    //     { $project: { quarterBudgets: 1 } },
+    //     { $unwind: '$quarterBudgets' },
+    //     { $match: { 'quarterBudgets.index': 600 } },
+    // ]);
+
+    // console.log(prevlist);
+    // console.log(list);
     const data = [];
     let SubjectIds = await SubjectModel.find({ budgetType: '财务' }, { _id: 1 }); // 财务ID
     SubjectIds = SubjectIds.map((item) => item._id.toJSON());
@@ -172,7 +181,7 @@ function quarterIncome(list: any) {
         // 全年
         obj.jd_ys_5 = obj.jd_ys_4 + (obj.jd_ys_2 || 0) + (obj.jd_ys_3 || 0);
         obj.jd_sj_5 = obj.jd_sj_4 + (obj.jd_sj_2 || 0) + (obj.jd_sj_3 || 0);
-
+        obj.jd_ys_6 = 100;
         for (const k of Object.keys(obj)) {
             const ks = k.split('_');
             const n = +ks[2]; // 季度， 0、1、2、3

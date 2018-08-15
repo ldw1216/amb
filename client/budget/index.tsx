@@ -23,14 +23,14 @@ class Index extends Component {
         return (
             <Root>
                 <Switch>
-                    <Route exact path="/budget/config" component={importedComponent(() => import('./config'))} />
+                    {rootStore.user.role === 'admin' ? <Route exact path="/budget/config" component={importedComponent(() => import('./config'))} /> : ''}
                     <Route exact path="/budget/submit" component={importedComponent(() => import('./manage/index'))} />
-                    <Route exact path="/budget/all" component={importedComponent(() => import('./manage/all'))} />
+                    {rootStore.user.role === 'admin' ? <Route exact path="/budget/all" component={importedComponent(() => import('./manage/all'))} /> : ''}
                     <Route exact path="/budget/edit/:groupId/approval" component={importedComponent(() => import('./manage/edit'))} />
                     <Route exact path="/budget/edit/:groupId/reality" component={importedComponent(() => import('./manage/edit'))} />
                     <Route exact path="/budget/edit/:groupId/type" component={importedComponent(() => import('./manage/edit'))} />
                     <Route exact path="/budget/edit/:groupId" component={importedComponent(() => import('./manage/edit'))} />
-                    <Route exact path="/budget/totalTable" component={importedComponent(() => import('./totalTable'))} />
+                    {rootStore.user.role === 'admin' ? <Route exact path="/budget/totalTable" component={importedComponent(() => import('./totalTable'))} /> : ''}
                 </Switch>
             </Root>
         );
@@ -52,9 +52,9 @@ export class BudgetMenu extends Component<any, {}> {
                 defaultOpenKeys={[pathname.replace(/\/[^/]+$/, '')]}
             >
                 {showTotalTable ? <Menu.Item key="/budget/totalTable"><Link to="/budget/totalTable"><Icon type="pie-chart" /> <span>预算总表</span></Link></Menu.Item> : ''}
-                <Menu.Item key="/budget/config"><Link to="/budget/config"><Icon type="pie-chart" /> <span>预算配置</span></Link></Menu.Item>
-                <Menu.Item key="/budget/submit"><Link to="/budget/submit"><Icon type="pie-chart" /> <span>预算提报</span></Link></Menu.Item>
-                <Menu.Item key="/budget/all"><Link to="/budget/all"><Icon type="pie-chart" /> <span>预算审核</span></Link></Menu.Item>
+                {showTotalTable ? <Menu.Item key="/budget/config"><Link to="/budget/config"><Icon type="pie-chart" /> <span>预算配置</span></Link></Menu.Item> : ''}
+                <Menu.Item key="/budget/submit"><Link to="/budget/submit"><Icon type="pie-chart" /> <span>预算管理</span></Link></Menu.Item>
+                {showTotalTable ? <Menu.Item key="/budget/all"><Link to="/budget/all"><Icon type="pie-chart" /> <span>预算审核</span></Link></Menu.Item> : ''}
             </Menu>
         );
     }

@@ -3,7 +3,9 @@ import excellentexport from 'components/excellentexport';
 import { SearchBar, ToolBar } from 'components/SearchBar';
 import Section, { TableSection } from 'components/Section';
 import { ApprovalState } from 'config/config';
+import { toJS } from 'mobx';
 import { observer } from 'mobx-react';
+
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import AdvancedSearch from '../components/AdvancedSearch';
@@ -15,7 +17,7 @@ export default class extends Component {
     private pageState = new ListState();
     private exportExcel = () => {
         const table = document.getElementsByTagName('table')[0];
-        excellentexport.excel(table, '工作簿1', '阿米巴');
+        excellentexport.excel(table, '工作簿1', rootStore.user.name + '-阿米巴');
     }
     public componentDidMount() {
         this.pageState.fetchCurrentUserBudgetTables({});
@@ -23,7 +25,7 @@ export default class extends Component {
 
     public render() {
         const { budgetTables, condition } = this.pageState;
-
+        // console.log(toJS(rootStore))
         return (
             <div>
                 <Section>
