@@ -1,4 +1,4 @@
-import { action, observable } from 'mobx';
+import { action, observable, reaction } from 'mobx';
 import BudgetTable from '../model/BudgetTable';
 import Condition from '../model/Condition';
 
@@ -10,7 +10,6 @@ export class ListState {
     @observable public budgetTables: BudgetTable[] = [];
     @observable public advancedSearchDisplay = false; // 是否显示高级搜索
     constructor(public condition = new Condition()) {
-        //
     }
     @action.bound public showAdvancedSearch() {
         this.advancedSearchDisplay = true;

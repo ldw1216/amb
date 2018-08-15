@@ -45,7 +45,6 @@ const allTitleMap = {
     预算完成率: ['预算完成率', '预算完成率'],
 } as any;
 export default class BudgetTable {
-    // private allTitles = [['预算', '预算'], ['预算占收入比', '占收入比'], ['实际收入', '实际收入'], ['实际占收入比', '占收入比'], ['预算完成率', '预算完成率']];
     @observable public visibleType = true;
     @observable public budget: Budget;
     @observable public editableOption: amb.ITableEditableOptiont;
@@ -54,9 +53,6 @@ export default class BudgetTable {
         this.budget = budget;
         this.editableOption = editableOption || {};
         this.condition = condition;
-        reaction(() => this.condition.year, (year) => {
-            console.log(year);
-        });
     }
     @computed get canEdit() {
         return this.approvalState < ApprovalState.已通过审核 && this.budget.groupIsAvailable;
