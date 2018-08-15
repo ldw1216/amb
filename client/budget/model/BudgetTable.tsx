@@ -166,7 +166,7 @@ export default class BudgetTable {
 
         //     // [incomeAmount].concat(incomeRows, costAmount, costRows, profitRow, expenseAmount, rewardRow, expenseRows, pureProfitRow);
         // ]
-
+        console.log(toJS(this.budget.quarterBudgets));
         const sumRowMap = {
             profit: {
                 key: '毛利',
@@ -202,7 +202,6 @@ export default class BudgetTable {
         const incomeRows = [] as any[]; // 收入数据
         const costRows = [] as any[]; // 成本数据
         const expenseRows = [] as any[]; // 费用数据
-
         [['incomeAmount', 'income'], ['costAmount', 'cost'], ['expenseAmount', 'expense'], ['profitRow', 'profit'], ['rewardRow', 'reward'], ['pureProfitRow', 'pureProfit']].forEach(([row, col]) => {
             this.budget.monthBudgets.forEach(({ index, budget, reality, realityRate, completeRate, budgetRate }) => {
                 sumRowMap[col][`预算_${index}月`] = (budget as any)[col];
@@ -243,8 +242,6 @@ export default class BudgetTable {
             if (subject.subjectType === BudgetSubjectType.成本) costRows.push(row);
             if (subject.subjectType === BudgetSubjectType.费用) expenseRows.push(row);
         });
-
-        console.log(toJS(this.budget.quarters[2]));
 
         // 汇总数据
         const dataSource = [sumRowMap.income].concat(incomeRows, sumRowMap.cost, costRows, sumRowMap.profit, sumRowMap.expense, sumRowMap.reward, expenseRows, sumRowMap.pureProfit);
