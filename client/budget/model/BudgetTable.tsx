@@ -182,7 +182,6 @@ export default class BudgetTable {
                 type: undefined,
             } as any,
         } as any;
-        console.log(toJS(this.budget.quarterBudgets));
         ['income', 'cost', 'expense', 'profit', 'reward', 'pureProfit'].forEach((col) => {
             this.budget.monthBudgets.concat(this.budget.quarterBudgets).forEach(({ index, budget, reality, realityRate, completeRate, budgetRate }) => {
                 sumRowMap[col][`预算_${index}月`] = (budget as any)[col] && (budget as any)[col].toFixed(2);
@@ -221,7 +220,7 @@ export default class BudgetTable {
             } else {
                 row.type = rowSubject.budgetType;
             }
-            this.budget.monthBudgets.forEach((monthBudget) => {
+            this.budget.monthBudgets.concat(this.budget.quarterBudgets).forEach((monthBudget) => {
                 const data = this.getBudgetValue(monthBudget, rowSubject);
                 row[`预算_${monthBudget.index}月`] = data.budget;
                 row[`预算占收入比_${monthBudget.index}月`] = formatRate(data.budgetRate);
