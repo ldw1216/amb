@@ -25,7 +25,7 @@ export default class extends Component {
 
     public render() {
         const { budgetTables, condition } = this.pageState;
-        console.log(toJS(rootStore))
+        // console.log(toJS(rootStore))
         return (
             <div>
                 <Section>
