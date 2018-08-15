@@ -37,6 +37,7 @@ const schema = new Schema({
     period: { type: SchemaTypes.ObjectId, ref: 'Period', required: true, cn: '预算周期' },
     year: { type: Number, required: true, cn: '年份' },
     monthBudgets: { type: [MonthBudget], required: true, default: [], cn: '各月的预算数据' },
+    quarterBudgets: { type: [MonthBudget], required: true, default: [], cn: '每个季度及半年、全年的预算数据' },
     removed: { type: Boolean, default: false },
     sort: { type: Number, default: 0, cn: '排序' },
     remark: String,

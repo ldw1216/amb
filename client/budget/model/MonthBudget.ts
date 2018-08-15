@@ -30,14 +30,15 @@ export default class MonthBudget implements amb.IMonthBudget {
         const reward = profit < 0 ? 0 : profit * this.rewardRate / 100;
         const expense = this.subjectBudgets.filter(({ subjectType }) => subjectType === BudgetSubjectType.费用)
             .reduce((x, y) => x + (y.budget || 0), 0) + reward;
-        const purProfit = profit - reward - expense;
+        const pureProfit = profit - reward - expense;
+        console.log(pureProfit);
         return {
             income,
             cost,
             expense,
             profit,
             reward,
-            purProfit,
+            pureProfit,
         };
     }
 
@@ -49,7 +50,7 @@ export default class MonthBudget implements amb.IMonthBudget {
             expense: this.budget.income ? this.budget.expense / this.budget.income : undefined,
             profit: this.budget.income ? this.budget.profit / this.budget.income : undefined,
             reward: this.budget.income ? this.budget.reward / this.budget.income : undefined,
-            purProfit: this.budget.income ? this.budget.purProfit / this.budget.income : undefined,
+            pureProfit: this.budget.income ? this.budget.pureProfit / this.budget.income : undefined,
         };
     }
 
@@ -63,14 +64,14 @@ export default class MonthBudget implements amb.IMonthBudget {
         const reward = profit < 0 ? 0 : profit * this.rewardRate / 100;
         const expense = this.subjectBudgets.filter(({ subjectType }) => subjectType === BudgetSubjectType.费用)
             .reduce((x, y) => x + (y.reality || 0), 0) + reward;
-        const purProfit = profit - reward - expense;
+        const pureProfit = profit - reward - expense;
         return {
             income,
             cost,
             expense,
             profit,
             reward,
-            purProfit,
+            pureProfit,
         };
     }
 
@@ -82,7 +83,7 @@ export default class MonthBudget implements amb.IMonthBudget {
             expense: this.reality.income ? this.reality.expense / this.reality.income : undefined,
             profit: this.reality.income ? this.reality.profit / this.reality.income : undefined,
             reward: this.reality.income ? this.reality.reward / this.reality.income : undefined,
-            purProfit: this.reality.income ? this.reality.purProfit / this.reality.income : undefined,
+            purProfit: this.reality.income ? this.reality.pureProfit / this.reality.income : undefined,
         };
     }
 
@@ -94,10 +95,10 @@ export default class MonthBudget implements amb.IMonthBudget {
             if (this.budget.profit === 0 && this.reality.profit >= 0) return 1;
             return -1;
         })();
-        const purProfit = (() => {
-            if (this.budget.purProfit > 0) return this.reality.purProfit / this.budget.purProfit;
-            if (this.budget.purProfit < 0) return 2 - this.reality.purProfit / this.budget.purProfit;
-            if (this.budget.purProfit === 0 && this.reality.purProfit >= 0) return 1;
+        const pureProfit = (() => {
+            if (this.budget.pureProfit > 0) return this.reality.pureProfit / this.budget.pureProfit;
+            if (this.budget.pureProfit < 0) return 2 - this.reality.pureProfit / this.budget.pureProfit;
+            if (this.budget.pureProfit === 0 && this.reality.pureProfit >= 0) return 1;
             return -1;
         })();
         return {
@@ -106,7 +107,7 @@ export default class MonthBudget implements amb.IMonthBudget {
             expense: this.budget.expense ? this.reality.expense / this.budget.expense : undefined,
             profit,
             reward: this.budget.reward ? this.reality.reward / this.budget.reward : undefined,
-            purProfit,
+            pureProfit,
         };
     }
 

@@ -66,7 +66,7 @@ export default class Budget implements amb.IBudget {
     @action.bound public async save() {
         const group = rootStore.groupStore.list.find((item) => item._id === this.group)!;
         const period = group.period!._id;
-        return axios.post('/budget', Object.assign({}, this, { period }));
+        return axios.post('/budget', Object.assign({}, this, { period, quarterBudgets: this.quarterBudgets }));
     }
 
     // 修改
@@ -77,10 +77,10 @@ export default class Budget implements amb.IBudget {
 
     // 修改实际
     @action.bound public async putReal() {
-        return axios.post('/budget', this);
+        return axios.post('/budget', Object.assign({}, this, { quarterBudgets: this.quarterBudgets }));
     }
 
-    @computed get quarters() {
+    @computed get quarterBudgets() {
         const titles = [
             { name: '第一季度', index: 100, months: [0, 1, 2] },
             { name: '第二季度', index: 200, months: [3, 4, 5] },
