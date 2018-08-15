@@ -63,6 +63,14 @@ declare global {
             sort?: number; // 排序
         }
 
+        // 预算表格每行的subject
+        interface IRowSubject {
+            subjectId: string,
+            budgetType: BudgetType,
+            subjectType: BudgetSubjectType,
+            name: string
+        }
+
         // 预算
         interface IBudget {
             _id?: string

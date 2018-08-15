@@ -119,11 +119,11 @@ export default class BudgetTable {
     }
 
     // 获取具体预算
-    private getBudgetValue(monthBudget: MonthBudget, subject: amb.IBudgetSubject) {
+    private getBudgetValue(monthBudget: MonthBudget, subject: amb.IRowSubject) {
         const subjectBudget = monthBudget.getSubjectBudget(subject);
         if (subjectBudget) return subjectBudget;
         return new SubjectBudget({
-            subjectId: subject._id!,
+            subjectId: subject.subjectId!,
             subjectType: subject.subjectType,
             subjectName: subject.name!,
             budget: undefined,
@@ -132,7 +132,7 @@ export default class BudgetTable {
     }
 
     // 设置预算值
-    @action.bound private setBudgetValue(monthIndex: number, subject: amb.IBudgetSubject, value: { budget?: number, reality?: number }) {
+    @action.bound private setBudgetValue(monthIndex: number, subject: amb.IRowSubject, value: { budget?: number, reality?: number }) {
         let monthBuget = this.budget.monthBudgets.find((item) => item.index === monthIndex);
 
         if (!monthBuget) {
@@ -143,10 +143,10 @@ export default class BudgetTable {
             }, this.budget.fullGroup);
             this.budget.monthBudgets.push(monthBuget);
         }
-        let subjectBudget = monthBuget.subjectBudgets.find(({ subjectId }) => subject._id === subjectId);
+        let subjectBudget = monthBuget.subjectBudgets.find(({ subjectId }) => subject.subjectId === subjectId);
         if (!subjectBudget) {
             subjectBudget = new SubjectBudget({
-                subjectId: subject._id!,
+                subjectId: subject.subjectId!,
                 subjectType: subject.subjectType!,
                 subjectName: subject.name!, // 子类型id
             }, monthBuget);
@@ -161,25 +161,14 @@ export default class BudgetTable {
     }
 
     @computed get dataSource() {
-
-        // const subjects = [
-
-        //     // [incomeAmount].concat(incomeRows, costAmount, costRows, profitRow, expenseAmount, rewardRow, expenseRows, pureProfitRow);
-        // ]
-        console.log(toJS(this.budget.quarterBudgets));
+        const incomeRows = [] as any[]; // 收入数据
+        const costRows = [] as any[]; // 成本数据
+        const expenseRows = [] as any[]; // 费用数据
         const sumRowMap = {
-            profit: {
-                key: '毛利',
-                subject: <SubjectSubTitle>毛利</SubjectSubTitle>,
-            } as any,
-            reward: {
-                key: '奖金',
-                subject: <SubjectSubTitle>奖金</SubjectSubTitle>,
-            } as any,
-            pureProfit: {
-                key: '利润',
-                subject: <SubjectSubTitle>利润</SubjectSubTitle>,
-            } as any,
+            profit: { key: '毛利', subject: <SubjectSubTitle>毛利</SubjectSubTitle> } as any,
+            reward: { key: '奖金', subject: <SubjectSubTitle>奖金</SubjectSubTitle> } as any,
+            pureProfit: { key: '利润', subject: <SubjectSubTitle>利润</SubjectSubTitle> } as any,
+            expense: { key: '费用汇总', subject: <SubjectTitle><span>费用</span></SubjectTitle>, type: undefined } as any,
             income: {
                 key: '收入汇总',
                 subject: <SubjectTitle><span>收入</span>
@@ -192,41 +181,48 @@ export default class BudgetTable {
                     {this.canEdit && this.editableOption.addSubject ? <Icon onClick={() => this.addProject(BudgetSubjectType.成本)} type="plus" /> : ''}</SubjectTitle>,
                 type: undefined,
             } as any,
-            expense: {
-                key: '费用汇总',
-                subject: <SubjectTitle><span>费用</span></SubjectTitle>,
-                type: undefined,
-            } as any,
         } as any;
 
-        const incomeRows = [] as any[]; // 收入数据
-        const costRows = [] as any[]; // 成本数据
-        const expenseRows = [] as any[]; // 费用数据
-        [['incomeAmount', 'income'], ['costAmount', 'cost'], ['expenseAmount', 'expense'], ['profitRow', 'profit'], ['rewardRow', 'reward'], ['pureProfitRow', 'pureProfit']].forEach(([row, col]) => {
+        ['income', 'cost', 'expense', 'profit', 'reward', 'pureProfit'].forEach((col) => {
             this.budget.monthBudgets.forEach(({ index, budget, reality, realityRate, completeRate, budgetRate }) => {
-                sumRowMap[col][`预算_${index}月`] = (budget as any)[col];
+                sumRowMap[col][`预算_${index}月`] = (budget as any)[col] && (budget as any)[col].toFixed(2);
                 sumRowMap[col][`预算占收入比_${index}月`] = formatRate((budgetRate as any)[col]);
                 sumRowMap[col][`实际收入_${index}月`] = (reality as any)[col];
                 sumRowMap[col][`实际占收入比_${index}月`] = formatRate((realityRate as any)[col]);
                 sumRowMap[col][`预算完成率_${index}月`] = formatRate((completeRate as any)[col]);
             });
         });
-
         // 每个项目一行，添加数据，修改数据 填加完数据以后跟据提报周期确定哪几个季度是可编辑的
-        this.budget.subjects.concat(this.expenseSubjects as any).forEach((subject) => {
+        const rowSubjects: amb.IRowSubject[] = this.budget.subjects.map((item) => ({
+            subjectId: item._id!,
+            budgetType: item.budgetType,
+            subjectType: item.subjectType,
+            name: item.name!,
+        })).concat(this.expenseSubjects.map((item) => ({
+            subjectId: item._id!,
+            budgetType: item.budgetType!,
+            subjectType: item.subjectType,
+            name: item.name!,
+        })));
+        rowSubjects.forEach((rowSubject) => {
+            const subject = this.budget.subjects.find((item) => item._id === rowSubject.subjectId)!;
             const row = {
-                key: subject._id,
+                key: rowSubject.subjectId,
                 subject: <SubjectSubTitle>
                     {this.canEdit && this.editableOption.removeSubject ?
                         <Popconfirm placement="topLeft" title="确认删除？" onConfirm={() => this.removeProject(subject)} okText="确认" cancelText="取消">
                             <Icon type="close" />
                         </Popconfirm> : ''}
-                    {subject && subject.name}</SubjectSubTitle >,
-                type: this.editableOption.budgetType ? <TypeSelector onChange={(e) => subject.save && subject.save({ budgetType: e as any })} value={subject.budgetType} /> : subject.budgetType,
+                    {rowSubject && rowSubject.name}</SubjectSubTitle >,
+                // type: ,
             } as any;
-
+            if (subject) {
+                row.type = this.editableOption.budgetType ? <TypeSelector onChange={(e) => subject.save && subject.save({ budgetType: e as any })} value={subject.budgetType} /> : subject.budgetType;
+            } else {
+                row.type = rowSubject.budgetType;
+            }
             this.budget.monthBudgets.forEach((monthBudget) => {
-                const data = this.getBudgetValue(monthBudget, subject);
+                const data = this.getBudgetValue(monthBudget, rowSubject);
                 row[`预算_${monthBudget.index}月`] = data.budget;
                 row[`预算占收入比_${monthBudget.index}月`] = formatRate(data.budgetRate);
                 row[`实际收入_${monthBudget.index}月`] = data.reality;
@@ -235,12 +231,12 @@ export default class BudgetTable {
             });
             this.editableMonths.forEach((i) => {
                 const monthBudget = this.budget.monthBudgets.find((item) => item.index === i) || new MonthBudget({ index: i, name: `${i + 1}月份`, subjectBudgets: [] }, this.budget.fullGroup);
-                row[`预算_${i}月`] = this.editableOption.budget ? <InputNumber value={this.getBudgetValue(monthBudget, subject).budget} onChange={(value) => this.setBudgetValue(i, subject, { budget: +(value || 0) })} /> : this.getBudgetValue(monthBudget, subject).budget;
-                row[`实际收入_${i}月`] = this.editableOption.reality ? <InputNumber value={this.getBudgetValue(monthBudget, subject).reality} onChange={(value) => this.setBudgetValue(i, subject, { reality: +(value || 0) })} /> : this.getBudgetValue(monthBudget, subject).reality;
+                row[`预算_${i}月`] = this.editableOption.budget ? <InputNumber value={this.getBudgetValue(monthBudget, rowSubject).budget} onChange={(value) => this.setBudgetValue(i, rowSubject, { budget: +(value || 0) })} /> : this.getBudgetValue(monthBudget, rowSubject).budget;
+                row[`实际收入_${i}月`] = this.editableOption.reality ? <InputNumber value={this.getBudgetValue(monthBudget, rowSubject).reality} onChange={(value) => this.setBudgetValue(i, rowSubject, { reality: +(value || 0) })} /> : this.getBudgetValue(monthBudget, rowSubject).reality;
             });
-            if (subject.subjectType === BudgetSubjectType.收入) incomeRows.push(row);
-            if (subject.subjectType === BudgetSubjectType.成本) costRows.push(row);
-            if (subject.subjectType === BudgetSubjectType.费用) expenseRows.push(row);
+            if (rowSubject.subjectType === BudgetSubjectType.收入) incomeRows.push(row);
+            if (rowSubject.subjectType === BudgetSubjectType.成本) costRows.push(row);
+            if (rowSubject.subjectType === BudgetSubjectType.费用) expenseRows.push(row);
         });
 
         // 汇总数据

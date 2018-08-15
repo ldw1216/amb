@@ -15,8 +15,8 @@ export default class MonthBudget implements amb.IMonthBudget {
     private budget_?: amb.IMonthBudgetColumn;
     private reality_?: amb.IMonthBudgetColumn;
     // 获取某个项目的预算
-    public getSubjectBudget(subject: amb.IBudgetSubject) {
-        const subjectBudget = this.subjectBudgets.find(({ subjectId }) => subject._id === subjectId);
+    public getSubjectBudget(subject: amb.IBudgetSubject & { subjectId: string }) {
+        const subjectBudget = this.subjectBudgets.find(({ subjectId }) => (subject._id || subject.subjectId) === subjectId);
         if (subjectBudget) return subjectBudget;
     }
 
@@ -31,7 +31,6 @@ export default class MonthBudget implements amb.IMonthBudget {
         const expense = this.subjectBudgets.filter(({ subjectType }) => subjectType === BudgetSubjectType.费用)
             .reduce((x, y) => x + (y.budget || 0), 0) + reward;
         const pureProfit = profit - reward - expense;
-        console.log(pureProfit);
         return {
             income,
             cost,
