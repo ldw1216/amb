@@ -1,15 +1,17 @@
-import { Affix, Button, Checkbox, Input, message, Table } from 'antd';
+import { Button, Checkbox, Input, message, Table } from 'antd';
 import { SearchBar } from 'components/SearchBar';
 import Section, { TableSection } from 'components/Section';
 import { ApprovalState } from 'config/config';
-import { action, autorun, computed, observable, runInAction, toJS } from 'mobx';
+import { observable, runInAction, toJS } from 'mobx';
 import { observer } from 'mobx-react';
 import React, { Component } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
+import AdvancedSearch from '../components/AdvancedSearch';
 import BudgetRemark from '../components/BudgetRemark';
 import Budget from '../model/Budget';
 import BudgetTable from '../model/BudgetTable';
 import Condition from '../model/Condition';
+import { ListState } from './ListState';
 
 @observer
 export default class extends Component<RouteComponentProps<{ groupId: string }>> {
@@ -20,11 +22,24 @@ export default class extends Component<RouteComponentProps<{ groupId: string }>>
     @observable private isReality = false;
     @observable private isBudgetType = false;
     @observable private opt: amb.ITableEditableOptiont = {};
-    public componentDidMount() {
+    @observable private pageState = new ListState();
+    constructor(props: any, context: any) {
+        super(props, context);
+        this.condition.dataTypes = ['预算占比'];
+    }
+    public async componentDidMount() {
         const groupId = this.props.match.params.groupId;
         this.isApproval = this.props.match.path.endsWith('approval');
         this.isReality = this.props.match.path.endsWith('reality');
         this.isBudgetType = this.props.match.path.endsWith('type');
+        const isMe = rootStore.user.groups.some((item) => (item as any)._id === groupId); // 是否是本用户自己的预算
+
+        // 如果没有预算数据则初始化预算数据
+        if (rootStore.budgetStore.list.length === 0) {
+            isMe ? await rootStore.budgetStore.fetchCurrentUserBudgetList(this.condition.year) :
+                await rootStore.budgetStore.fetchAllBudgetList(this.condition.year);
+        }
+
         if (this.isReality) {
             this.opt = {
                 reality: true,
@@ -33,9 +48,9 @@ export default class extends Component<RouteComponentProps<{ groupId: string }>>
             this.opt = {
                 budgetType: true,
             };
-        } else if (this.isApproval) {
+        } else if (this.isApproval) { // 审核预算
             this.opt = {};
-        } else {
+        } else { // 提报预算 编辑预算
             this.opt = {
                 budgetType: true,
                 budget: true,
@@ -43,7 +58,7 @@ export default class extends Component<RouteComponentProps<{ groupId: string }>>
                 removeSubject: true,
             };
         }
-        rootStore.budgetStore.getCurrentUserBudget(groupId, this.condition.year).then((res) => {
+        rootStore.budgetStore.getBudget(groupId, this.condition.year).then((res) => {
             if (!res) return;
             const budgetTable = new BudgetTable(res, this.condition, this.opt);
             runInAction(() => {
@@ -65,12 +80,14 @@ export default class extends Component<RouteComponentProps<{ groupId: string }>>
         this.reset();
         message.info(approvalState === ApprovalState.审核拒绝 ? '审核拒绝' : '审核通过');
     }
-    // 审核
+    // 修改实际
     private putReal = async () => {
         if (!this.budget) return;
         await this.budget.putReal();
         this.reset();
     }
+
+    // 重置
     private reset = async () => {
         await rootStore.budgetStore.fetchCurrentUserBudgetList(this.condition.year);
         history.back();
@@ -101,15 +118,16 @@ export default class extends Component<RouteComponentProps<{ groupId: string }>>
             <div>
                 <Section>
                     <SearchBar style={{ marginBottom: 0 }}>
-                        <Checkbox checked={this.condition.budgetRatioVisible} onChange={(e) => this.condition.budgetRatioVisible = e.target.checked} >显示预算占比</Checkbox>
+                        <Button onClick={this.pageState.showAdvancedSearch} type="primary">自定义指标</Button>
                     </SearchBar>
+                    {this.pageState.advancedSearchDisplay && <AdvancedSearch condition={this.condition} />}
                 </Section>
                 <TableSection>
                     {this.budgetTable &&
                         <Table
                             rowClassName={(record) => record.key === '毛利' ? 'profitRow' : ''}
                             pagination={false}
-                            scroll={{ x: 'auto' }}
+                            scroll={{ x: this.budgetTable.columns.length > 1 ? this.budgetTable.columns.length * this.budgetTable.columns[1].children.length * 150 + 200 : 200 }}
                             bordered size="small"
                             dataSource={this.budgetTable.dataSource}
                             columns={this.budgetTable.columns} />

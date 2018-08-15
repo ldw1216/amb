@@ -3,13 +3,11 @@ import { action, computed, observable, runInAction, toJS } from 'mobx';
 import Budget from './Budget';
 
 export class BudgetList {
-    @observable public currentUserBudgetList: Budget[] = []; // 当前用户的预算列表
-    @observable public allBudgetList: Budget[] = []; // 所有组的预算列表
+    @observable public list: Budget[] = [];
 
     // 获取当前用的某个阿米巴组的预算
-    @action.bound public async getCurrentUserBudget(groupId: string, year: number) {
-        if (this.currentUserBudgetList.length === 0) await this.fetchCurrentUserBudgetList(year);
-        return this.currentUserBudgetList.find((item) => item.group === groupId);
+    @action.bound public async getBudget(groupId: string, year: number) {
+        return this.list.find((item) => item.group === groupId);
     }
 
     // 获取所有组的预算列表
@@ -22,7 +20,7 @@ export class BudgetList {
             const group = rootStore.groupStore.list.find((item) => item._id === budget.group)!;
             return new Budget(budget, group);
         });
-        this.allBudgetList = budgetList;
+        this.list = budgetList;
         return budgetList;
     }
 
@@ -48,7 +46,7 @@ export class BudgetList {
                 remark: budget && budget.remark,
             }, rootStore.groupStore.list.find((item) => item._id === groupId)!);
         });
-        this.currentUserBudgetList = currentUserBudgetList;
+        this.list = currentUserBudgetList;
         return currentUserBudgetList;
     }
 }

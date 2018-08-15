@@ -40,7 +40,7 @@ const TypeSelector: React.SFC<SelectProps> = (props) => (
 
 const allTitleMap = {
     预算占比: ['预算占收入比', '占收入比'],
-    实际完成: ['实际收入', '实际收入'],
+    实际完成: ['实际收入', '实际'],
     实际占比: ['实际占收入比', '占收入比'],
     预算完成率: ['预算完成率', '预算完成率'],
 } as any;
@@ -90,11 +90,7 @@ export default class BudgetTable {
         return this.condition.range;
     }
     @computed get visibleTitles() {
-        if (this.condition.budgetRatioVisible) {
-            return [['预算', '预算'], ...this.condition.dataTypes.map((d: string) => allTitleMap[d])];
-        } else {
-            return [['预算', '预算'], ...this.condition.dataTypes.map((d: string) => allTitleMap[d])].filter((i) => i[0] !== '预算占收入比' && i[0] !== '实际占收入比');
-        }
+        return [['预算', '预算']].concat(Object.entries(allTitleMap).filter(([key, value]) => this.condition.dataTypes.includes(key)).map(([key, value]) => value) as any);
     }
     @computed get expenseSubjects() {
         return rootStore.expenseTypeStore.getExpenseSubject(this.budget.year);
