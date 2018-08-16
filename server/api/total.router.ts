@@ -39,7 +39,6 @@ router.get('/totalTable', async (ctx) => {
         ambList.push(calculate(k, data, SubjectIds));
     }
     quarterIncome(ambList);
-    // console.log(ambList)
     ctx.body = ambList;
 });
 
@@ -95,7 +94,7 @@ function calculate(key: string, data: any, SubjectIds: any) {
             const sj = ambData.filter((m: any) => m.subjectType === 'income').reduce((a: any, b: any) => a + (b.reality || 0), 0);
             obj['ys_' + i] = ys - ambData.filter((m: any) => m.subjectType !== 'income').reduce((a: any, b: any) => a + (b.budget || 0), 0);
             obj['sj_' + i] = sj - ambData.filter((m: any) => m.subjectType !== 'income').reduce((a: any, b: any) => a + (b.reality || 0), 0);
-            structure(obj, i, 0, 0, true);
+            structure(obj, i, ys, sj, true);
         } else if (key === '收入-财务') {
             obj['ys_' + i] = ambData.filter((n: any) => SubjectIds.includes(n.subjectId)).filter((n: any) => n.subjectType === 'income').reduce((a: any, b: any) => a + (b.budget || 0), 0);
             obj['sj_' + i] = ambData.filter((n: any) => SubjectIds.includes(n.subjectId)).filter((n: any) => n.subjectType === 'income').reduce((a: any, b: any) => a + (b.reality || 0), 0);
@@ -111,7 +110,7 @@ function calculate(key: string, data: any, SubjectIds: any) {
             const sj = ambData.filter((n: any) => SubjectIds.includes(n.subjectId)).filter((m: any) => m.subjectType === 'income').reduce((a: any, b: any) => a + (b.reality || 0), 0);
             obj['ys_' + i] = ys - ambData.filter((n: any) => SubjectIds.includes(n.subjectId)).filter((m: any) => m.subjectType !== 'income').reduce((a: any, b: any) => a + (b.budget || 0), 0);
             obj['sj_' + i] = sj - ambData.filter((n: any) => SubjectIds.includes(n.subjectId)).filter((m: any) => m.subjectType !== 'income').reduce((a: any, b: any) => a + (b.reality || 0), 0);
-            structure(obj, i, 0, 0, true);
+            structure(obj, i, ys, sj, true);
         }
     }
     return obj;
