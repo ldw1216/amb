@@ -159,7 +159,7 @@ export default class BudgetTable {
         const sumRowMap = {
             profit: { key: '毛利', subject: <SubjectSubTitle>毛利</SubjectSubTitle> } as any,
             reward: { key: '奖金', subject: <SubjectSubTitle>奖金</SubjectSubTitle>, type: BudgetType.财务 } as any,
-            pureProfit: { key: '利润', subject: <SubjectSubTitle>利润</SubjectSubTitle> } as any,
+            pureProfit: { key: '利润', subject: <SubjectTitle>利润</SubjectTitle> } as any,
             expense: { key: '费用汇总', subject: <SubjectTitle><span>费用</span></SubjectTitle> } as any,
             income: {
                 key: '收入汇总',
@@ -177,7 +177,7 @@ export default class BudgetTable {
             this.budget.monthBudgets.concat(this.budget.quarterBudgets).forEach(({ index, budget, reality, realityRate, completeRate, budgetRate }) => {
                 sumRowMap[col][`预算_${index}月`] = (budget as any)[col] && (budget as any)[col].toFixed(2);
                 sumRowMap[col][`预算占收入比_${index}月`] = formatRate((budgetRate as any)[col]);
-                sumRowMap[col][`实际收入_${index}月`] = (reality as any)[col];
+                sumRowMap[col][`实际收入_${index}月`] = (reality as any)[col] && (reality as any)[col].toFixed(2);
                 sumRowMap[col][`实际占收入比_${index}月`] = formatRate((realityRate as any)[col]);
                 sumRowMap[col][`预算完成率_${index}月`] = formatRate((completeRate as any)[col]);
             });
@@ -215,9 +215,9 @@ export default class BudgetTable {
             }
             this.budget.monthBudgets.concat(this.budget.quarterBudgets).forEach((monthBudget) => {
                 const data = this.getBudgetValue(monthBudget, rowSubject);
-                row[`预算_${monthBudget.index}月`] = data.budget;
+                row[`预算_${monthBudget.index}月`] = data.budget && data.budget.toFixed(2);
                 row[`预算占收入比_${monthBudget.index}月`] = formatRate(data.budgetRate);
-                row[`实际收入_${monthBudget.index}月`] = data.reality;
+                row[`实际收入_${monthBudget.index}月`] = data.reality && data.reality.toFixed(2);
                 row[`实际占收入比_${monthBudget.index}月`] = formatRate(data.realityRate);
                 row[`预算完成率_${monthBudget.index}月`] = formatRate(data.completeRate);
             });

@@ -30,7 +30,7 @@ export default class MonthBudget implements amb.IMonthBudget {
         const reward = profit < 0 ? 0 : profit * this.rewardRate / 100;
         const expense = this.subjectBudgets.filter(({ subjectType }) => subjectType === BudgetSubjectType.费用)
             .reduce((x, y) => x + (y.budget || 0), 0) + reward;
-        const pureProfit = profit - reward - expense;
+        const pureProfit = profit - expense;
         return {
             income,
             cost,
@@ -63,7 +63,7 @@ export default class MonthBudget implements amb.IMonthBudget {
         const reward = profit < 0 ? 0 : profit * this.rewardRate / 100;
         const expense = this.subjectBudgets.filter(({ subjectType }) => subjectType === BudgetSubjectType.费用)
             .reduce((x, y) => x + (y.reality || 0), 0) + reward;
-        const pureProfit = profit - reward - expense;
+        const pureProfit = profit - expense;
         return {
             income,
             cost,
